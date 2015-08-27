@@ -3,19 +3,17 @@ package com.example.indoorbeacon.app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Created by Dima on 28/07/2015.
  */
 public class SearchResultActivity extends Activity {
 
-    public static String[] results = {"Robert Tscharn", "Tobias Grundgeiger", "Diana Löffler"};
+    public static String[] results = {"Robert Tscharn", "Tobias Grundgeiger", "Diana LÃ¶ffler"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
