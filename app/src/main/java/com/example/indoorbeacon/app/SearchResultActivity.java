@@ -8,7 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.indoorbeacon.app.view.adapter.CustomAdapter;
+import com.example.indoorbeacon.app.view.adapter.CustomResultListAdapter;
 
 /**
  * Created by Dima on 28/07/2015.
@@ -34,7 +34,7 @@ public class SearchResultActivity extends Activity {
         text = text.replace("#", results.length + "");
         resultText.setText(text);
 
-        CustomAdapter adapter = new CustomAdapter(this, results);
+        CustomResultListAdapter adapter = new CustomResultListAdapter(this, results);
         list.setAdapter(adapter);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {

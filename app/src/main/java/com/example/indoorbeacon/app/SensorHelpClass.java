@@ -30,7 +30,7 @@ public class SensorHelpClass {
     ImageView arrowImage;
 
     public SensorHelpClass(Context c, ImageView arrowImage, TextView instructionText) {
-//        mSensorManager = (SensorManager) c.getSystemService(SENSOR_SERVICE);
+        mSensorManager = (SensorManager) c.getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 

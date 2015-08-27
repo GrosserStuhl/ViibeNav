@@ -1,22 +1,20 @@
 package com.example.indoorbeacon.app.view.adapter;
 
 import android.content.Context;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-
 import com.example.indoorbeacon.app.R;
 
 /**
  * Created by Dima on 27/07/2015.
  */
-public class CustomAdapter extends ArrayAdapter<String> {
+public class CustomResultListAdapter extends ArrayAdapter<String> {
 
-    public CustomAdapter(Context context, String[] items) {
+    public CustomResultListAdapter(Context context, String[] items) {
         super(context, R.layout.custom_listitem, items);
     }
 
@@ -48,7 +46,8 @@ public class CustomAdapter extends ArrayAdapter<String> {
 
         String item = getItem(position);
         Log.i("MyApp", item);
-        mViewHolder.listButton.setText(Html.fromHtml(item));
+//        mViewHolder.listButton.setText(Html.fromHtml(item));
+        mViewHolder.listButton.setText(item);
 //        mViewHolder.listButton.setFocusable(false);
 //        mViewHolder.listButton.setClickable(false);
 

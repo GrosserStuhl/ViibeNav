@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.indoorbeacon.app.view.adapter.CustomAdapter;
+import com.example.indoorbeacon.app.view.adapter.CustomResultListAdapter;
 
 import java.util.Arrays;
 
@@ -31,7 +31,7 @@ public class RoomlistActivity extends Activity {
         setContentView(R.layout.activity_raumliste);
 
         list = (ListView) findViewById(R.id.roomListView);
-        CustomAdapter adapter = new CustomAdapter(this, categories);
+        CustomResultListAdapter adapter = new CustomResultListAdapter(this, categories);
         list.setAdapter(adapter);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -53,7 +53,7 @@ public class RoomlistActivity extends Activity {
                             break;
                     }
 
-                    list.setAdapter(new CustomAdapter(RoomlistActivity.this, chosenCategory));
+                    list.setAdapter(new CustomResultListAdapter(RoomlistActivity.this, chosenCategory));
                     list.deferNotifyDataSetChanged();
                 } else {
                     Intent intent = new Intent(RoomlistActivity.this, NavigationActivity.class);
@@ -70,7 +70,7 @@ public class RoomlistActivity extends Activity {
             super.onBackPressed();
         else {
             chosenCategory = categories;
-            list.setAdapter(new CustomAdapter(RoomlistActivity.this, chosenCategory));
+            list.setAdapter(new CustomResultListAdapter(RoomlistActivity.this, chosenCategory));
             list.deferNotifyDataSetChanged();
         }
     }

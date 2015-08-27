@@ -5,14 +5,11 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,21 +19,7 @@ import android.widget.Toast;
  */
 public class NavigationActivity extends Activity implements SensorEventListener {
 
-    private ImageView arrowImage;
-    private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
-    private Sensor mMagnetometer;
-    private float[] mLastAccelerometer = new float[3];
-    private float[] mLastMagnetometer = new float[3];
-    private boolean mLastAccelerometerSet = false;
-    private boolean mLastMagnetometerSet = false;
-    private float[] mR = new float[9];
-    private float[] mOrientation = new float[3];
-    private float mCurrentDegree = 0f;
-
-    private TextView instructionText;
-    int meter = 0;
-    int grad = 0;
+    private SensorHelpClass sensorHelpClass;
 
     private GestureDetector mDetector;
 
@@ -55,17 +38,9 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         Intent intent = getIntent();
         String ziel = intent.getStringExtra("Ziel");
 
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-
-        arrowImage = (ImageView) findViewById(R.id.arrowImageView);
-        instructionText = (TextView) findViewById(R.id.instructionTextView);
-
-        meter = 2;
-        grad = 45;
-        String text = meter + " Meter \n" + grad + " Grad";
-        instructionText.setText(text);
+        ImageView arrowImage = (ImageView) findViewById(R.id.arrowImageView);
+        TextView instructionText = (TextView) findViewById(R.id.instructionTextView);
+        sensorHelpClass = new SensorHelpClass(this, arrowImage, instructionText);
 
         anweisungen[0] = R.raw.anweisung1;
         anweisungen[1] = R.raw.anweisung2;
@@ -80,47 +55,17 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
     protected void onResume() {
         super.onResume();
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
-        mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_GAME);
+        sensorHelpClass.onResumeOperation(this);
     }
 
     protected void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(this, mAccelerometer);
-        mSensorManager.unregisterListener(this, mMagnetometer);
+        sensorHelpClass.onPauseOperation(this);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor == mAccelerometer) {
-            System.arraycopy(event.values, 0, mLastAccelerometer, 0, event.values.length);
-            mLastAccelerometerSet = true;
-        } else if (event.sensor == mMagnetometer) {
-            System.arraycopy(event.values, 0, mLastMagnetometer, 0, event.values.length);
-            mLastMagnetometerSet = true;
-        }
-        if (mLastAccelerometerSet && mLastMagnetometerSet) {
-            SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
-            SensorManager.getOrientation(mR, mOrientation);
-            float azimuthInRadians = mOrientation[0];
-            float azimuthInDegress = (float) (Math.toDegrees(azimuthInRadians) + 360) % 360;
-            RotateAnimation ra = new RotateAnimation(
-                    mCurrentDegree,
-                    -azimuthInDegress,
-                    Animation.RELATIVE_TO_SELF, 0.5f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f);
-
-            ra.setDuration(1000);
-            ra.setFillAfter(true);
-
-            arrowImage.startAnimation(ra);
-            mCurrentDegree = -azimuthInDegress;
-
-            grad = (int) (360 + mCurrentDegree);
-            String text = meter + " Meter \n" + grad + " Grad";
-            instructionText.setText(text);
-        }
+        sensorHelpClass.onSensorChangedOperation(event);
     }
 
     @Override
