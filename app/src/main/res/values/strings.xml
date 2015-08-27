@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">ViibeNav</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="listenButtonText">Aus Liste \n wählen</string>
+    <string name="suchenButtonText">Nach Raum oder Name suchen</string>
+    <string name="sucheStartButtonText">Suche starten</string>
+    <string name="settingsButtonText">Einstellungen</string>
+    <string name="suchenText">Suchen</string>
+    <string name="listeText">Aus Liste wählen</string>
+    <string name="suchFeldHint">Eingabe</string>
+    <string name="mikroButtonText">Spracheingabe starten</string>
+    <string name="infoText">Raumkategorie auswählen:</string>
+    <string name="searchResultText">Suche nach X ergab # Treffer:</string>
+    <string name="infoTextSuche">Geben Sie den Namen einer Person oder eines Raumes ein</string>
+    <string name="directionArrowText">Richtungspfeil</string>
+</resources>

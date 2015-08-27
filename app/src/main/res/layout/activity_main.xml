@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+        >
+
+    <ImageButton
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:id="@+id/sucheStartenImgButton"
+            android:layout_marginLeft="100dp"
+            android:layout_marginRight="100dp"
+            android:layout_marginTop="39dp"
+            android:src="@drawable/lupe"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:background="@drawable/custom_button"
+            android:padding="30dp"
+            android:contentDescription="@string/suchenButtonText"
+            android:onClick="openSearchActivity"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:stateListAnimator="@drawable/button_press_animator"/>
+    <!-- Ob android:adjustViewBounds="true" überhaupt eine Auswirkung hat
+     ist unklar -->
+
+    <ImageButton
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:id="@+id/listeImgButton"
+            android:minHeight="20dp"
+            android:minWidth="20dp"
+            android:visibility="visible"
+            android:background="@drawable/custom_button"
+            android:src="@drawable/liste"
+            android:padding="30dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/listenButtonText"
+            android:onClick="openListActivity"
+            android:layout_marginTop="48dp"
+            android:layout_below="@+id/suchenTextView"
+            android:layout_alignStart="@+id/sucheStartenImgButton"
+            android:stateListAnimator="@drawable/button_press_animator"/>
+
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_marginTop="10dp"
+            android:text="@string/suchenText"
+            android:id="@+id/suchenTextView"
+            android:layout_below="@+id/sucheStartenImgButton"
+            android:layout_centerHorizontal="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:textStyle="bold"
+            android:importantForAccessibility="no"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/listeText"
+            android:id="@+id/listeTextView"
+            android:textStyle="bold"
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+            android:importantForAccessibility="no"
+            android:layout_below="@+id/listeImgButton"
+            android:layout_alignStart="@+id/listeImgButton"
+            android:layout_marginTop="10dp"/>
+
+    <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/settingsImgButton"
+            android:scaleType="fitCenter"
+            android:padding="15dp"
+            android:src="@drawable/settings"
+            android:background="@drawable/custom_button"
+            android:contentDescription="@string/settingsButtonText"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:onClick="openSettingsActivity"
+            android:layout_alignTop="@+id/listeImgButton"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="130dp"
+            android:layout_marginStart="5dp"
+            android:stateListAnimator="@drawable/button_press_animator"/>
+</RelativeLayout>
