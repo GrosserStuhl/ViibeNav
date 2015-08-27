@@ -8,6 +8,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.indoorbeacon.app.view.adapter.CustomAdapter;
+
 /**
  * Created by Dima on 28/07/2015.
  */

@@ -1,4 +1,4 @@
-package com.example.indoorbeacon.app;
+package com.example.indoorbeacon.app.view.adapter;
 
 import android.content.Context;
 import android.text.Html;
@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+
+import com.example.indoorbeacon.app.R;
 
 /**
  * Created by Dima on 27/07/2015.

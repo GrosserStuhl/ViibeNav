@@ -24,4 +24,9 @@
         <item name="android:textSize">30sp</item>
     </style>
 
+    <style name="spinnerItemStyle">
+        <item name="android:textSize">40dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

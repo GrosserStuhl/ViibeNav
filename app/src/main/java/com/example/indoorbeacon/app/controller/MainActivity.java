@@ -1,12 +1,31 @@
-package com.example.indoorbeacon.app;
+package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothManager;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.indoorbeacon.app.R;
+import com.example.indoorbeacon.app.RoomlistActivity;
+import com.example.indoorbeacon.app.SearchActivity;
+import com.example.indoorbeacon.app.SettingsActivity;
+import com.example.indoorbeacon.app.model.BluetoothScan;
+import com.example.indoorbeacon.app.model.Connector;
+import com.example.indoorbeacon.app.model.Coordinate;
+import com.example.indoorbeacon.app.model.RadioMap;
+import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+
 
 public class MainActivity extends Activity {
+
+    Application applicationUI;
+    RadioMap radioMap;
+    BluetoothScan bluetoothScan;
+    DBHandler dbHandler;
+
+    Connector connect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,6 +33,16 @@ public class MainActivity extends Activity {
 //        getActionBar().setHomeButtonEnabled(true);
 //        getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_main);
+
+        radioMap = new RadioMap(new Coordinate(0,0,0));
+        dbHandler = DBHandler.createDB(this, null, null, 1);
+        applicationUI = new Application(this);
+
+        connect = Connector.createConnector((WifiManager) getSystemService(this.WIFI_SERVICE));
+
+
+        BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+        bluetoothScan = new BluetoothScan(manager.getAdapter());
     }
 
     public void openSearchActivity(View view) {

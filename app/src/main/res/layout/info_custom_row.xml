@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="82dp"
+        android:id="@+id/onyxImage"
+        android:src="@mipmap/onyx_transparent"
+        android:contentDescription="Image of iBeacon"
+        android:layout_margin="5dp"
+        android:layout_weight="0.42" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="237dp"
+        android:layout_height="75dp"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Medium Text"
+            android:id="@+id/macAdressText"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Medium Text"
+            android:id="@+id/majMinText"
+            android:layout_marginTop="2dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Medium Text"
+            android:id="@+id/distancingText"
+            android:layout_marginTop="2dp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</LinearLayout>

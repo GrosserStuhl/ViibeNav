@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.indoorbeacon.app.view.adapter.CustomAdapter;
+
 import java.util.Arrays;
 
 /**
