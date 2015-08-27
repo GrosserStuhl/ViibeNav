@@ -8,10 +8,6 @@ import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 import com.example.indoorbeacon.app.model.position.neighbor.PositionAlgorithm;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 
 /**
@@ -73,60 +69,6 @@ public class Person {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // OLD CODE OLD CODE OLD CODE OLD CODE OLD CODE
-    public void getSupposedAnchorIds(final ArrayList<OnyxBeacon> surrounding){
-        ArrayList<Integer> res = new ArrayList<>();
-        for(OnyxBeacon b: surrounding) {
-            ArrayList<Integer> possibleAnchors = DBHandler.getDB().getMostLikelyAnchorToBeacon(b.getMacAddress(),b.getOnTheFlyMedian());
-            for(int p : possibleAnchors)
-                res.add(p);
-
-        }
-
-        Log.d(TAG, "Beacons pointing to ANCHORS" +Util.intListToString(res));
-
-        Coordinate likeliestMatch = getCoordFromAnchorId(findMostLikelyMatch(res));
-        setCoord(likeliestMatch);
-        Log.d(TAG, "Position: " + getCoord());
-        test.updateLikelyCoordsView();
-
-    }
-
-    public int findMostLikelyMatch(final ArrayList<Integer> ids){
-        HashMap<Integer,Integer> frequencyMap = new HashMap<>();
-        for(int id : ids)
-            frequencyMap.put(Collections.frequency(ids, id), id);
-
-
-
-
-        int mostFrequent = 0;
-        int res = 0;
-        Iterator it = frequencyMap.entrySet().iterator();
-        while(it.hasNext()){
-            Map.Entry<Integer,Integer> pair = (Map.Entry)it.next();
-            if(pair.getKey()>mostFrequent)
-                res = pair.getValue();
-        }
-        Log.d(TAG, "MOST FREQUENT ANCHORID: " + res);
-
-        return res;
-    }
 
 
     private Coordinate getCoordFromAnchorId(int id){

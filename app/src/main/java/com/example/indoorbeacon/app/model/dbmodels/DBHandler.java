@@ -10,8 +10,6 @@ import android.util.Log;
 import com.example.indoorbeacon.app.model.AnchorPoint;
 import com.example.indoorbeacon.app.model.Coordinate;
 import com.example.indoorbeacon.app.model.OnyxBeacon;
-import com.example.indoorbeacon.app.model.Setup;
-import com.example.indoorbeacon.app.model.Util;
 import com.example.indoorbeacon.app.model.position.neighbor.DeviationToCoord;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 
@@ -45,6 +43,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_BEACON_4 = "beacon4";
     public static final String COLUMN_BEACON_5 = "beacon5";
     public static final String COLUMN_BEACON_6 = "beacon6";
+    public static final String COLUMN_INFO_FK = "infofk";
 
     // MEDIANS TABLE
     public static final String TABLE_MEDIANS = "medians";
@@ -57,6 +56,13 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String BEACONS_COLUMN_ID = "id";
     public static final String COLUMN_MAJOR = "major";
     public static final String COLUMN_MINOR = "minor";
+
+    // INFO Table
+    public static final String TABLE_INFO = "info";
+    public static final String INFO_COLUMN_ID = "id";
+    public static final String COLUMN_PERSON_NAME = "personname";
+    public static final String COLUMN_ROOM_NAME = "roomname";
+    public static final String COLUMN_ENVIRONMENT = "environment";
 
     private static DBHandler singleton;
 
@@ -116,6 +122,15 @@ public class DBHandler extends SQLiteOpenHelper{
                 ");";
         db.execSQL(query3);
 
+        // CREATE INFO TABLE
+        String query4 = "CREATE TABLE "+ TABLE_INFO + "(" +
+                "'"+ INFO_COLUMN_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "'"+ COLUMN_PERSON_NAME +"'"+ " TEXT, "+
+                "'"+ COLUMN_ROOM_NAME +"'"+ " TEXT, "+
+                "'"+ COLUMN_ENVIRONMENT +"'"+ " TEXT "+
+                ");";
+        db.execSQL(query4);
+
     }
 
     @Override
@@ -123,6 +138,7 @@ public class DBHandler extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS" + TABLE_ANCHORS);
         db.execSQL("DROP TABLE IF EXISTS" + TABLE_MEDIANS);
         db.execSQL("DROP TABLE IF EXISTS" + TABLE_BEACONS);
+        db.execSQL("DROP TABLE IF EXISTS" + TABLE_INFO);
         onCreate(db);
     }
 
@@ -202,70 +218,8 @@ public class DBHandler extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS '" + TABLE_ANCHORS+"'");
         db.execSQL("DROP TABLE IF EXISTS '" + TABLE_MEDIANS+"'");
         db.execSQL("DROP TABLE IF EXISTS '" + TABLE_BEACONS+"'");
+        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_INFO+"'");
         onCreate(db);
-    }
-
-
-
-
-    /**
-     * Returns an ArrayList<Integer> containing possible AnchorPoint IDs for one measured onTheFlyMedian from a specific device.
-     * @param macAddress
-     * @param median
-     * @return
-     */
-    public ArrayList<Integer> getMostLikelyAnchorToBeacon(CharBuffer macAddress, double median){
-        ArrayList<Integer> anchors = new ArrayList<>();
-        int anchor_id = 0;
-        SQLiteDatabase db = getWritableDatabase();
-
-        final String LOCAL_COLUMN_DEVIATION = "deviation";
-
-
-        final String LOCAL_COLUMN_ANCHORID = "anchorid";
-
-//          WORKING SQL EXAMPLE FOR RETRIEVING ANCHORPOINT TO MOST LIKELIEST MEDIAN_ID-
-//        SELECT anchorpoint.id as anchorid, median.id, MAX(median +58.5) as deviation FROM Median JOIN anchorpoint  WHERE macAddress = "78:A5:04:07:AE:96"
-//        AND (anchorpoint.b1 = median.id or anchorpoint.b2 = median.id OR anchorpoint.b3 = median.id OR anchorpoint.b4 = median.id) Group By median ORDER BY deviation DESC limit 5
-
-//        SELECT  median.id, MAX(ABS(median +58.5)) as deviation FROM Median JOIN anchorpoint  WHERE macAddress = "78:A5:04:07:AE:96"
-//        AND (anchorpoint.b1 = median.id or anchorpoint.b2 = median.id OR anchorpoint.b3 = median.id OR anchorpoint.b4 = median.id) Group By median HAVING deviation < 5 ORDER BY deviation ASC limit 5
-
-        String query = "SELECT "+TABLE_ANCHORS+"."+ANCHORS_COLUMN_ID+" as "+LOCAL_COLUMN_ANCHORID+", "+TABLE_MEDIANS+"."+MEDIANS_COLUMN_ID+", "+calcManhattenDB_Cmd(median)+" AS "+LOCAL_COLUMN_DEVIATION+" " +
-                " FROM '"+TABLE_MEDIANS + "' JOIN '"+TABLE_ANCHORS+"' WHERE macAddress = '"+macAddress.toString()+"' AND " +
-                " ( "+TABLE_ANCHORS+"."+COLUMN_BEACON_1+" = "+TABLE_MEDIANS+"."+MEDIANS_COLUMN_ID+" " +
-                "   OR "+TABLE_ANCHORS+"."+COLUMN_BEACON_2+" = "+TABLE_MEDIANS+"."+MEDIANS_COLUMN_ID+"  " +
-                "   OR "+TABLE_ANCHORS+"."+COLUMN_BEACON_3+" = "+TABLE_MEDIANS+"."+MEDIANS_COLUMN_ID+"  " +
-                "   OR "+TABLE_ANCHORS+"."+COLUMN_BEACON_4+" = "+TABLE_MEDIANS+"."+MEDIANS_COLUMN_ID+"  " +
-                "   OR "+TABLE_ANCHORS+"."+COLUMN_BEACON_5+" = "+TABLE_MEDIANS+"."+MEDIANS_COLUMN_ID+"  " +
-                "   OR "+TABLE_ANCHORS+"."+COLUMN_BEACON_6+" = "+TABLE_MEDIANS+"."+MEDIANS_COLUMN_ID+"  " +
-                "  ) " +
-                " GROUP BY "+COLUMN_MEDIAN_VALUE+" ORDER BY "+LOCAL_COLUMN_DEVIATION+" ASC LIMIT 1;";
-
-        // IMPORTANT - NOTE:
-        // IT MAKES SENSE TO SET UP THE LIMIT TO 5 WHEN MULTIPLE ANCHORS ARE SET IN THE RADIO MAP
-        // BUT NOW FOR TESTING PURPOSES IT DOES NOT MAKE SENSE -> TESTCASE: I ONLY HAVE 2 ANCHORS IN MY MAP IF I SET LIMIT TO >1
-        // I WILL GET BOTH ANCHORS AS POSSIBLE, BUT I ONLY WANT THE ONE MOST LIKELIEST ANCHORPOINT !
-
-        Cursor c = db.rawQuery(query,null);
-        c.moveToFirst();
-
-        while(!c.isAfterLast()){
-            anchor_id = c.getInt(c.getColumnIndex(LOCAL_COLUMN_ANCHORID));
-            anchors.add(anchor_id);
-
-            if(Setup.EVALUATE_MEDIAN_QUALITY) {
-                int limit = Util.probFromMedianQuality(median);
-                for(int i=0;i<limit;i++)
-                    anchors.add(anchor_id);
-            }
-
-            Log.d(TAG, "Median id " + c.getInt(c.getColumnIndex(MEDIANS_COLUMN_ID)) + " macAddress "+macAddress.toString() + " deviation: "+c.getDouble(c.getColumnIndex(LOCAL_COLUMN_DEVIATION)) + " -> Anchorid: "+anchor_id);
-            c.moveToNext();
-        }
-
-        db.close();
-        return anchors;
     }
 
     /*
