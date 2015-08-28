@@ -2,6 +2,7 @@ package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -38,7 +39,7 @@ public class MainActivity extends Activity {
         dbHandler = DBHandler.createDB(this, null, null, 1);
         applicationUI = new Application(this);
 
-        connect = Connector.createConnector((WifiManager) getSystemService(this.WIFI_SERVICE));
+        connect = Connector.createConnector((WifiManager) getSystemService(WIFI_SERVICE));
 
 
         BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);

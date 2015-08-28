@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.indoorbeacon.app" >
+          package="com.example.indoorbeacon.app">
 
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 
 
     <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/CustomTheme" >
-        <activity
-            android:name=".controller.MainActivity"
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
-            >
+            android:theme="@style/CustomTheme"
+            android:screenOrientation="landscape">
+        <activity
+                android:name=".controller.MainActivity"
+                android:label="@string/app_name"
+                >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
@@ -29,9 +30,9 @@
                 android:name=".SearchActivity"
                 android:label="Nach Ziel suchen">
             <intent-filter>
-                <action android:name="com.example.indoorbeacon.app.SearchActivity" />
+                <action android:name="com.example.indoorbeacon.app.SearchActivity"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
@@ -39,9 +40,9 @@
                 android:name=".SearchResultActivity"
                 android:label="Suchergebnisse">
             <intent-filter>
-                <action android:name="com.example.indoorbeacon.app.SearchResultActivity" />
+                <action android:name="com.example.indoorbeacon.app.SearchResultActivity"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
@@ -49,9 +50,9 @@
                 android:name=".RoomlistActivity"
                 android:label="Raumliste">
             <intent-filter>
-                <action android:name="com.example.indoorbeacon.app.RoomlistActivity" />
+                <action android:name="com.example.indoorbeacon.app.RoomlistActivity"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
@@ -59,9 +60,9 @@
                 android:name=".SettingsActivity"
                 android:label="Einstellungen">
             <intent-filter>
-                <action android:name="com.example.indoorbeacon.app.SettingsActivity" />
+                <action android:name="com.example.indoorbeacon.app.SettingsActivity"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
@@ -69,9 +70,9 @@
                 android:name=".NavigationActivity"
                 android:label="Navigation">
             <intent-filter>
-                <action android:name="com.example.indoorbeacon.app.NavigationActivity" />
+                <action android:name="com.example.indoorbeacon.app.NavigationActivity"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
     </application>

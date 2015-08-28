@@ -19,7 +19,7 @@ import android.widget.Toast;
  */
 public class NavigationActivity extends Activity implements SensorEventListener {
 
-    private SensorHelpClass sensorHelpClass;
+    private SensorHelper sensorHelper;
 
     private GestureDetector mDetector;
 
@@ -40,7 +40,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         ImageView arrowImage = (ImageView) findViewById(R.id.arrowImageView);
         TextView instructionText = (TextView) findViewById(R.id.instructionTextView);
-        sensorHelpClass = new SensorHelpClass(this, arrowImage, instructionText);
+        sensorHelper = new SensorHelper(this, arrowImage, instructionText);
 
         anweisungen[0] = R.raw.anweisung1;
         anweisungen[1] = R.raw.anweisung2;
@@ -55,17 +55,17 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
     protected void onResume() {
         super.onResume();
-        sensorHelpClass.onResumeOperation(this);
+        sensorHelper.onResumeOperation(this);
     }
 
     protected void onPause() {
         super.onPause();
-        sensorHelpClass.onPauseOperation(this);
+        sensorHelper.onPauseOperation(this);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        sensorHelpClass.onSensorChangedOperation(event);
+        sensorHelper.onSensorChangedOperation(event);
     }
 
     @Override
@@ -76,7 +76,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_DISTANCE_THRESHOLD = 100;
         private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-        private long time = 0L;
         private int pointer = 0;
 
         @Override
@@ -96,24 +95,12 @@ public class NavigationActivity extends Activity implements SensorEventListener 
                     Log.d("SWIPE GESTURES", "Swipe right");
                     Toast.makeText(NavigationActivity.this, "Swipe Right", Toast.LENGTH_SHORT).show();
 
-                    if (pointer > 0) {
-                        if (time == 0L) {
-                            time = System.currentTimeMillis();
-                        } else {
-                            long curTime = System.currentTimeMillis();
-                            if (curTime - time < 3000L) {
-                                pointer--;
-                                time = System.currentTimeMillis();
-                            } else time = 0L;
-                        }
-                    }
-
+                    if (pointer > 0) pointer--;
                 } else {
                     Log.d("SWIPE GESTURES", "Swipe Left");
                     Toast.makeText(NavigationActivity.this, "Swipe Left", Toast.LENGTH_SHORT).show();
                     if (pointer < 2) {
                         pointer++;
-                        time = 0L;
                     }
                 }
 
@@ -125,6 +112,19 @@ public class NavigationActivity extends Activity implements SensorEventListener 
                 mp.start();
 
                 return true;
+            } else if (Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > SWIPE_DISTANCE_THRESHOLD
+                    && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                if (distanceY < 0) {
+                    Log.d("SWIPE GESTURES", "Swipe up");
+                    Toast.makeText(NavigationActivity.this, "Swipe Up", Toast.LENGTH_SHORT).show();
+
+                    if (mp != null) {
+                        mp.release();
+                        mp = null;
+                    }
+                    mp = MediaPlayer.create(NavigationActivity.this, anweisungen[pointer]);
+                    mp.start();
+                }
             }
             return false;
         }

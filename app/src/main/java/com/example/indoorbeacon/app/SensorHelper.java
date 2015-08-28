@@ -12,7 +12,7 @@ import android.widget.TextView;
 /**
  * Created by Dima on 04/08/2015.
  */
-public class SensorHelpClass {
+public class SensorHelper {
     SensorManager mSensorManager;
     Sensor mAccelerometer;
     Sensor mMagnetometer;
@@ -29,7 +29,7 @@ public class SensorHelpClass {
     TextView instructionText;
     ImageView arrowImage;
 
-    public SensorHelpClass(Context c, ImageView arrowImage, TextView instructionText) {
+    public SensorHelper(Context c, ImageView arrowImage, TextView instructionText) {
         mSensorManager = (SensorManager) c.getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -78,7 +78,7 @@ public class SensorHelpClass {
             arrowImage.startAnimation(ra);
             mCurrentDegree = -azimuthInDegress;
 
-            grad = (int) mCurrentDegree;
+            grad = (int) -mCurrentDegree;
             String text = meter + " Meter \n" + grad + " Grad";
             instructionText.setText(text);
         }

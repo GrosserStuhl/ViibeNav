@@ -1,6 +1,8 @@
 package com.example.indoorbeacon.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -13,11 +15,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by Dima on 27/07/2015.
  */
 public class SearchActivity extends Activity {
+
+    private EditText searchField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +31,8 @@ public class SearchActivity extends Activity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_suchen);
 
-        final EditText searchField = (EditText) findViewById(R.id.searchField);
+        searchField = (EditText) findViewById(R.id.searchField);
+
         searchField.setImeActionLabel("Suchen", KeyEvent.KEYCODE_ENTER);
         searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
@@ -58,6 +64,7 @@ public class SearchActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                         RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
                 intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Spracheingabe");
@@ -66,17 +73,33 @@ public class SearchActivity extends Activity {
         });
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == 1) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-               ArrayList<String> matches = data.getStringArrayListExtra(
+                ArrayList<String> matches = data.getStringArrayListExtra(
                         RecognizerIntent.EXTRA_RESULTS);
-               EditText searchField = (EditText) findViewById(R.id.searchField);
-               searchField.setText(matches.get(0));
+                //ArrayList "matches" zu Array konvertieren und als Parameter für nächsten Dialog übergeben
+//                showSpeechRecResults(matches.toArray(new String[matches.size()]));
+                searchField.setText(matches.get(0));
             }
         }
+    }
+
+    private void showSpeechRecResults(String[] matches) {
+        final String[] matchesCopy = new String[3];
+        System.arraycopy(matches, 0, matchesCopy, 0, matches.length);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        builder.setTitle("Mögliche Option wählen").setItems(matches,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        searchField.setText(matchesCopy[which]);
+                    }
+                });
+        builder.create().show();
     }
 }
