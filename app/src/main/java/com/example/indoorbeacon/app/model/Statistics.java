@@ -98,6 +98,16 @@ public class Statistics {
             return (double) data.get((data.size() + 1 - 1) / 2);
     }
 
+    public static float calcMedianFromFloat(final ArrayList<Float> data){
+        Collections.sort(data);
+
+    /*-1 bec. it's an array!*/
+    /* array starts from 0 !*/
+        if (data.size() % 2 == 0)
+            return (data.get((data.size() / 2) - 1) + data.get((data.size() / 2) + 1 - 1)) / 2;
+        else
+            return data.get((data.size() + 1 - 1) / 2);
+    }
 
     /**
      *  Ein Korrelationskoeffizient kann zwischen

@@ -4,10 +4,15 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.example.indoorbeacon.app.model.Statistics;
+import com.example.indoorbeacon.app.model.Util;
+
+import java.util.ArrayList;
 
 /**
  * Created by Dima on 04/08/2015.
@@ -28,6 +33,21 @@ public class SensorHelper {
     int grad = 0;
     TextView instructionText;
     ImageView arrowImage;
+
+    private boolean calcInProgress = false;
+    private long startTime = 0;
+    private long curTime = 0;
+    private boolean timeToAddValue = false;
+    private ArrayList<Float> degreeValuesForMedian = new ArrayList<>();
+
+    /**
+     * Ausrichtung des Smartphones zum Nordpol
+     */
+    private static int orientation = 0;
+
+    public static int getOrientation() {
+        return orientation;
+    }
 
     public SensorHelper(Context c, ImageView arrowImage, TextView instructionText) {
         mSensorManager = (SensorManager) c.getSystemService(Context.SENSOR_SERVICE);
@@ -64,10 +84,36 @@ public class SensorHelper {
             SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
             SensorManager.getOrientation(mR, mOrientation);
             float azimuthInRadians = mOrientation[0];
-            float azimuthInDegress = (float) (Math.toDegrees(azimuthInRadians) + 360) % 360;
+            float azimuthInDegrees = (float) (Math.toDegrees(azimuthInRadians) + 360) % 360;
+
+            if (!calcInProgress) {
+                degreeValuesForMedian.add(azimuthInDegrees);
+                startTime = System.currentTimeMillis();
+                calcInProgress = true;
+                startTimerThread();
+            }
+            if (timeToAddValue) {
+                degreeValuesForMedian.add(azimuthInDegrees);
+                if (degreeValuesForMedian.size() < 10) {
+                    startTime = System.currentTimeMillis();
+                    timeToAddValue = false;
+                } else {
+                    timeToAddValue = false;
+                    calcInProgress = false;
+
+                    float median = Statistics.calcMedianFromFloat(degreeValuesForMedian);
+                    degreeValuesForMedian.clear();
+                    animateImage(median);
+                }
+            }
+        }
+    }
+
+    private void animateImage(float degrees) {
+        if (mCurrentDegree > 350 && mCurrentDegree < 359 && degrees > 0 && degrees < 10) {
             RotateAnimation ra = new RotateAnimation(
                     mCurrentDegree,
-                    -azimuthInDegress,
+                    360,
                     Animation.RELATIVE_TO_SELF, 0.5f,
                     Animation.RELATIVE_TO_SELF,
                     0.5f);
@@ -76,11 +122,77 @@ public class SensorHelper {
             ra.setFillAfter(true);
 
             arrowImage.startAnimation(ra);
-            mCurrentDegree = -azimuthInDegress;
 
-            grad = (int) -mCurrentDegree;
-            String text = meter + " Meter \n" + grad + " Grad";
-            instructionText.setText(text);
+            ra = new RotateAnimation(
+                    0,
+                    degrees,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f);
+
+            ra.setDuration(250);
+            ra.setFillAfter(true);
+
+            arrowImage.startAnimation(ra);
+        } else if (mCurrentDegree > 0 && mCurrentDegree < 10 && degrees > 350 && degrees < 359) {
+            RotateAnimation ra = new RotateAnimation(
+                    mCurrentDegree,
+                    0,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f);
+
+            ra.setDuration(250);
+            ra.setFillAfter(true);
+
+            arrowImage.startAnimation(ra);
+
+            ra = new RotateAnimation(
+                    360,
+                    degrees,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f);
+
+            ra.setDuration(250);
+            ra.setFillAfter(true);
+
+            arrowImage.startAnimation(ra);
+        } else {
+            RotateAnimation ra = new RotateAnimation(
+                    mCurrentDegree,
+                    degrees,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f);
+
+            ra.setDuration(250);
+            ra.setFillAfter(true);
+
+            arrowImage.startAnimation(ra);
         }
+        mCurrentDegree = degrees;
+
+
+        grad = (int) mCurrentDegree;
+        orientation = grad;
+        String text = meter + " Meter \n" + grad + " Grad";
+        instructionText.setText(text);
+    }
+
+    private void startTimerThread() {
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                while (calcInProgress) {
+                    curTime = System.currentTimeMillis();
+                    long dif = curTime - startTime;
+                    if (dif >= 15) timeToAddValue = true;
+                }
+            }
+        };
+
+        Thread t = new Thread(r);
+        t.start();
     }
 }

@@ -152,6 +152,14 @@ public class Util implements Serializable {
         return Util.timeDiff_MillisToNow(time) <= Setup.TIME_LAST_SIGNAL_THRESHOLD;
     }
 
+    public static ArrayList<Integer> convertFloatListToIntegerList(ArrayList<Float> floatArray){
+        ArrayList<Integer> intArray = new ArrayList<>();
+        for(float temp : floatArray){
+            intArray.add((int) temp);
+        }
+        return intArray;
+    }
+
 
 
 }
