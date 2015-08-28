@@ -1,51 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="1">
+    android:layout_height="match_parent">
 
     <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:id="@+id/testarea_info_custom_row_tl">
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:id="@+id/id_beacons"
-                android:layout_weight="1"
-                android:textColor="#ff20d761"
-                android:text="ID" />
+            android:layout_height="match_parent">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/major"
+                android:text="ID"
                 android:layout_weight="1"
-                android:layout_marginLeft="10dp"
-                android:text="Major" />
+                android:id="@+id/dbInfoID" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/minor"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="PersonName"
                 android:layout_weight="1"
-                android:text="Minor" />
+                android:id="@+id/dbInfoPersonName" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/macAddress"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="RoomName"
                 android:layout_weight="1"
-                android:text="MacAddress" />
+                android:id="@+id/dbInfoRoomName" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Environment"
+                android:layout_weight="1"
+                android:id="@+id/dbInfoEnvironment" />
         </TableRow>
     </TableLayout>
 </LinearLayout>

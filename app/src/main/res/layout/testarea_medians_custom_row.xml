@@ -9,28 +9,42 @@
         android:layout_height="wrap_content"
         android:weightSum="1">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/id_medians"
-            android:layout_weight="0.12"
-            android:textColor="#ff20d761" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/median_median"
-            android:layout_weight="0.12"
-            android:layout_marginLeft="10dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/median_macAddress"
-            android:layout_weight="0.60"
-            android:layout_marginLeft="10dp" />
     </LinearLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:id="@+id/id_medians"
+                android:layout_weight="1"
+                android:textColor="#ff20d761"
+                android:text="ID" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/median_median"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:text="Median" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/median_macAddress"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:text="MacAddress" />
+        </TableRow>
+    </TableLayout>
 </LinearLayout>

@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.indoorbeacon.app.model.AddInfo;
 import com.example.indoorbeacon.app.model.AnchorPoint;
 import com.example.indoorbeacon.app.model.Coordinate;
 import com.example.indoorbeacon.app.model.OnyxBeacon;
@@ -43,7 +44,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_BEACON_4 = "beacon4";
     public static final String COLUMN_BEACON_5 = "beacon5";
     public static final String COLUMN_BEACON_6 = "beacon6";
-    public static final String COLUMN_INFO_FK = "infofk";
+    public static final String COLUMN_INFO_ID = "info";
 
     // MEDIANS TABLE
     public static final String TABLE_MEDIANS = "medians";
@@ -57,7 +58,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_MAJOR = "major";
     public static final String COLUMN_MINOR = "minor";
 
-    // INFO Table
+    // INFO TABLE
     public static final String TABLE_INFO = "info";
     public static final String INFO_COLUMN_ID = "id";
     public static final String COLUMN_PERSON_NAME = "personname";
@@ -118,7 +119,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 "'"+ COLUMN_BEACON_3 +"'"+ " INTEGER," /*FOREIGN KEY REFERENCES "+TABLE_MEDIANS+"("+MEDIANS_COLUMN_ID+"),"*/+
                 "'"+ COLUMN_BEACON_4 +"'"+ " INTEGER, " /*FOREIGN KEY REFERENCES "+TABLE_MEDIANS+"("+MEDIANS_COLUMN_ID+")"*/+
                 "'"+ COLUMN_BEACON_5 +"'"+ " INTEGER, " +
-                "'"+ COLUMN_BEACON_6 +"'"+ " INTEGER  " +
+                "'"+ COLUMN_BEACON_6 +"'"+ " INTEGER, " +
+                "'"+ COLUMN_INFO_ID +"'"+ " INTEGER  " +
                 ");";
         db.execSQL(query3);
 
@@ -143,7 +145,7 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     // Add a new row to the database
-    public void addAnchor(AnchorPoint a){
+    public void addAnchor(AnchorPoint a, AddInfo addInfo){
         SQLiteDatabase db = getWritableDatabase();
 
 
@@ -165,7 +167,6 @@ public class DBHandler extends SQLiteOpenHelper{
 
             // INSERT INTO MEDIANSTABLE
             ContentValues valuesMedian = new ContentValues();
-            // 1.param: COLUMN_NAME     2.param VALUE
             valuesMedian.put(COLUMN_MEDIAN_VALUE, pair.getValue().getMedianRSSI());
             valuesMedian.put(COLUMN_MACADDRESS, pair.getValue().getMacAddressStr());
             db.insert(TABLE_MEDIANS, null, valuesMedian);
@@ -193,11 +194,38 @@ public class DBHandler extends SQLiteOpenHelper{
             valuesAnchor.put(COLUMN_BEACON_6, relatedMedians.get(5));
         }
 
-        db.insert(TABLE_ANCHORS, null, valuesAnchor);
+        // Add Additional Info
+        if(addInfo.hasAddInfo()){
+            Log.d(TAG, "NAME "+addInfo.getPerson_name()+" Room "+addInfo.getRoom_name()+
+                    " ENV: "+addInfo.getEnvironment());
+
+            ContentValues valuesAddInfo = new ContentValues();
+            if(addInfo.hasPersonInfo())
+                valuesAddInfo.put(COLUMN_PERSON_NAME, addInfo.getPerson_name());
+            if(addInfo.hasRoomInfo())
+                valuesAddInfo.put(COLUMN_ROOM_NAME, addInfo.getRoom_name());
+            if(addInfo.hasEnvironmentInfo())
+                valuesAddInfo.put(COLUMN_ENVIRONMENT, addInfo.getEnvironment());
+
+            db.insertOrThrow(TABLE_INFO, null, valuesAddInfo);
+
+            int infoID = getLastID(db,TABLE_INFO, INFO_COLUMN_ID);
+            Log.d(TAG,"ID "+infoID);
+            valuesAnchor.put(COLUMN_INFO_ID, infoID);
+        }
+
+        db.insertOrThrow(TABLE_ANCHORS, null, valuesAnchor);
 
         db.close();
     }
 
+    /**
+     * Gets the most recent ID, which is the latest inserted entry for a specific TABLE
+     * @param db
+     * @param TABLE
+     * @param id
+     * @return
+     */
     public int getLastID(SQLiteDatabase db, final String TABLE, final String id) {
         final String query = "SELECT MAX("+id+") FROM '" + TABLE+ "'";
         Cursor cur = db.rawQuery(query, null);
@@ -221,6 +249,7 @@ public class DBHandler extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS '" + TABLE_INFO+"'");
         onCreate(db);
     }
+
 
     /*
     Uses euclidean distance
@@ -280,7 +309,7 @@ public class DBHandler extends SQLiteOpenHelper{
             }
         }
         db.close();
-//        return devsToCoords.toArray(new DeviationToCoord[devsToCoords.size()]);
+
         return devsToCoords;
     }
 
@@ -325,7 +354,7 @@ public class DBHandler extends SQLiteOpenHelper{
         int x = 0;
         int y = 0;
         int floor = 0;
-
+        int addInfoID = 0;
 
         while(!c.isAfterLast()){
             _id = c.getInt(c.getColumnIndex(ANCHORS_COLUMN_ID));
@@ -339,18 +368,17 @@ public class DBHandler extends SQLiteOpenHelper{
             beaconIds.add(c.getInt(c.getColumnIndex(COLUMN_BEACON_4)));
             beaconIds.add(c.getInt(c.getColumnIndex(COLUMN_BEACON_5)));
             beaconIds.add(c.getInt(c.getColumnIndex(COLUMN_BEACON_6)));
+            addInfoID = c.getInt(c.getColumnIndex(COLUMN_INFO_ID));
 
-            res.add(new AnchorPointDBModel(_id,new Coordinate(floor,x,y),beaconIds));
-
+            res.add(new AnchorPointDBModel(_id,new Coordinate(floor,x,y),beaconIds,addInfoID));
             c.moveToNext();
         }
 
         Log.d(TAG,"DONE FETCHING ANCHORLIST "+res.size());
-//        Log.d(TAG, "DB "+DBHandler.getDB().databaseToString());
         db.close();
         AnchorPointDBModel.setAllAnchors(res);
     }
-
+//
     public void getAllBeacons(){
         ArrayList<OnyxBeaconDBModel> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
@@ -358,7 +386,6 @@ public class DBHandler extends SQLiteOpenHelper{
 
         // Cursor point to a location in your results
         Cursor c = db.rawQuery(query,null);
-        // Move to the first row in your results
         c.moveToFirst();
 
         int _id = 0;
@@ -387,7 +414,6 @@ public class DBHandler extends SQLiteOpenHelper{
 
         // Cursor point to a location in your results
         Cursor c = db.rawQuery(query,null);
-        // Move to the first row in your results
         c.moveToFirst();
 
         int _id = 0;
@@ -405,6 +431,35 @@ public class DBHandler extends SQLiteOpenHelper{
         Log.d(TAG,"DONE FETCHING MEDIANSLIST "+res.size());
         db.close();
         MedianDBModel.setAllMedians(res);
+    }
+
+    public void getAllInfo(){
+        ArrayList<InfoDBModel> res = new ArrayList<>();
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM '"+TABLE_INFO + "';";
+
+        // Cursor point to a location in your results
+        Cursor c = db.rawQuery(query,null);
+        // Move to the first row in your results
+        c.moveToFirst();
+
+        int id = 0;
+        String person_name = "";
+        String room_name = "";
+        String environment = "";
+
+        while(!c.isAfterLast()){
+            id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
+            person_name = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
+            room_name = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
+            environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
+            res.add(new InfoDBModel(id,person_name,room_name,environment));
+            c.moveToNext();
+        }
+
+        Log.d(TAG,"DONE FETCHING INFOLIST "+res.size());
+        db.close();
+        InfoDBModel.setAllInfo(res);
     }
 
 

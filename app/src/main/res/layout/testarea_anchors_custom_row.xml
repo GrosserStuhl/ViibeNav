@@ -1,51 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:weightSum="1">
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="1">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/_id"
-            android:layout_weight="0.12"
-            android:textColor="#ff20d761" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/_x"
-            android:layout_weight="0.12"
-            android:layout_marginLeft="10dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="ID"
+                    android:layout_weight="1"
+                    android:textColor="#ff20d761"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/dbAnchorID" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/_y"
-            android:layout_weight="0.12" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Coord(f,x,y)"
+                    android:layout_weight="1"
+                    android:id="@+id/dbCoord"
+                    android:layout_column="1" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/_f"
-            android:layout_weight="0.12" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="InfoID"
+                android:id="@+id/dbAnchorInfoID" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/allBeacons"
-            android:layout_weight="0.48" />
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="MedianID(B1,B2,B3,B4,B5?,B6?)"
+                    android:layout_weight="1"
+                    android:id="@+id/dbAnchorMedian" />
 
-    </LinearLayout>
+        </TableRow>
+    </TableLayout>
+
 </LinearLayout>
