@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.dbmodels.OnyxBeaconDBModel;
 
+
 /**
  * Created by TomTheBomb on 24.07.2015.
  */

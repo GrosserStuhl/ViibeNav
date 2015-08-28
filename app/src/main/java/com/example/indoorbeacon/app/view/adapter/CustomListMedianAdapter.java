@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+
 import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.dbmodels.MedianDBModel;
-
 
 /**
  * Created by TomTheBomb on 25.07.2015.
@@ -32,7 +32,7 @@ public class CustomListMedianAdapter  extends ArrayAdapter<MedianDBModel> {
 
         id_median.setText(""+ m.get_id());
         median_median.setText("" + m.getMedian()+" |");
-        macAddress.setText(""+m.getMacAddress()+" |");
+        macAddress.setText(""+m.getMacAddress());
 
 
         return customView;

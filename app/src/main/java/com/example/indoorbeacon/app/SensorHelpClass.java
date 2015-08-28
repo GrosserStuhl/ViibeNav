@@ -12,7 +12,7 @@ import android.widget.TextView;
 /**
  * Created by Dima on 04/08/2015.
  */
-public class SensorHelpClass {
+public class SensorHelpClass  {
     SensorManager mSensorManager;
     Sensor mAccelerometer;
     Sensor mMagnetometer;

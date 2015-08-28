@@ -10,6 +10,8 @@ import android.widget.TextView;
 import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.dbmodels.AnchorPointDBModel;
 
+import java.util.ArrayList;
+
 
 /**
  * Created by TomTheBomb on 24.07.2015.
@@ -28,22 +30,24 @@ public class CustomListAnchorAdapter extends ArrayAdapter<AnchorPointDBModel> {
         View customView = tomsInflater.inflate(R.layout.testarea_anchors_custom_row, parent, false);
 
         AnchorPointDBModel a = getItem(position);
-        TextView _id = (TextView) customView.findViewById(R.id._id);
-        TextView _x = (TextView) customView.findViewById(R.id._x);
-        TextView _y = (TextView) customView.findViewById(R.id._y);
-        TextView _f = (TextView) customView.findViewById(R.id._f);
-        TextView allBeacons = (TextView) customView.findViewById(R.id.allBeacons);
+        TextView id = (TextView) customView.findViewById(R.id.dbAnchorID);
+        TextView coord = (TextView) customView.findViewById(R.id.dbCoord);
+        TextView median = (TextView) customView.findViewById(R.id.dbAnchorMedian);
+        TextView info = (TextView) customView.findViewById(R.id.dbAnchorInfoID);
 
-        _id.setText(""+ a.get_id());
-        _x.setText("" + a.getCoord().getX()+" |");
-        _y.setText(""+a.getCoord().getY()+" |");
-        _f.setText(""+a.getCoord().getFloor()+" |");
+        id.setText("" + a.get_id());
+        coord.setText("" + a.getCoord().getFloor()+" | " + a.getCoord().getX()+" | " + a.getCoord().getY()+" | ");
+        info.setText(""+a.getAddInfoID());
 
         String in = "";
-        for(int i : a.getBeaconIds())
-            in += " "+i+" |";
+        ArrayList<Integer> tmpAllMedians = a.getAllMediansFromAnchor();
+        for(int i=0; i<tmpAllMedians.size();i++)
+            if(i<tmpAllMedians.size() - 1)
+                in += ""+tmpAllMedians.get(i)+",";
+            else
+                in += ""+ tmpAllMedians.get(i);
 
-        allBeacons.setText(in);
+        median.setText(in);
         return customView;
     }
 }
