@@ -16,7 +16,14 @@
     <string name="directionArrowText">Richtungspfeil</string>
     <string name="nothingFoundText">Sie können entweder eine neue Suche mit einem anderen Suchbegriff starten,
         oder einen Raum aus der Liste wählen:</string>
-
+    
+    <string name="add_info">Hinzufügen</string>
+    <string name="cancel_info">Abbrechen</string>
+    <string name="person_name">Person</string>
+    <string name="room_name">Raumname</string>
+    <string name="environment">Umgebung</string>
+    <string name="set">Einstellen</string>
+    
     <string name="prefDistanceUnit">Einheit der angezeigten Entfernung</string>
     <string name="prefDistanceDefault">Meter</string>
     <string name="prefOrientationUnit">Einheit der angezeigten Orientation</string>

@@ -2,7 +2,6 @@ package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothManager;
-import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import com.example.indoorbeacon.app.SearchActivity;
 import com.example.indoorbeacon.app.SettingsActivity;
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
-import com.example.indoorbeacon.app.model.Coordinate;
 import com.example.indoorbeacon.app.model.RadioMap;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
@@ -36,7 +34,7 @@ public class MainActivity extends Activity {
 //        getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_main);
 
-        radioMap = new RadioMap(new Coordinate(0,0,0));
+        radioMap = RadioMap.createRadioMap();
         dbHandler = DBHandler.createDB(this, null, null, 1);
         applicationUI = new Application(this);
 
@@ -64,8 +62,11 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
+    public Application getApplicationUI() {
+        return applicationUI;
+    }
 
-//    @Override
+    //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu; this adds items to the action bar if it is present.
 //        getMenuInflater().inflate(R.menu.menu_main, menu);

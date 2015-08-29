@@ -4,13 +4,11 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
-import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.indoorbeacon.app.model.Statistics;
-import com.example.indoorbeacon.app.model.Util;
 
 import java.util.ArrayList;
 

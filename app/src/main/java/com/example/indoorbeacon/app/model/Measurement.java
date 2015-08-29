@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.indoorbeacon.app.controller.MainActivity;
+import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -63,7 +65,7 @@ public class Measurement {
             while(isMeasuring()) {
                 Iterator<OnyxBeacon> it = beacons.iterator();
                 while (it.hasNext()) {
-                    if (it.next().isCalculationDone()) {
+                    if (it.next().isMeasurementDone()) {
                         publishProgress(1);
                         it.remove();
                     }
@@ -88,11 +90,11 @@ public class Measurement {
                 long ende = System.currentTimeMillis()-start;
                 Log.d(TAG, "Dauer: " + ende / 1000 + "s");
 
-//                AnchorPoint a = new AnchorPoint(main.getRadioMap().getCoordinate(),this.beacons);
-//                main.getRadioMap().add(a);
-//                main.getRadioMap().setLastAnchor(a);
-//                main.getApplicationUI().updateLayer1();
-//                DBHandler.getDB().addAnchor(a);
+                AnchorPoint a = new AnchorPoint(RadioMap.getRadioMap().getCoordinate(),this.beacons);
+                RadioMap.getRadioMap().add(a);
+                RadioMap.getRadioMap().setLastAnchor(a);
+                main.getApplicationUI().updateLayer1();
+                DBHandler.getDB().addAnchor(a,main.getApplicationUI().getAddInfo());
                 cleanUp();
         }
 
@@ -100,6 +102,7 @@ public class Measurement {
             for(OnyxBeacon b : this.beacons) {
                 b.resetMedianMeasurement();
             }
+            main.getApplicationUI().getAddInfo().reset();
         }
 
     }
@@ -145,7 +148,7 @@ public class Measurement {
 
         @Override
         protected void onPreExecute() {
-            dialog = new ProgressDialog(person.getTest());
+            dialog = new ProgressDialog(person.getActivity());
             dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             dialog.setTitle("Messung von " + measurementSize + " Beacons");
             dialog.setMax(measurementSize);
@@ -165,7 +168,7 @@ public class Measurement {
             while(isMeasuring()) {
                 Iterator<OnyxBeacon> it = beacons.iterator();
                 while (it.hasNext()) {
-                    if (it.next().onTheFlyDone()) {
+                    if (it.next().isMeasurementDone()) {
                         publishProgress(1);
                         it.remove();
                     }
@@ -187,19 +190,14 @@ public class Measurement {
 
         @Override
         protected void onPostExecute(String result) {
-            // OLD CODE OLD CODE OLD CODE OLD CODE
-            // person.getSupposedAnchorIds(beacons);
-
-//            MacToMedian[] data = Util.listToMacToMedianArr(beacons);
-//            person.estimatePos(data);
+            MacToMedian[] data = Util.listToMacToMedianArr(beacons);
+            person.estimatePos(data);
             cleanUp();
-            person.checkLoop();
         }
 
         private void cleanUp(){
             for(OnyxBeacon b : this.beacons)
-                b.resetOnTheFlyMeasurement();
-
+                b.resetMedianMeasurement();
         }
 
     }
