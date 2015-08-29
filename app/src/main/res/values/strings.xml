@@ -2,7 +2,7 @@
     <string name="app_name">ViibeNav</string>
 
     <string name="action_settings">Settings</string>
-    <string name="listenButtonText">Aus Liste \n wählen</string>
+    <string name="listenButtonText">Aus Liste wählen</string>
     <string name="suchenButtonText">Nach Raum oder Name suchen</string>
     <string name="sucheStartButtonText">Suche starten</string>
     <string name="settingsButtonText">Einstellungen</string>
@@ -14,4 +14,11 @@
     <string name="searchResultText">Suche nach X ergab # Treffer:</string>
     <string name="infoTextSuche">Geben Sie den Namen einer Person oder eines Raumes ein</string>
     <string name="directionArrowText">Richtungspfeil</string>
+    <string name="nothingFoundText">Sie können entweder eine neue Suche mit einem anderen Suchbegriff starten,
+        oder einen Raum aus der Liste wählen:</string>
+
+    <string name="prefDistanceUnit">Einheit der angezeigten Entfernung</string>
+    <string name="prefDistanceDefault">Meter</string>
+    <string name="prefOrientationUnit">Einheit der angezeigten Orientation</string>
+    <string name="prefOrientationDefault">Grad</string>
 </resources>

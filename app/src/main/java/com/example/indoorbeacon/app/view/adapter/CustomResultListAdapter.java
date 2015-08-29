@@ -45,7 +45,6 @@ public class CustomResultListAdapter extends ArrayAdapter<String> {
         } else mViewHolder = (ViewHolder) convertView.getTag();
 
         String item = getItem(position);
-        Log.i("MyApp", item);
 //        mViewHolder.listButton.setText(Html.fromHtml(item));
         mViewHolder.listButton.setText(item);
 //        mViewHolder.listButton.setFocusable(false);

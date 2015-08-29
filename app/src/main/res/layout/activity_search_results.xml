@@ -8,23 +8,44 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/searchResultText"
-            android:id="@+id/resultTextView"
+            android:id="@+id/searchResultTextView"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="33dp"
             android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"/>
+            android:layout_marginLeft="10dp"
+            />
 
-    <ListView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/resultsListView"
-            android:layout_below="@+id/resultTextView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="54dp"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="30sp"
-            android:layout_marginBottom="5dp"
-            android:listSelector="@drawable/list_button_animatior"
-            android:drawSelectorOnTop="true"/>
+    <!--<Space-->
+            <!--android:layout_width="1dp"-->
+            <!--android:layout_height="20dp"-->
+            <!--android:layout_below="@+id/searchResultTextView"-->
+            <!--android:layout_toEndOf="@+id/viewStub"/>-->
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="25dp"
+            android:layout_marginStart="25dp"
+            android:layout_below="@id/searchResultTextView">
+
+        <ViewStub
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/viewStub"/>
+    </LinearLayout>
+
+    <!--<ListView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/resultsListView"-->
+            <!--android:layout_below="@+id/resultTextView"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:layout_marginTop="54dp"-->
+            <!--android:divider="@android:color/transparent"-->
+            <!--android:dividerHeight="30sp"-->
+            <!--android:layout_marginBottom="5dp"-->
+            <!--android:listSelector="@drawable/list_button_animatior"-->
+            <!--android:drawSelectorOnTop="true"/>-->
 </RelativeLayout>

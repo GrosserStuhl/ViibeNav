@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 
 import com.example.indoorbeacon.app.R;
@@ -44,6 +45,8 @@ public class MainActivity extends Activity {
 
         BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
         bluetoothScan = new BluetoothScan(manager.getAdapter());
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     }
 
     public void openSearchActivity(View view) {
