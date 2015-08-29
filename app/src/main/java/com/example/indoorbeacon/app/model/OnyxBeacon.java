@@ -21,22 +21,21 @@ public class OnyxBeacon {
 
     private String uuid;
     private int minor,major,rssi,txPower;
-    private double distanceFSPL;
-    private double distanceRegression;
+    private float distanceFSPL;
+    private float distanceRegression;
 
-    private ArrayList<Integer> tenRSSIsList;
-    private double medianRSSI;
+
+    private float medianRSSI;
 
     public static HashMap<CharBuffer, OnyxBeacon> beaconMap;
 
-    private boolean measurementStarted,calculationDone;
+
 
     private long lastSignalMeasured;
 
     // ON THE FLY MEASUREMENT
-    private ArrayList<Integer> onTheFlyRSSIs;
-    private boolean onTheFlyMeasurement,onTheFlyDone;
-    private double onTheFlyMedian;
+    private ArrayList<Integer> measurementRSSIs;
+    private boolean measurementStarted,measurementDone;
 
     static{
         beaconMap = new HashMap<>();
@@ -55,16 +54,9 @@ public class OnyxBeacon {
     }
 
     private void init(){
-        tenRSSIsList = new ArrayList<Integer>(10);
-
         measurementStarted = false;
-        calculationDone = false;
-
-        // ON THE FLY MEASUREMENT
-        onTheFlyMeasurement = false;
-        onTheFlyMedian = 0;
-        onTheFlyRSSIs = new ArrayList<>(Setup.ON_THE_FLY_THRESHOLD);
-        onTheFlyDone = false;
+        measurementDone = false;
+        measurementRSSIs = new ArrayList<>();
     }
 
     private void addBeaconToHashMap(OnyxBeacon beacon){
@@ -105,70 +97,42 @@ public class OnyxBeacon {
     }
 
     public void checkState(){
-        if(measurementStarted) {
-            if (fillTenRSSIs()) {
+        if(measurementStarted)
+            if (onMeasurementRSSIsFilled()) {
                 calculateMedian();
+                Log.d(TAG,Util.intListToString(measurementRSSIs)+" "+macAddress);
                 Log.d(TAG, "Calculated Median is: " + medianRSSI + " | mac: " + macAddress);
-                calculationDone = true;
+                measurementDone = true;
             }
-        } else if(onTheFlyMeasurement)
-            if(fillOnTheFlyRSSIs(rssi)) {
-                doOnTheFlyMedianMeasurement();
-                Log.d(TAG, "OnTheFly Median is: " + onTheFlyMedian + " | mac: "+macAddress);
-                onTheFlyDone = true;
-            }
-
 
     }
 
-    public boolean onTheFlyDone(){
-        return onTheFlyDone;
+    public boolean isMeasurementDone(){
+        return measurementDone;
     }
 
-    private boolean fillTenRSSIs(){
-        if(tenRSSIsList.size()<10) {
-            tenRSSIsList.add(rssi);
+    /**
+     * Returns true if the amount of measured RSSIs equals the predefined size of a set for later on median calculation.
+     * @return
+     */
+    private boolean onMeasurementRSSIsFilled(){
+        if(measurementRSSIs.size()<Setup.MEASUREMENT_AMT_THRESHOLD) {
+            measurementRSSIs.add(rssi);
             return false;
-        } else {
-            if (measurementStarted)
-                Log.d(TAG, Util.stringListToString(tenRSSIsList) + " | mac: "+macAddress);
+        } else
             measurementStarted = false;
-            return true;
-        }
-    }
-
-    private boolean fillOnTheFlyRSSIs(int rssi){
-        if(onTheFlyRSSIs.size()<Setup.ON_THE_FLY_THRESHOLD) {
-            onTheFlyRSSIs.add(rssi);
-            return false;
-        } else {
-            if (onTheFlyMeasurement) {
-                onTheFlyMeasurement = false;
-            }
-            return true;
-        }
+        return true;
     }
 
     private void calculateMedian(){
-            medianRSSI = Statistics.calcMedian(tenRSSIsList);
+            medianRSSI = (float) Statistics.calcMedian(measurementRSSIs);
     }
-
-    private void doOnTheFlyMedianMeasurement(){
-            onTheFlyMedian = Statistics.calcMedian(onTheFlyRSSIs);
-    }
-
 
     public void resetMedianMeasurement(){
-        tenRSSIsList.clear();
-        calculationDone = false;
         medianRSSI = 0;
-    }
-
-    public void resetOnTheFlyMeasurement(){
-        onTheFlyMedian = 0;
-        onTheFlyRSSIs.clear();
-        onTheFlyMeasurement = false;
-        onTheFlyDone = false;
+        measurementRSSIs.clear();
+        measurementStarted = false;
+        measurementDone = false;
     }
 
 
@@ -183,10 +147,10 @@ public class OnyxBeacon {
         while(it.hasNext()){
             OnyxBeacon tmp = (OnyxBeacon) it.next();
             if(!Util.hasSufficientSendingFreq(tmp.lastSignalMeasured)) {
-                tmp.resetOnTheFlyMeasurement();
+                tmp.resetMedianMeasurement();
                 it.remove();
             } else if(tmp.rssi <= Setup.SIGNAL_TOO_BAD_THRESHOLD) {
-                tmp.resetOnTheFlyMeasurement();
+                tmp.resetMedianMeasurement();
                 it.remove();
             }
         }
@@ -243,26 +207,16 @@ public class OnyxBeacon {
     public double getMedianRSSI() {
         return medianRSSI;
     }
-    public void setMedianRSSI(double medianRSSI) {
+    public void setMedianRSSI(float medianRSSI) {
         this.medianRSSI = medianRSSI;
     }
     public void setMeasurementStarted(boolean measurementStarted) {
         this.measurementStarted = measurementStarted;
     }
-    public boolean isCalculationDone() {
-        return calculationDone;
-    }
     public boolean isMeasurementStarted() {
         return measurementStarted;
     }
-    public boolean onTheFlyMeasurement() { return onTheFlyMeasurement; }
-    public void setOnTheFlyMeasurement(boolean onTheFlyMeasurement) {
-        this.onTheFlyMeasurement = onTheFlyMeasurement;
-    }
     public void setRssi(int rssi) {
         this.rssi = rssi;
-    }
-    public double getOnTheFlyMedian() {
-        return onTheFlyMedian;
     }
 }

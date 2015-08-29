@@ -9,14 +9,30 @@ import java.util.Map;
  */
 public class RadioMap {
 
+    private static RadioMap singleton;
+
     private Coordinate coordinate;
 
     private static HashMap<BeaconsMedians,AnchorPoint> data;
     private AnchorPoint lastAnchor;
 
-    public RadioMap(Coordinate coordinate) {
-        this.coordinate = coordinate;
+    private RadioMap() {
         this.data = new HashMap<BeaconsMedians,AnchorPoint>();
+        this.coordinate = new Coordinate(0,0,0);
+    }
+
+    public static RadioMap createRadioMap(){
+        // Avoid possible errors with multiple threads accessing this method -> synchronized
+        synchronized(RadioMap.class) {
+            if (singleton == null) {
+                singleton = new RadioMap();
+            }
+        }
+        return singleton;
+    }
+
+    public static RadioMap getRadioMap(){
+        return singleton;
     }
 
     public static void add(AnchorPoint a){
@@ -32,7 +48,7 @@ public class RadioMap {
         }
     }
 
-    public int size(){
+    public static int size(){
         return data.size();
     }
 

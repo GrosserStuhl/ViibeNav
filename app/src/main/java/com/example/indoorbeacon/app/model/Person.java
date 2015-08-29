@@ -1,5 +1,6 @@
 package com.example.indoorbeacon.app.model;
 
+import android.app.Activity;
 import android.util.Log;
 
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
@@ -19,12 +20,12 @@ public class Person {
 
     private Coordinate coord;
     private Measurement measurement;
-    private TestAreaActivity test;
+    private Activity activity;
 
     private PositionAlgorithm algorithm;
 
-    public Person(TestAreaActivity test) {
-        this.test = test;
+    public Person(Activity activity) {
+        this.activity = activity;
         coord = new Coordinate(-1,-1,-1);
         measurement = new Measurement();
 
@@ -42,33 +43,24 @@ public class Person {
         Log.d(TAG, "SURROUNDING " + surrounding.size());
         ArrayList<Integer> supposedAnchorPointIds = new ArrayList<>();
 
-        // START MEASURING
         measurement.setState(Measurement.State.isMeasuring);
-        for(OnyxBeacon tmp : surrounding) {
-            if (!tmp.onTheFlyMeasurement())
-                tmp.setOnTheFlyMeasurement(true);
-        }
+        for(OnyxBeacon tmp : surrounding)
+            if (!tmp.isMeasurementStarted())
+                tmp.setMeasurementStarted(true);
         measurement.overallOnTheFlyCalcProcess(surrounding, this);
-
     }
 
     public void estimatePos(MacToMedian[] data){
         setCoord(getAlgorithm().estimatePos(data));
-        getTest().updateLikelyCoordsView();
+
+        /**TODO**
+         *
+         * AFTER getAlgorithm().estimatePos(data) is done
+         * Persons coordinates have changed to an estimated value!
+         * Therefore HERE NEEDS to be the Code to set estimated Location on UI
+         *
+         */
     }
-
-    public void checkLoop(){
-        if(isLoop())
-            getMostLikelyPosition();
-    }
-
-    private boolean isLoop(){
-        return test.isLoopTest();
-    }
-
-
-
-
 
 
     private Coordinate getCoordFromAnchorId(int id){
@@ -83,8 +75,8 @@ public class Person {
         return coord;
     }
 
-    public TestAreaActivity getTest() {
-        return test;
+    public Activity getActivity() {
+        return activity;
     }
 
     public Measurement getMeasurement() {

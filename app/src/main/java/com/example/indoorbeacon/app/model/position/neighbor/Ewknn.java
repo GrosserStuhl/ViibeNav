@@ -99,7 +99,7 @@ public class Ewknn implements PositionAlgorithm {
         final double estimate_X = numerator_X/denominator_X;
         final double estimate_Y = numerator_Y/denominator_Y;
 
-        return new Coordinate (Util.twoDecimals(estimate_FLOOR),Util.twoDecimals(estimate_X),Util.twoDecimals(estimate_Y));
+        return new Coordinate (Util.twoDecimals(estimate_FLOOR), Util.twoDecimals(estimate_X),Util.twoDecimals(estimate_Y));
     }
 
     private DeviationToCoord getMinDevToCoord(ArrayList<DeviationToCoord> data){

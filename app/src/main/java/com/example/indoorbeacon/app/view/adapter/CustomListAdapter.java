@@ -40,7 +40,7 @@ public class CustomListAdapter extends ArrayAdapter<OnyxBeacon> {
 
         macAdressText.setText(beaconItem.getMacAddress().toString());
         majMinText.setText("Major: "+beaconItem.getMajor()+", Minor: "+beaconItem.getMinor());
-        distancingText.setText("FSPL: "+ Util.twoDecimals(DistanceCalculation.calculateDistanceFromFreeSpacePathLossModel((double) beaconItem.getRssi(), beaconItem.getTxPower()))+"m | Regr."+Util.twoDecimals(DistanceCalculation.calculateDistanceFromBestFitRegression((double)beaconItem.getRssi(),beaconItem.getTxPower()))+"m");
+        distancingText.setText("FSPL: "+ Util.twoDecimals(DistanceCalculation.calculateDistanceFromFreeSpacePathLossModel((double) beaconItem.getRssi(), beaconItem.getTxPower()))+"m | Regr."+ Util.twoDecimals(DistanceCalculation.calculateDistanceFromBestFitRegression((double) beaconItem.getRssi(), beaconItem.getTxPower()))+"m");
         onyxImage.setImageResource(R.mipmap.onyx_transparent);
 
         return customView;

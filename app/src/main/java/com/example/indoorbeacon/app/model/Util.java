@@ -4,7 +4,6 @@ import android.widget.EditText;
 
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 
-import java.io.Serializable;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -14,12 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
-
-
 /**
  * Created by TomTheBomb on 26.06.2015.
  */
-public class Util implements Serializable {
+public class Util {
 
     private static final String TAG = "Util";
     public static DecimalFormat df;
@@ -39,28 +36,9 @@ public class Util implements Serializable {
      * @return
      */
     public static int textViewToInt(EditText t){
-//        Log.d("Measurement"," "+Integer.parseInt(t.getText().toString()));
-//        if(isInteger(t.toString()))
-//            return Integer.parseInt(t.toString());
-//        else
-//            return -99;
             return Integer.valueOf(t.toString());
     }
 
-//    /**
-//     * Checks if the passed String is convertable to an Integer
-//     * @param string
-//     * @return
-//     */
-//    public static boolean isInteger(String string) {
-//        try {
-//            Integer.parseInt(string);
-//            return true;
-//        } catch (NumberFormatException e) {
-//            return false;
-//        }
-//        return true;
-//    }
 
     public static String stringListToString(ArrayList<Integer> list){
         String res = "";
@@ -97,14 +75,13 @@ public class Util implements Serializable {
     }
 
     public static String intListToString(ArrayList<Integer> data){
-        String res = "( ";
-
-        for(int i: data){
-            res += i + ",";
-        }
-
-        res += ")";
-
+        String res = "{ ";
+        for(int i=0;i<data.size();i++)
+            if(i<data.size()-1)
+                res += i + ",";
+            else
+                res += i;
+        res += " }";
         return res;
     }
 
@@ -126,26 +103,9 @@ public class Util implements Serializable {
     public static MacToMedian[] listToMacToMedianArr(final ArrayList<OnyxBeacon> input){
         MacToMedian[] res = new MacToMedian[input.size()];
         for(int i=0;i<input.size();i++)
-            res[i] = new MacToMedian(input.get(i).getMacAddress(), input.get(i).getOnTheFlyMedian());
+            res[i] = new MacToMedian(input.get(i).getMacAddress(), input.get(i).getMedianRSSI());
 
         return res;
-    }
-
-
-    /**
-     * Adds additional probability to the signals
-     * @param median
-     * @return
-     */
-    public static int probFromMedianQuality(double median){
-        if(median<= Setup.STRONG_SIGNAL_QUALITY)
-            return 3;
-        else if (median <= Setup.MEDIUM_SIGNAL_QUALITY)
-            return 2;
-        else if (median <= Setup.LOW_SIGNAL_QUALITY)
-            return 0;
-
-        return 0;
     }
 
     public static boolean hasSufficientSendingFreq(long time){
@@ -154,12 +114,10 @@ public class Util implements Serializable {
 
     public static ArrayList<Integer> convertFloatListToIntegerList(ArrayList<Float> floatArray){
         ArrayList<Integer> intArray = new ArrayList<>();
-        for(float temp : floatArray){
+        for(float temp : floatArray)
             intArray.add((int) temp);
-        }
         return intArray;
     }
-
 
 
 }

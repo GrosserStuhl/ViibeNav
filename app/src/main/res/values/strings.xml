@@ -14,4 +14,10 @@
     <string name="searchResultText">Suche nach X ergab # Treffer:</string>
     <string name="infoTextSuche">Geben Sie den Namen einer Person oder eines Raumes ein</string>
     <string name="directionArrowText">Richtungspfeil</string>
+    <string name="add_info">Hinzufügen</string>
+    <string name="cancel_info">Abbrechen</string>
+    <string name="person_name">Person</string>
+    <string name="room_name">Raumname</string>
+    <string name="environment">Umgebung</string>
+    <string name="set">Einstellen</string>
 </resources>
