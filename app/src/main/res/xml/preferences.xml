@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+            android:key="pref_distanceUnit"
+            android:title="@string/prefDistanceUnit"
+            android:dialogTitle="@string/prefDistanceUnit"
+            android:entries="@array/pref_distance_units_entries"
+            android:entryValues="@array/pref_distance_units_values"
+            android:defaultValue="@string/prefDistanceDefault" />
+
+        <ListPreference
+                android:key="pref_orientationUnit"
+                android:title="@string/prefOrientationUnit"
+                android:dialogTitle="@string/prefOrientationUnit"
+                android:entries="@array/pref_orientation_units_entries"
+                android:entryValues="@array/pref_orientation_units_values"
+                android:defaultValue="@string/prefOrientationDefault" />
+</PreferenceScreen>
