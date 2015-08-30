@@ -416,7 +416,7 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
 
-    public String[] getSearchSpecificPersonEntries(String key) {
+    public ArrayList<String> getSearchSpecificPersonEntries(String key) {
         ArrayList<String> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
@@ -440,10 +440,10 @@ public class DBHandler extends SQLiteOpenHelper{
         c.close();
         db.close();
 
-        return res.toArray(new String[res.size()]);
+        return res;
     }
 
-    public String[] getSearchSpecificRoomEntries(String key) {
+    public ArrayList<String> getSearchSpecificRoomEntries(String key) {
         ArrayList<String> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
@@ -467,7 +467,7 @@ public class DBHandler extends SQLiteOpenHelper{
         c.close();
         db.close();
 
-        return res.toArray(new String[res.size()]);
+        return res;
     }
 
     public String[] getAllDistinctCategories(){
