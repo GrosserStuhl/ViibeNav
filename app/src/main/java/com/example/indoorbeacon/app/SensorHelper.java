@@ -108,71 +108,20 @@ public class SensorHelper {
     }
 
     private void animateImage(float degrees) {
-        if (mCurrentDegree > 350 && mCurrentDegree < 359 && degrees > 0 && degrees < 10) {
-            RotateAnimation ra = new RotateAnimation(
-                    mCurrentDegree,
-                    360,
-                    Animation.RELATIVE_TO_SELF, 0.5f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f);
+        RotateAnimation ra = new RotateAnimation(
+                mCurrentDegree,
+                -degrees,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f);
 
-            ra.setDuration(250);
-            ra.setFillAfter(true);
+        ra.setDuration(250);
+        ra.setFillAfter(true);
 
-            arrowImage.startAnimation(ra);
+        arrowImage.startAnimation(ra);
 
-            ra = new RotateAnimation(
-                    0,
-                    degrees,
-                    Animation.RELATIVE_TO_SELF, 0.5f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f);
-
-            ra.setDuration(250);
-            ra.setFillAfter(true);
-
-            arrowImage.startAnimation(ra);
-        } else if (mCurrentDegree > 0 && mCurrentDegree < 10 && degrees > 350 && degrees < 359) {
-            RotateAnimation ra = new RotateAnimation(
-                    mCurrentDegree,
-                    0,
-                    Animation.RELATIVE_TO_SELF, 0.5f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f);
-
-            ra.setDuration(250);
-            ra.setFillAfter(true);
-
-            arrowImage.startAnimation(ra);
-
-            ra = new RotateAnimation(
-                    360,
-                    degrees,
-                    Animation.RELATIVE_TO_SELF, 0.5f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f);
-
-            ra.setDuration(250);
-            ra.setFillAfter(true);
-
-            arrowImage.startAnimation(ra);
-        } else {
-            RotateAnimation ra = new RotateAnimation(
-                    mCurrentDegree,
-                    degrees,
-                    Animation.RELATIVE_TO_SELF, 0.5f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f);
-
-            ra.setDuration(250);
-            ra.setFillAfter(true);
-
-            arrowImage.startAnimation(ra);
-        }
-        mCurrentDegree = degrees;
-
-
-        grad = (int) mCurrentDegree;
+        mCurrentDegree = -degrees;
+        grad = (int) -mCurrentDegree;
         orientation = grad;
         String text = meter + " Meter \n" + grad + " Grad";
         instructionText.setText(text);
