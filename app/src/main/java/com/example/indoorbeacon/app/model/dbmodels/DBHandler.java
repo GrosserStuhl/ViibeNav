@@ -127,7 +127,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 "'"+ INFO_COLUMN_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "'"+ COLUMN_PERSON_NAME +"'"+ " TEXT, "+
                 "'"+ COLUMN_ROOM_NAME +"'"+ " TEXT, "+
-                "'"+ COLUMN_ENVIRONMENT +"'"+ " TEXT "+
+                "'"+ COLUMN_ENVIRONMENT +"'"+ " TEXT, "+
                 "'"+ COLUMN_CATEGORY+"'"+ " TEXT "+
                 ");";
         db.execSQL(query4);
