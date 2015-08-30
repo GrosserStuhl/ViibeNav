@@ -148,6 +148,20 @@ public class DBHandler extends SQLiteOpenHelper{
                 ");";
         db.execSQL(query5);
 
+
+
+        // TEST ZWECKE
+        ContentValues valuesTest = new ContentValues();
+        valuesTest.put(COLUMN_PERSON_NAME, "Robert Tscharn");
+        valuesTest.put(COLUMN_ROOM_NAME, "Diana Löffler ihr Raum");
+
+        db.insertOrThrow(TABLE_INFO, null, valuesTest);
+
+        ContentValues valuesTest2 = new ContentValues();
+        valuesTest2.put(COLUMN_PERSON_NAME, "Diana Löffler");
+        valuesTest2.put(COLUMN_ROOM_NAME, "Robert Tscharn sein Raum");
+
+        db.insertOrThrow(TABLE_INFO, null, valuesTest2);
     }
 
     @Override
@@ -493,8 +507,8 @@ public class DBHandler extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
                 "(" +
-                COLUMN_PERSON_NAME + " MATCH " + "'" + key + "'" + " OR " +
-                COLUMN_ROOM_NAME + " MATCH " + "'" + key + "'" + " OR " +
+                COLUMN_PERSON_NAME + " LIKE " + "'%" + key + "%'" + " OR " +
+                COLUMN_ROOM_NAME + " LIKE " + "'%" + key + "%'" +
                 ");";
 
         Cursor c = db.rawQuery(query, null);

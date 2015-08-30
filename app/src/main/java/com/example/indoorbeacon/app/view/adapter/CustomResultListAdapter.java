@@ -1,20 +1,21 @@
 package com.example.indoorbeacon.app.view.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+
 import com.example.indoorbeacon.app.R;
+import com.example.indoorbeacon.app.model.dbmodels.InfoDBModel;
 
 /**
  * Created by Dima on 27/07/2015.
  */
-public class CustomResultListAdapter extends ArrayAdapter<String> {
+public class CustomResultListAdapter extends ArrayAdapter<InfoDBModel> {
 
-    public CustomResultListAdapter(Context context, String[] items) {
+    public CustomResultListAdapter(Context context, InfoDBModel[] items) {
         super(context, R.layout.custom_listitem, items);
     }
 
@@ -44,9 +45,9 @@ public class CustomResultListAdapter extends ArrayAdapter<String> {
 
         } else mViewHolder = (ViewHolder) convertView.getTag();
 
-        String item = getItem(position);
+        InfoDBModel item = getItem(position);
 //        mViewHolder.listButton.setText(Html.fromHtml(item));
-        mViewHolder.listButton.setText(item);
+        mViewHolder.listButton.setText(item.getPerson_name()+System.lineSeparator()+item.getRoom_name());
 //        mViewHolder.listButton.setFocusable(false);
 //        mViewHolder.listButton.setClickable(false);
 

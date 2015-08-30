@@ -9,19 +9,16 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.dbmodels.InfoDBModel;
 import com.example.indoorbeacon.app.view.adapter.CustomResultListAdapter;
-
-import java.util.ArrayList;
 
 /**
  * Created by Dima on 28/07/2015.
  */
 public class SearchResultActivity extends Activity {
 
-    private ArrayList<String> rooms = new ArrayList<>();
-    private ArrayList<String> persons = new ArrayList<>();
-    private ArrayList<String> results = new ArrayList<>();
+    private InfoDBModel[] searchResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,31 +30,17 @@ public class SearchResultActivity extends Activity {
         Intent intent = getIntent();
         String suchInhalt = intent.getStringExtra("suchInhalt");
 
-        ArrayList<InfoDBModel> allInfoList = InfoDBModel.getAllInfo();
-        if (allInfoList != null) {
-            for (InfoDBModel info : allInfoList) {
-                rooms.add(info.getRoom_name());
-                persons.add(info.getPerson_name());
-            }
-            for (String room : rooms) {
-                if (room.contains(suchInhalt)) results.add(room);
-            }
-            for (String person : persons) {
-                if (person.contains(suchInhalt)) results.add(person);
-            }
-        }
-
-//        results.add("lol");
+        searchResults = DBHandler.getDB().getSearchSpecificInfoEntries(suchInhalt);
 
         TextView resultText = (TextView) findViewById(R.id.searchResultTextView);
         String text = resultText.getText().toString();
         text = text.replace("X", suchInhalt);
-        text = text.replace("#", results.size() + "");
+        text = text.replace("#", searchResults.length + "");
         resultText.setText(text);
 
         ViewStub stub = (ViewStub) findViewById(R.id.viewStub);
 
-        if (results.size() > 0) {
+        if (searchResults.length != 0) {
             stub.setLayoutResource(R.layout.search_results_list_content);
             stub.inflate();
 
@@ -66,7 +49,7 @@ public class SearchResultActivity extends Activity {
 //            params.setMarginStart(25);
 //            list.setLayoutParams(params);
 
-            CustomResultListAdapter adapter = new CustomResultListAdapter(this, results.toArray(new String[results.size()]));
+            CustomResultListAdapter adapter = new CustomResultListAdapter(this, searchResults);
             list.setAdapter(adapter);
 
             list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
