@@ -415,45 +415,59 @@ public class DBHandler extends SQLiteOpenHelper{
         InfoDBModel.setAllInfo(res);
     }
 
-    /**
-     * NOCH NICHT REVIEWTER CODE muss noch getestet werden
-     * @param key
-     * @return
-     */
-    public InfoDBModel[] getSearchSpecificInfoEntries(String key) {
-        ArrayList<InfoDBModel> res = new ArrayList<>();
+
+    public String[] getSearchSpecificPersonEntries(String key) {
+        ArrayList<String> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
                 "(" +
-                COLUMN_PERSON_NAME + " LIKE " + "'%" + key + "%'" + " OR " +
-                COLUMN_ROOM_NAME + " LIKE " + "'%" + key + "%'" + " OR " +
-                COLUMN_CATEGORY + " LIKE " + "'%" + key + "%'" +
+                COLUMN_PERSON_NAME + " LIKE " + "'%" + key + "%'"+
                 ");";
 
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
 
-        int id = 0;
+
         String person_name = "";
-        String room_name = "";
-        String environment = "";
-        String category = "";
 
         while (!c.isAfterLast()) {
-            id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
             person_name = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
-            room_name = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
-            environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
-            category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
-            res.add(new InfoDBModel(id, person_name, room_name, environment,category));
+            res.add(person_name);
             c.moveToNext();
         }
 
-        Log.d(TAG, "DONE GETTING SEARCH SPECIFIC INFO-ENTRIES " + res.size());
+        Log.d(TAG, "DONE GETTING SEARCH SPECIFIC PERSON -ENTRIES " + res.size());
         c.close();
         db.close();
 
-        return res.toArray(new InfoDBModel[res.size()]);
+        return res.toArray(new String[res.size()]);
+    }
+
+    public String[] getSearchSpecificRoomEntries(String key) {
+        ArrayList<String> res = new ArrayList<>();
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
+                "(" +
+                COLUMN_ROOM_NAME + " LIKE " + "'%" + key + "%'"+
+                ");";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+
+        String room_name = "";
+
+        while (!c.isAfterLast()) {
+            room_name = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
+            res.add(room_name);
+            c.moveToNext();
+        }
+
+        Log.d(TAG, "DONE GETTING SEARCH SPECIFIC ROOM -ENTRIES " + res.size());
+        c.close();
+        db.close();
+
+        return res.toArray(new String[res.size()]);
     }
 
     public String[] getAllDistinctCategories(){
