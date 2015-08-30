@@ -483,5 +483,41 @@ public class DBHandler extends SQLiteOpenHelper{
         InfoDBModel.setAllInfo(res);
     }
 
+    /**
+     * NOCH NICHT REVIEWTER CODE muss noch getestet werden
+     * @param key
+     * @return
+     */
+    public InfoDBModel[] getSearchSpecificInfoEntries(String key) {
+        ArrayList<InfoDBModel> res = new ArrayList<>();
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
+                "(" +
+                COLUMN_PERSON_NAME + " MATCH " + "'" + key + "'" + " OR " +
+                COLUMN_ROOM_NAME + " MATCH " + "'" + key + "'" + " OR " +
+                ");";
 
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        int id = 0;
+        String person_name = "";
+        String room_name = "";
+        String environment = "";
+
+        while (!c.isAfterLast()) {
+            id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
+            person_name = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
+            room_name = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
+            environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
+            res.add(new InfoDBModel(id, person_name, room_name, environment));
+            c.moveToNext();
+        }
+
+        Log.d(TAG, "DONE GETTING SEARCH SPECIFIC INFO-ENTRIES " + res.size());
+        c.close();
+        db.close();
+
+        return res.toArray(new InfoDBModel[res.size()]);
+    }
 }
