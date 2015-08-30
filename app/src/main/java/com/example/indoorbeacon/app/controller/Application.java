@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.indoorbeacon.app.R;
-import com.example.indoorbeacon.app.model.AddInfo;
 import com.example.indoorbeacon.app.model.InfoActivity;
 import com.example.indoorbeacon.app.model.Measurement;
 import com.example.indoorbeacon.app.model.OnyxBeacon;
@@ -47,7 +46,6 @@ public class Application {
     Handler calcMediansHandler;
     Measurement measurement;
 
-    private AddInfo addInfo;
 
 
     Application(MainActivity main){
@@ -71,7 +69,6 @@ public class Application {
         tempRSSIsView = (TextView) main.findViewById(R.id.tempRSSIFeld);
 
 
-        addInfo = new AddInfo();
     }
 
     private void initHandler(){
@@ -134,7 +131,4 @@ public class Application {
         main.startActivityForResult(intent, 0);
     }
 
-    public AddInfo getAddInfo() {
-        return addInfo;
-    }
 }

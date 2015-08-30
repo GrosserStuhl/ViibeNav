@@ -14,7 +14,7 @@ import java.util.Arrays;
  */
 public class RoomlistActivity extends Activity {
 
-    public static String[] categories = {"Büros", "Sekretäriat", "WCs"};
+    public static String[] categories = {"Büros", "Sekretäriat", "Sonstiges"};
     public static String[] option1_items = {"Robert Tscharn", "Tobias Grundgeiger", "Diana Löffler"};
     public static String[] option2_items = {"Sandra Schubert"};
     public static String[] option3_items = {"WC1", "WC2", "WC3"};

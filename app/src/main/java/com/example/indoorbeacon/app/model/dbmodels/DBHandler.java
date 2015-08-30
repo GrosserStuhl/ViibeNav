@@ -7,17 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.indoorbeacon.app.model.AddInfo;
-import com.example.indoorbeacon.app.model.AnchorPoint;
 import com.example.indoorbeacon.app.model.Coordinate;
-import com.example.indoorbeacon.app.model.OnyxBeacon;
 import com.example.indoorbeacon.app.model.position.neighbor.DeviationToCoord;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 
-import java.nio.CharBuffer;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 
 
 /**
@@ -69,6 +63,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_PERSON_NAME = "personname";
     public static final String COLUMN_ROOM_NAME = "roomname";
     public static final String COLUMN_ENVIRONMENT = "environment";
+    public static final String COLUMN_CATEGORY = "category";
 
     private static DBHandler singleton;
 
@@ -133,6 +128,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 "'"+ COLUMN_PERSON_NAME +"'"+ " TEXT, "+
                 "'"+ COLUMN_ROOM_NAME +"'"+ " TEXT, "+
                 "'"+ COLUMN_ENVIRONMENT +"'"+ " TEXT "+
+                "'"+ COLUMN_CATEGORY+"'"+ " TEXT "+
                 ");";
         db.execSQL(query4);
 
@@ -173,86 +169,6 @@ public class DBHandler extends SQLiteOpenHelper{
         onCreate(db);
     }
 
-    // Add a new row to the database
-    public void addAnchor(AnchorPoint a, AddInfo addInfo){
-        SQLiteDatabase db = getWritableDatabase();
-
-
-        ArrayList<Integer> relatedMedians = new ArrayList<>();
-        Iterator it = a.getAnchorBeacons().entrySet().iterator();
-        while(it.hasNext()){
-            Map.Entry<CharBuffer,OnyxBeacon> pair = (Map.Entry)it.next();
-
-            // INSERT INTO BEACONS TABLE IF NOT EXISTS
-            ContentValues values = new ContentValues();
-            // 1.param: COLUMN_NAME     2.param VALUE
-            values.put(COLUMN_MACADDRESS, pair.getKey().toString());
-            values.put(COLUMN_MAJOR, pair.getValue().getMajor());
-            values.put(COLUMN_MINOR, pair.getValue().getMinor());
-
-            //  laut: http://stackoverflow.com/questions/6918206/android-sqlite-insert-or-ignore-doesnt-work
-            db.insertWithOnConflict(TABLE_BEACONS, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-
-            // INSERT INTO MEDIANSTABLE
-            ContentValues valuesMedian = new ContentValues();
-            valuesMedian.put(COLUMN_MEDIAN_VALUE, pair.getValue().getMedianRSSI());
-            valuesMedian.put(COLUMN_MACADDRESS, pair.getValue().getMacAddressStr());
-            db.insert(TABLE_MEDIANS, null, valuesMedian);
-
-            relatedMedians.add(getLastID(db,TABLE_MEDIANS, MEDIANS_COLUMN_ID));
-        }
-
-
-        //INSERT REALTED-MEDIANS IN ANCHORTABLE
-        ContentValues valuesAnchor= new ContentValues();
-        // 1.param: COLUMN_NAME     2.param VALUE
-        valuesAnchor.put(COLUMN_X, a.getCoordinate().getX());
-        valuesAnchor.put(COLUMN_Y, a.getCoordinate().getY());
-        valuesAnchor.put(COLUMN_FLOOR, a.getCoordinate().getFloor());
-
-
-        // INSERT INTO BEACON_TO_MEDIAN_TABLE
-        ContentValues valuesBeaconToAnchor = new ContentValues();
-        valuesBeaconToAnchor.put(COLUMN_BEACON_1, relatedMedians.get(0));
-        valuesBeaconToAnchor.put(COLUMN_BEACON_2, relatedMedians.get(1));
-        valuesBeaconToAnchor.put(COLUMN_BEACON_3, relatedMedians.get(2));
-        valuesBeaconToAnchor.put(COLUMN_BEACON_4, relatedMedians.get(3));
-
-        // IF THERE ARE MORE THAN 4 BEACONS AVAILABLE
-        if(relatedMedians.size()>= 5)
-            valuesBeaconToAnchor.put(COLUMN_BEACON_5, relatedMedians.get(4));
-
-        if(relatedMedians.size()== 6)
-            valuesBeaconToAnchor.put(COLUMN_BEACON_6, relatedMedians.get(5));
-
-        db.insertOrThrow(TABLE_BEACON_MEDIAN_TO_ANCHOR, null, valuesBeaconToAnchor);
-        //
-
-
-        // Add Additional Info
-        if(addInfo.hasAddInfo()){
-            Log.d(TAG, "NAME "+addInfo.getPerson_name()+" Room "+addInfo.getRoom_name()+
-                    " ENV: "+addInfo.getEnvironment());
-
-            ContentValues valuesAddInfo = new ContentValues();
-            if(addInfo.hasPersonInfo())
-                valuesAddInfo.put(COLUMN_PERSON_NAME, addInfo.getPerson_name());
-            if(addInfo.hasRoomInfo())
-                valuesAddInfo.put(COLUMN_ROOM_NAME, addInfo.getRoom_name());
-            if(addInfo.hasEnvironmentInfo())
-                valuesAddInfo.put(COLUMN_ENVIRONMENT, addInfo.getEnvironment());
-
-            db.insertOrThrow(TABLE_INFO, null, valuesAddInfo);
-
-            int infoID = getLastID(db,TABLE_INFO, INFO_COLUMN_ID);
-            Log.d(TAG,"ID "+infoID);
-            valuesAnchor.put(COLUMN_INFO_ID, infoID);
-        }
-
-        db.insertOrThrow(TABLE_ANCHORS, null, valuesAnchor);
-
-        db.close();
-    }
 
     /**
      * Gets the most recent ID, which is the latest inserted entry for a specific TABLE
@@ -482,13 +398,15 @@ public class DBHandler extends SQLiteOpenHelper{
         String person_name = "";
         String room_name = "";
         String environment = "";
+        String category;
 
         while(!c.isAfterLast()){
             id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
             person_name = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
             room_name = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
             environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
-            res.add(new InfoDBModel(id,person_name,room_name,environment));
+            category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
+            res.add(new InfoDBModel(id,person_name,room_name,environment,category));
             c.moveToNext();
         }
 
@@ -508,7 +426,8 @@ public class DBHandler extends SQLiteOpenHelper{
         String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
                 "(" +
                 COLUMN_PERSON_NAME + " LIKE " + "'%" + key + "%'" + " OR " +
-                COLUMN_ROOM_NAME + " LIKE " + "'%" + key + "%'" +
+                COLUMN_ROOM_NAME + " LIKE " + "'%" + key + "%'" + " OR " +
+                COLUMN_CATEGORY + " LIKE " + "'%" + key + "%'" +
                 ");";
 
         Cursor c = db.rawQuery(query, null);
@@ -518,17 +437,68 @@ public class DBHandler extends SQLiteOpenHelper{
         String person_name = "";
         String room_name = "";
         String environment = "";
+        String category = "";
 
         while (!c.isAfterLast()) {
             id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
             person_name = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
             room_name = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
             environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
-            res.add(new InfoDBModel(id, person_name, room_name, environment));
+            category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
+            res.add(new InfoDBModel(id, person_name, room_name, environment,category));
             c.moveToNext();
         }
 
         Log.d(TAG, "DONE GETTING SEARCH SPECIFIC INFO-ENTRIES " + res.size());
+        c.close();
+        db.close();
+
+        return res.toArray(new InfoDBModel[res.size()]);
+    }
+
+    public String[] getAllDistinctCategories(){
+        ArrayList<String> res = new ArrayList<>();
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT DISTINCT CATEGORY  FROM '" + TABLE_INFO + ";";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        String category = "";
+
+        while (!c.isAfterLast()) {
+            res.add(category);
+            c.moveToNext();
+        }
+
+        return res.toArray(new String[res.size()]);
+    }
+
+    public InfoDBModel[] getAllEntriesForSpecificCategory(String key){
+        ArrayList<InfoDBModel> res = new ArrayList<>();
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM '" + TABLE_INFO + " WHERE CATEGORY ='" + key + "';";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        int id = 0;
+        String person_name = "";
+        String room_name = "";
+        String environment = "";
+        String category = "";
+
+        while (!c.isAfterLast()) {
+            id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
+            person_name = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
+            room_name = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
+            environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
+            category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
+            res.add(new InfoDBModel(id, person_name, room_name, environment,category));
+            c.moveToNext();
+        }
+
+        Log.d(TAG, "DONE GETTING ALL ENTRIES FOR SPECIFIC CATEGORY" + res.size());
         c.close();
         db.close();
 
