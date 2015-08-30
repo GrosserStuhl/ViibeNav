@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.indoorbeacon.app.controller.MainActivity;
-import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 
 import java.util.ArrayList;
@@ -29,83 +28,7 @@ public class Measurement {
 
     private int measurementSize;
     private long start;
-
-    public void overallCalcProgress(final long start, final ArrayList<OnyxBeacon> beacons, final MainActivity main){
-            this.main = main;
-            this.start = start;
-
-            measurementSize = beacons.size();
-        new AsyncMeasure().execute(beacons);
-    }
-
-    public class AsyncMeasure extends AsyncTask<ArrayList<OnyxBeacon>, Integer, String> {
-
-        ArrayList<OnyxBeacon> beacons;
-        ProgressDialog dialog;
-
-        @Override
-        protected void onPreExecute() {
-            dialog = new ProgressDialog(main);
-            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            dialog.setTitle("Messung von " + measurementSize + " Beacons");
-            dialog.setMax(measurementSize);
-            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    cleanUp();
-                }
-            });
-            dialog.show();
-        }
-
-        @Override
-        protected String doInBackground(ArrayList<OnyxBeacon>... params) {
-            ArrayList<OnyxBeacon> beacons = params[0];
-            this.beacons = (ArrayList<OnyxBeacon>)beacons.clone();
-            while(isMeasuring()) {
-                Iterator<OnyxBeacon> it = beacons.iterator();
-                while (it.hasNext()) {
-                    if (it.next().isMeasurementDone()) {
-                        publishProgress(1);
-                        it.remove();
-                    }
-                }
-
-                // break out if list is empty = all calcs are done
-                if(beacons.isEmpty())
-                    setState(State.notMeasuring);
-            }
-            dialog.dismiss();
-
-            return "";
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            dialog.incrementProgressBy(values[0]);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-                long ende = System.currentTimeMillis()-start;
-                Log.d(TAG, "Dauer: " + ende / 1000 + "s");
-
-                AnchorPoint a = new AnchorPoint(RadioMap.getRadioMap().getCoordinate(),this.beacons);
-                RadioMap.getRadioMap().add(a);
-                RadioMap.getRadioMap().setLastAnchor(a);
-                main.getApplicationUI().updateLayer1();
-                DBHandler.getDB().addAnchor(a,main.getApplicationUI().getAddInfo());
-                cleanUp();
-        }
-
-        private void cleanUp(){
-            for(OnyxBeacon b : this.beacons) {
-                b.resetMedianMeasurement();
-            }
-            main.getApplicationUI().getAddInfo().reset();
-        }
-
-    }
+    
 
     public void setState(State state) {
         Log.d(TAG, "STATE: "+state);

@@ -2,7 +2,6 @@ package com.example.indoorbeacon.app.controller;
 
 import android.content.Intent;
 import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.widget.TextView;
 
@@ -12,7 +11,6 @@ import com.example.indoorbeacon.app.model.Measurement;
 import com.example.indoorbeacon.app.model.OnyxBeacon;
 import com.example.indoorbeacon.app.model.RadioMap;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -54,7 +52,6 @@ public class Application {
 
         // initialize GUI elemnts
         initGUI();
-        initHandler();
     }
 
     private void initGUI(){
@@ -69,26 +66,6 @@ public class Application {
         tempRSSIsView = (TextView) main.findViewById(R.id.tempRSSIFeld);
 
 
-    }
-
-    private void initHandler(){
-        calcMediansHandler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                // sets device state to measuring, which deactivates GUI elements
-                measurement.setState(Measurement.State.isMeasuring);
-                ArrayList<OnyxBeacon> calcBeacons = new ArrayList<>();
-                int amountOfMeasuredBeacons = 0;
-                Iterator it = OnyxBeacon.filterSurroundingBeacons().iterator();
-                while (it.hasNext()) {
-                    amountOfMeasuredBeacons++;
-                    OnyxBeacon tmp = (OnyxBeacon) it.next();
-                    tmp.setMeasurementStarted(true);
-                    calcBeacons.add(tmp);
-                }
-                measurement.overallCalcProgress(System.currentTimeMillis(), calcBeacons, main);
-            }
-        };
     }
 
     /**
