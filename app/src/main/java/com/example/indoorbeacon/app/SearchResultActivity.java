@@ -6,19 +6,24 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.AdapterView;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.dbmodels.InfoDBModel;
+import com.example.indoorbeacon.app.view.adapter.CustomResultExpListAdapter;
 import com.example.indoorbeacon.app.view.adapter.CustomResultListAdapter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Dima on 28/07/2015.
  */
 public class SearchResultActivity extends Activity {
 
-    private InfoDBModel[] searchResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,36 +35,48 @@ public class SearchResultActivity extends Activity {
         Intent intent = getIntent();
         String suchInhalt = intent.getStringExtra("suchInhalt");
 
-        searchResults = DBHandler.getDB().getSearchSpecificInfoEntries(suchInhalt);
+        ArrayList<String> persons = new ArrayList<>(DBHandler.getDB().getSearchSpecificPersonEntries(suchInhalt));
+        ArrayList<String> rooms = new ArrayList<>(DBHandler.getDB().getSearchSpecificRoomEntries(suchInhalt));
+        HashMap<String, List<String>> results = new HashMap<>();
+
+        if (persons.size() > 0)
+            results.put("Personen", persons);
+        if (rooms.size() > 0)
+            results.put("Räume", rooms);
 
         TextView resultText = (TextView) findViewById(R.id.searchResultTextView);
         String text = resultText.getText().toString();
         text = text.replace("X", suchInhalt);
-        text = text.replace("#", searchResults.length + "");
+        text = text.replace("#", persons.size() + rooms.size() + "");
         resultText.setText(text);
 
         ViewStub stub = (ViewStub) findViewById(R.id.viewStub);
 
-        if (searchResults.length != 0) {
-            stub.setLayoutResource(R.layout.search_results_list_content);
+        if (results.size() != 0) {
+            ArrayList<String> categories = new ArrayList<>(results.keySet());
+
+            stub.setLayoutResource(R.layout.search_results_exp_list);
             stub.inflate();
 
-            final ListView list = (ListView) findViewById(R.id.resultsListView);
+//            final ListView list = (ListView) findViewById(R.id.resultsListView);
+            final ExpandableListView list = (ExpandableListView) findViewById(R.id.resultExpListView);
 //            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) list.getLayoutParams();
 //            params.setMarginStart(25);
 //            list.setLayoutParams(params);
 
-            CustomResultListAdapter adapter = new CustomResultListAdapter(this, searchResults);
+//            CustomResultListAdapter adapter = new CustomResultListAdapter(this, searchResults);
+            CustomResultExpListAdapter adapter = new CustomResultExpListAdapter(this, results, categories);
             list.setAdapter(adapter);
 
-            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            list.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String value = String.valueOf(parent.getItemAtPosition(position));
+                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                    String value = String.valueOf(parent.getChildAt(childPosition));
                     Intent intent = new Intent(SearchResultActivity.this, NavigationActivity.class);
                     intent.putExtra("Ziel", value);
                     startActivity(intent);
+                    return true;
                 }
             });
         } else {

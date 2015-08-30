@@ -12,8 +12,7 @@
             android:text="@string/nothingFoundText"
             android:id="@+id/nothingFoundTextView"
             android:layout_gravity="center_horizontal"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"/>
+            android:layout_marginStart="5dp"/>
 
     <ImageButton
             android:layout_width="115dp"
@@ -30,7 +29,8 @@
             android:onClick="openListActivity"
             android:stateListAnimator="@drawable/button_press_animator"
             android:layout_gravity="center_horizontal"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="5dp"
             />
 </LinearLayout>
