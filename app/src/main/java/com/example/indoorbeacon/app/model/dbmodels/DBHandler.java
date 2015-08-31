@@ -150,14 +150,17 @@ public class DBHandler extends SQLiteOpenHelper{
         ContentValues valuesTest = new ContentValues();
         valuesTest.put(COLUMN_PERSON_NAME, "Robert Tscharn");
         valuesTest.put(COLUMN_ROOM_NAME, "Diana Löffler ihr Raum");
+        valuesTest.put(COLUMN_CATEGORY, "WCs");
 
         db.insertOrThrow(TABLE_INFO, null, valuesTest);
 
         ContentValues valuesTest2 = new ContentValues();
         valuesTest2.put(COLUMN_PERSON_NAME, "Diana Löffler");
         valuesTest2.put(COLUMN_ROOM_NAME, "Robert Tscharn sein Raum");
+        valuesTest2.put(COLUMN_CATEGORY, "Büro");
 
         db.insertOrThrow(TABLE_INFO, null, valuesTest2);
+
     }
 
     @Override
@@ -481,7 +484,7 @@ public class DBHandler extends SQLiteOpenHelper{
         String category = "";
 
         while (!c.isAfterLast()) {
-            res.add(category);
+            res.add(c.getString(c.getColumnIndex(COLUMN_CATEGORY)));
             c.moveToNext();
         }
 
