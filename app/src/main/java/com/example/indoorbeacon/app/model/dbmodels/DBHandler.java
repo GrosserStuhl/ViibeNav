@@ -473,7 +473,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public ArrayList<String> getAllDistinctCategories(){
         ArrayList<String> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT DISTINCT CATEGORY FROM '" + TABLE_INFO + ";";
+        String query = "SELECT DISTINCT CATEGORY FROM '" + TABLE_INFO + "';";
 
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
@@ -491,7 +491,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public ArrayList<InfoDBModel> getAllEntriesForSpecificCategory(String key){
         ArrayList<InfoDBModel> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '" + TABLE_INFO + " WHERE CATEGORY ='" + key + "';";
+        String query = "SELECT * FROM '" + TABLE_INFO + "' WHERE CATEGORY ='" + key + "';";
 
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
