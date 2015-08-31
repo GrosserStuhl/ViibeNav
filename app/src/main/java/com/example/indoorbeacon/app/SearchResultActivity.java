@@ -5,15 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.AdapterView;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
 import android.widget.TextView;
-
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
-import com.example.indoorbeacon.app.model.dbmodels.InfoDBModel;
 import com.example.indoorbeacon.app.view.adapter.CustomResultExpListAdapter;
-import com.example.indoorbeacon.app.view.adapter.CustomResultListAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,21 +45,14 @@ public class SearchResultActivity extends Activity {
         text = text.replace("#", persons.size() + rooms.size() + "");
         resultText.setText(text);
 
-        ViewStub stub = (ViewStub) findViewById(R.id.viewStub);
+        ViewStub stub = (ViewStub) findViewById(R.id.searchResultsViewStub);
 
         if (results.size() != 0) {
-            ArrayList<String> categories = new ArrayList<>(results.keySet());
-
             stub.setLayoutResource(R.layout.search_results_exp_list);
             stub.inflate();
 
-//            final ListView list = (ListView) findViewById(R.id.resultsListView);
-            final ExpandableListView list = (ExpandableListView) findViewById(R.id.resultsExpListView);
-//            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) list.getLayoutParams();
-//            params.setMarginStart(25);
-//            list.setLayoutParams(params);
-
-//            CustomResultListAdapter adapter = new CustomResultListAdapter(this, searchResults);
+            ExpandableListView list = (ExpandableListView) findViewById(R.id.resultsExpListView);
+            ArrayList<String> categories = new ArrayList<>(results.keySet());
             CustomResultExpListAdapter adapter = new CustomResultExpListAdapter(this, results, categories);
             list.setAdapter(adapter);
 
@@ -80,14 +68,8 @@ public class SearchResultActivity extends Activity {
                 }
             });
         } else {
-
             stub.setLayoutResource(R.layout.search_results_nothingfound_content);
             stub.inflate();
-
-//            TextView nothingFoundText = (TextView) findViewById(R.id.nothingFoundTextView);
-//            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) nothingFoundText.getLayoutParams();
-//            params.setMarginStart(10);
-//            nothingFoundText.setLayoutParams(params);
         }
     }
 

@@ -9,8 +9,8 @@
             android:layout_width="321dp"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/nothingFoundText"
-            android:id="@+id/nothingFoundTextView"
+            android:text="@string/searchResultsNothingFoundText"
+            android:id="@+id/searchResultsNothingFoundTextView"
             android:layout_gravity="center_horizontal"
             android:layout_marginStart="5dp"/>
 

@@ -1,6 +1,7 @@
 package com.example.indoorbeacon.app.view.adapter;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,7 +86,7 @@ public class CustomResultExpListAdapter extends BaseExpandableListAdapter {
 
         String childText = (String) getChild(groupPosition, childPosition);
         Button childButton = (Button) convertView.findViewById(R.id.roomlistButton);
-        childButton.setText(childText);
+        childButton.setText(Html.fromHtml(childText));
 
         return convertView;
     }

@@ -3,23 +3,21 @@ package com.example.indoorbeacon.app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.ExpandableListView;
+import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.dbmodels.InfoDBModel;
+import com.example.indoorbeacon.app.view.adapter.CustomResultExpListAdapter;
 
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Created by Dima on 27/07/2015.
  */
 public class RoomlistActivity extends Activity {
-
-    public static String[] categories = {"Büros", "Sekretäriat", "Sonstiges"};
-    public static String[] option1_items = {"Robert Tscharn", "Tobias Grundgeiger", "Diana Löffler"};
-    public static String[] option2_items = {"Sandra Schubert"};
-    public static String[] option3_items = {"WC1", "WC2", "WC3"};
-    private String[] chosenCategory = null;
-    private ListView list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,48 +26,47 @@ public class RoomlistActivity extends Activity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_raumliste);
 
-        list = (ListView) findViewById(R.id.roomListView);
-//        CustomResultListAdapter adapter = new CustomResultListAdapter(this, categories);
-//        list.setAdapter(adapter);
-
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String value = String.valueOf(parent.getItemAtPosition(position));
-                if (Arrays.asList(categories).contains(value)) {
-
-                    switch (value) {
-                        case "Büros":
-                            chosenCategory = option1_items;
-                            break;
-                        case "Sekretäriat":
-                            chosenCategory = option2_items;
-                            break;
-                        case "WCs":
-                            chosenCategory = option3_items;
-                            break;
+        HashMap<String, List<String>> allEntries = new HashMap<>();
+        ArrayList<String> categories = DBHandler.getDB().getAllDistinctCategories();
+        if (categories.size() > 0) {
+            for (String category : categories) {
+                ArrayList<InfoDBModel> infoList = DBHandler.getDB().getAllEntriesForSpecificCategory(category);
+                if (infoList.size() > 0) {
+                    ArrayList<String> entryList = new ArrayList<>();
+                    for (InfoDBModel infoEntry : infoList) {
+                        entryList.add("<font color='red'>" + infoEntry.getPerson_name() +
+                                "</font><br/><font color='blue'>" + infoEntry.getRoom_name() + "</font>");
                     }
+                    allEntries.put(category, entryList);
+                }
+            }
+        }
 
-//                    list.setAdapter(new CustomResultListAdapter(RoomlistActivity.this, chosenCategory));
-                    list.deferNotifyDataSetChanged();
-                } else {
+        ViewStub stub = (ViewStub) findViewById(R.id.searchResultsViewStub);
+
+        if (allEntries.size() != 0) {
+            stub.setLayoutResource(R.layout.search_results_exp_list);
+            stub.inflate();
+
+            ExpandableListView list = (ExpandableListView) findViewById(R.id.roomExpListView);
+            CustomResultExpListAdapter adapter = new CustomResultExpListAdapter(this, allEntries, categories);
+            list.setAdapter(adapter);
+
+            list.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+                @Override
+                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                    String value = String.valueOf(parent.getChildAt(childPosition));
+
                     Intent intent = new Intent(RoomlistActivity.this, NavigationActivity.class);
                     intent.putExtra("Ziel", value);
                     startActivity(intent);
+                    return true;
                 }
-            }
-        });
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (chosenCategory == null || chosenCategory == categories)
-            super.onBackPressed();
-        else {
-            chosenCategory = categories;
-//            list.setAdapter(new CustomResultListAdapter(RoomlistActivity.this, chosenCategory));
-            list.deferNotifyDataSetChanged();
+            });
+        } else {
+            stub.setLayoutResource(R.layout.roomlist_nothing_found_content);
+            stub.inflate();
         }
     }
 }

@@ -14,8 +14,10 @@
     <string name="searchResultText">Suche nach X ergab # Treffer:</string>
     <string name="infoTextSuche">Geben Sie den Namen einer Person oder eines Raumes ein</string>
     <string name="directionArrowText">Richtungspfeil</string>
-    <string name="nothingFoundText">Sie können entweder eine neue Suche mit einem anderen Suchbegriff starten,
+    <string name="searchResultsNothingFoundText">Sie können entweder eine neue Suche mit einem anderen Suchbegriff starten,
         oder einen Raum aus der Liste wählen:</string>
+    <string name="roomlistNothingFoundText">Es konnten keine Einträge gefunden werden, vielleicht wurde für dieses
+    Gebäude noch keine Karte angelegt. Informieren Sie sich bitte bei der Hausverwaltung.</string>
     
     <string name="add_info">Hinzufügen</string>
     <string name="cancel_info">Abbrechen</string>
