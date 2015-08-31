@@ -59,7 +59,7 @@ public class SearchResultActivity extends Activity {
             stub.inflate();
 
 //            final ListView list = (ListView) findViewById(R.id.resultsListView);
-            final ExpandableListView list = (ExpandableListView) findViewById(R.id.resultExpListView);
+            final ExpandableListView list = (ExpandableListView) findViewById(R.id.resultsExpListView);
 //            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) list.getLayoutParams();
 //            params.setMarginStart(25);
 //            list.setLayoutParams(params);
