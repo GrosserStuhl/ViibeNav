@@ -484,7 +484,9 @@ public class DBHandler extends SQLiteOpenHelper{
         String category = "";
 
         while (!c.isAfterLast()) {
-            res.add(c.getString(c.getColumnIndex(COLUMN_CATEGORY)));
+            category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
+            res.add(category);
+            Log.d("DBHandler", category);
             c.moveToNext();
         }
 
