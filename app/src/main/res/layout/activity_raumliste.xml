@@ -7,7 +7,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/infoText"
+            android:text="@string/roomlistInfoText"
             android:id="@+id/roomlistTextView"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
@@ -27,6 +27,6 @@
         <ViewStub
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/searchResultsViewStub"/>
+                android:id="@+id/roomlistViewStub"/>
     </LinearLayout>
 </RelativeLayout>

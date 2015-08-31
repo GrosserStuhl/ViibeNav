@@ -3,16 +3,17 @@ package com.example.indoorbeacon.app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.dbmodels.InfoDBModel;
 import com.example.indoorbeacon.app.view.adapter.CustomResultExpListAdapter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Dima on 27/07/2015.
@@ -34,18 +35,18 @@ public class RoomlistActivity extends Activity {
                 if (infoList.size() > 0) {
                     ArrayList<String> entryList = new ArrayList<>();
                     for (InfoDBModel infoEntry : infoList) {
-                        entryList.add("<font color='red'>" + infoEntry.getPerson_name() +
-                                "</font><br/><font color='blue'>" + infoEntry.getRoom_name() + "</font>");
+                        entryList.add("<font color='#000000'>" + infoEntry.getPerson_name() +
+                                "</font><br/><font color='#00008B'>" + infoEntry.getRoom_name() + "</font>");
                     }
                     allEntries.put(category, entryList);
                 }
             }
         }
 
-        ViewStub stub = (ViewStub) findViewById(R.id.searchResultsViewStub);
+        ViewStub stub = (ViewStub) findViewById(R.id.roomlistViewStub);
 
         if (allEntries.size() != 0) {
-            stub.setLayoutResource(R.layout.search_results_exp_list);
+            stub.setLayoutResource(R.layout.roomlist_exp_list);
             stub.inflate();
 
             ExpandableListView list = (ExpandableListView) findViewById(R.id.roomExpListView);

@@ -10,7 +10,7 @@
     <string name="listeText">Aus Liste wählen</string>
     <string name="suchFeldHint">Eingabe</string>
     <string name="mikroButtonText">Spracheingabe starten</string>
-    <string name="infoText">Raumkategorie auswählen:</string>
+    <string name="roomlistInfoText">Raum auswählen:</string>
     <string name="searchResultText">Suche nach X ergab # Treffer:</string>
     <string name="infoTextSuche">Geben Sie den Namen einer Person oder eines Raumes ein</string>
     <string name="directionArrowText">Richtungspfeil</string>

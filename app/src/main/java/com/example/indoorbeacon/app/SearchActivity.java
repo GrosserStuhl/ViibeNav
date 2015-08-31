@@ -46,15 +46,21 @@ public class SearchActivity extends Activity {
             }
         });
 
-        ImageButton searchButton = (ImageButton) findViewById(R.id.sucheStartenImgButton);
+        final ImageButton searchButton = (ImageButton) findViewById(R.id.sucheStartenImgButton);
         searchButton.setOnClickListener(new Button.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                String suchInhalt = searchField.getText().toString();
-                Intent intent = new Intent(getApplicationContext(), SearchResultActivity.class);
-                intent.putExtra("suchInhalt", suchInhalt);
-                startActivity(intent);
+                String suchInhalt = searchField.getText().toString().trim();
+
+                if (suchInhalt.equals("")) {
+                    searchField.setError("Bitte Suchbegriff eingeben!");
+                } else {
+
+                    Intent intent = new Intent(getApplicationContext(), SearchResultActivity.class);
+                    intent.putExtra("suchInhalt", suchInhalt);
+                    startActivity(intent);
+                }
             }
         });
 
