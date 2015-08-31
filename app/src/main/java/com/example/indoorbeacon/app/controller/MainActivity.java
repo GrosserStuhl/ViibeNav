@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
 
 
         BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        bluetoothScan = new BluetoothScan(manager.getAdapter());
+        bluetoothScan = BluetoothScan.createBluetoothScan(manager.getAdapter());
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     }

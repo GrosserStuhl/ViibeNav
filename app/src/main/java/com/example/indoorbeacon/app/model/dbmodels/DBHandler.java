@@ -169,6 +169,7 @@ public class DBHandler extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS" + TABLE_MEDIANS);
         db.execSQL("DROP TABLE IF EXISTS" + TABLE_BEACONS);
         db.execSQL("DROP TABLE IF EXISTS" + TABLE_INFO);
+        db.execSQL("DROP TABLE IF EXISTS" + TABLE_BEACON_MEDIAN_TO_ANCHOR);
         onCreate(db);
     }
 
@@ -201,6 +202,7 @@ public class DBHandler extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS '" + TABLE_MEDIANS+"'");
         db.execSQL("DROP TABLE IF EXISTS '" + TABLE_BEACONS+"'");
         db.execSQL("DROP TABLE IF EXISTS '" + TABLE_INFO+"'");
+        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_BEACON_MEDIAN_TO_ANCHOR+"'");
         onCreate(db);
     }
 

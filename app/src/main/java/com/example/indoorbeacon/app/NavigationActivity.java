@@ -1,7 +1,9 @@
 package com.example.indoorbeacon.app;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,6 +15,9 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.indoorbeacon.app.model.BluetoothScan;
+import com.example.indoorbeacon.app.model.Connector;
 
 /**
  * Created by Dima on 28/07/2015.
@@ -56,12 +61,71 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     protected void onResume() {
         super.onResume();
         sensorHelper.onResumeOperation(this);
+
+
+        // Turn Off WiFi signals on activity start as it mitigates position estimation
+        if(Connector.getConnector().WiFiEnabled())
+            Connector.getConnector().disableWiFi();
+
+        /*
+         * We need to enforce that Bluetooth is first enabled, and take the
+         * user to settings to enable it if they have not done so.
+         */
+        if (BluetoothScan.getBluetoothScan().getmBluetoothAdapter() == null || !BluetoothScan.getBluetoothScan().getmBluetoothAdapter().isEnabled()) {
+            //Bluetooth is disabled
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivity(enableBtIntent);
+//            BluetoothScan.getBluetoothScan().getmBluetoothAdapter().enable();
+            finish();
+            return;
+        }
+
+        /*
+         * Check for Bluetooth LE Support.  In production, our manifest entry will keep this
+         * from installing on these devices, but this will allow test devices or other
+         * sideloads to report whether or not the feature exists.
+         */
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(this, "No LE Support.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        //Begin scanning for LE devices
+        BluetoothScan.getBluetoothScan().startScan();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(!Connector.getConnector().WiFiEnabled())
+            Connector.getConnector().enableWiFi();
+
+        BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(!Connector.getConnector().WiFiEnabled())
+            Connector.getConnector().enableWiFi();
+
+        BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
+
     }
 
     protected void onPause() {
         super.onPause();
         sensorHelper.onPauseOperation(this);
+
+        // When application is paused turn on WiFi again
+        if(!Connector.getConnector().WiFiEnabled())
+            Connector.getConnector().enableWiFi();
     }
+
+
 
     @Override
     public void onSensorChanged(SensorEvent event) {

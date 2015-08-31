@@ -22,7 +22,10 @@ public class BluetoothScan {
     private BluetoothLeScanner mBluetoothLeScanner;
     private BluetoothAdapter mBluetoothAdapter;
 
-    public BluetoothScan(BluetoothAdapter mBluetoothAdapter) {
+    private static BluetoothScan singleton;
+
+
+    private BluetoothScan(BluetoothAdapter mBluetoothAdapter) {
         this.mBluetoothAdapter = mBluetoothAdapter;
         mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
 
@@ -31,6 +34,16 @@ public class BluetoothScan {
 //        listAdapter = new CustomListAdapter(this);
 //        ListView beaconListView = (ListView) findViewById(R.id.myListView);
 //        beaconListView.setAdapter(listAdapter);
+    }
+
+    public static BluetoothScan createBluetoothScan(BluetoothAdapter mBluetoothAdapter) {
+        synchronized (BluetoothScan.class)
+        {
+            if (singleton == null) {
+                singleton = new BluetoothScan(mBluetoothAdapter);
+            }
+        }
+        return singleton;
     }
 
     public void startScan(){
@@ -115,5 +128,9 @@ public class BluetoothScan {
 
     public BluetoothAdapter getmBluetoothAdapter() {
         return mBluetoothAdapter;
+    }
+
+    public static BluetoothScan getBluetoothScan() {
+        return singleton;
     }
 }
