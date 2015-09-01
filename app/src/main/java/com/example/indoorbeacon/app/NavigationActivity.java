@@ -1,6 +1,8 @@
 package com.example.indoorbeacon.app;
 
 import android.app.Activity;
+import android.app.IntentService;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -18,13 +20,20 @@ import android.widget.Toast;
 
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
 
 /**
- * Created by Dima on 28/07/2015.
+ * Created by #Dima on 28/07/2015.
  */
-public class NavigationActivity extends Activity implements SensorEventListener {
+public class NavigationActivity extends Activity implements SensorEventListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
+
+    private static final String TAG = "NavigationActivity";
 
     private SensorHelper sensorHelper;
+    private GoogleApiClient mGoogleApiClient;
 
     private GestureDetector mDetector;
 
@@ -51,6 +60,13 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         anweisungen[0] = R.raw.anweisung1;
         anweisungen[1] = R.raw.anweisung2;
         anweisungen[2] = R.raw.anweisung3;
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(ActivityRecognition.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -65,7 +81,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
 
         // Turn Off WiFi signals on activity start as it mitigates position estimation
-        if(Connector.getConnector().WiFiEnabled())
+        if (Connector.getConnector().WiFiEnabled())
             Connector.getConnector().disableWiFi();
 
         /*
@@ -99,7 +115,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     protected void onStop() {
         super.onStop();
 
-        if(!Connector.getConnector().WiFiEnabled())
+        if (!Connector.getConnector().WiFiEnabled())
             Connector.getConnector().enableWiFi();
 
         BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
@@ -109,11 +125,13 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     protected void onDestroy() {
         super.onDestroy();
 
-        if(!Connector.getConnector().WiFiEnabled())
+        if (!Connector.getConnector().WiFiEnabled())
             Connector.getConnector().enableWiFi();
 
         BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
-
+        Intent i = new Intent(this, ActivityRecIntentService.class);
+        PendingIntent actRecPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, actRecPendingIntent);
     }
 
     protected void onPause() {
@@ -121,10 +139,9 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         sensorHelper.onPauseOperation(this);
 
         // When application is paused turn on WiFi again
-        if(!Connector.getConnector().WiFiEnabled())
+        if (!Connector.getConnector().WiFiEnabled())
             Connector.getConnector().enableWiFi();
     }
-
 
 
     @Override
@@ -135,6 +152,24 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(TAG, "Connected to GoogleApiClient");
+        Intent i = new Intent(this, ActivityRecIntentService.class);
+        PendingIntent actRecPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mGoogleApiClient, 100, actRecPendingIntent);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(TAG, "Connection to GoogleApiClient suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.e(TAG, "Connection to GoogleApiClient failed");
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
