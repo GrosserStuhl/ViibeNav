@@ -21,6 +21,7 @@ import com.example.indoorbeacon.app.model.Connector;
 
 /**
  * Created by Dima on 28/07/2015.
+ * cgfsdgd
  */
 public class NavigationActivity extends Activity implements SensorEventListener {
 
