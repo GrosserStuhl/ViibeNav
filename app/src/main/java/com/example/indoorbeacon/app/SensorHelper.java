@@ -32,12 +32,6 @@ public class SensorHelper {
     TextView instructionText;
     ImageView arrowImage;
 
-    private boolean calcInProgress = false;
-    private long startTime = 0;
-    private long curTime = 0;
-    private boolean timeToAddValue = false;
-    private ArrayList<Float> degreeValuesForMedian = new ArrayList<>();
-
     /**
      * Ausrichtung des Smartphones zum Nordpol
      */
@@ -83,27 +77,7 @@ public class SensorHelper {
             SensorManager.getOrientation(mR, mOrientation);
             float azimuthInRadians = mOrientation[0];
             float azimuthInDegrees = (float) (Math.toDegrees(azimuthInRadians) + 360) % 360;
-
-            if (!calcInProgress) {
-                degreeValuesForMedian.add(azimuthInDegrees);
-                startTime = System.currentTimeMillis();
-                calcInProgress = true;
-                startTimerThread();
-            }
-            if (timeToAddValue) {
-                degreeValuesForMedian.add(azimuthInDegrees);
-                if (degreeValuesForMedian.size() < 10) {
-                    startTime = System.currentTimeMillis();
-                    timeToAddValue = false;
-                } else {
-                    timeToAddValue = false;
-                    calcInProgress = false;
-
-                    float median = Statistics.calcMedianFromFloat(degreeValuesForMedian);
-                    degreeValuesForMedian.clear();
-                    animateImage(median);
-                }
-            }
+            animateImage(azimuthInDegrees);
         }
     }
 
@@ -125,21 +99,5 @@ public class SensorHelper {
         orientation = grad;
         String text = meter + " Meter \n" + grad + " Grad";
         instructionText.setText(text);
-    }
-
-    private void startTimerThread() {
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                while (calcInProgress) {
-                    curTime = System.currentTimeMillis();
-                    long dif = curTime - startTime;
-                    if (dif >= 15) timeToAddValue = true;
-                }
-            }
-        };
-
-        Thread t = new Thread(r);
-        t.start();
     }
 }
