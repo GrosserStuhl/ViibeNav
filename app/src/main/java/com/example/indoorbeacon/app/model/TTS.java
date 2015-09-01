@@ -53,8 +53,10 @@ public class TTS extends UtteranceProgressListener {
             @Override
             public void onInit(int status) {
                 if(status != TextToSpeech.ERROR) {
-                    tts.setLanguage(Locale.GERMAN);
+                    if(tts.isSpeaking())
+                        tts.stop();
 
+                    tts.setLanguage(Locale.GERMAN);
                     Bundle params = new Bundle();
                     params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "Unique");
                     tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, params, "UniqueID");
