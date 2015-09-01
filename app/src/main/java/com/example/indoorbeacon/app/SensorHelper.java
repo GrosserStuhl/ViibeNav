@@ -97,7 +97,7 @@ public class SensorHelper {
         mCurrentDegree = -degrees;
         grad = (int) -mCurrentDegree;
         orientation = grad;
-        String text = meter + " Meter \n" + grad + " Grad";
+        String text = meter + " Meter" + System.lineSeparator() + grad + " Grad";
         instructionText.setText(text);
     }
 }

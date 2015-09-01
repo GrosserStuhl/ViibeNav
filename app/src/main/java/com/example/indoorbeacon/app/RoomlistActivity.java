@@ -38,7 +38,7 @@ public class RoomlistActivity extends Activity {
                     ArrayList<String> entryList = new ArrayList<>();
                     for (InfoDBModel infoEntry : infoList) {
                         entryList.add("<font color='#000000'>" + infoEntry.getPerson_name() +
-                                "</font><br/><font color='#00008B'>" + infoEntry.getRoom_name() + "</font>");
+                                "</font><br/><font color='#006400'>" + infoEntry.getRoom_name() + "</font>");
                     }
                     allEntries.put(category, entryList);
                 }
@@ -63,6 +63,7 @@ public class RoomlistActivity extends Activity {
 
                     Intent intent = new Intent(RoomlistActivity.this, NavigationActivity.class);
                     intent.putExtra("Ziel", value);
+                    intent.putExtra("ParentClassName", RoomlistActivity.this.getClass().getSimpleName());
                     startActivity(intent);
                     return true;
                 }

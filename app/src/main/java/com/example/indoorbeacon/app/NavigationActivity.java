@@ -46,7 +46,7 @@ public class NavigationActivity extends Activity implements SensorEventListener,
 
         super.onCreate(savedInstanceState);
         getActionBar().setHomeButtonEnabled(true);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+//        getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_navigation);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -119,6 +119,10 @@ public class NavigationActivity extends Activity implements SensorEventListener,
             Connector.getConnector().enableWiFi();
 
         BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
+
+        Intent i = new Intent(this, ActivityRecIntentService.class);
+        PendingIntent actRecPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, actRecPendingIntent);
     }
 
     @Override
@@ -129,6 +133,7 @@ public class NavigationActivity extends Activity implements SensorEventListener,
             Connector.getConnector().enableWiFi();
 
         BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
+
         Intent i = new Intent(this, ActivityRecIntentService.class);
         PendingIntent actRecPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, actRecPendingIntent);
@@ -171,6 +176,22 @@ public class NavigationActivity extends Activity implements SensorEventListener,
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.e(TAG, "Connection to GoogleApiClient failed");
     }
+
+//    @Override
+//    public Intent getSupportParentActivityIntent() {
+//        Intent parentIntent = getIntent();
+//        String className = parentIntent.getStringExtra("ParentClassName"); //getting the parent class name
+//
+//        Intent newIntent = null;
+//        try {
+//            //you need to define the class with package name
+//            newIntent = new Intent(NavigationActivity.this, Class.forName("com.myapplication." + className));
+//
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        return newIntent;
+//    }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_DISTANCE_THRESHOLD = 100;
