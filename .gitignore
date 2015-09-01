@@ -31,3 +31,6 @@ proguard/
 
 # Android Studio captures folder
 captures/
+
+# ignore .iml files
+*.iml
