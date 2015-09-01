@@ -1,7 +1,6 @@
 package com.example.indoorbeacon.app;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -73,10 +72,9 @@ public class NavigationActivity extends Activity implements SensorEventListener 
          */
         if (BluetoothScan.getBluetoothScan().getmBluetoothAdapter() == null || !BluetoothScan.getBluetoothScan().getmBluetoothAdapter().isEnabled()) {
             //Bluetooth is disabled
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivity(enableBtIntent);
-//            BluetoothScan.getBluetoothScan().getmBluetoothAdapter().enable();
-            finish();
+//            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//            startActivity(enableBtIntent);
+            BluetoothScan.getBluetoothScan().getmBluetoothAdapter().enable();
             return;
         }
 
