@@ -27,7 +27,7 @@ public class BluetoothScan {
 
     private BluetoothScan(BluetoothAdapter mBluetoothAdapter) {
         this.mBluetoothAdapter = mBluetoothAdapter;
-        mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+        this.mBluetoothLeScanner = this.mBluetoothAdapter.getBluetoothLeScanner();
 
         mHandler = standardHandler;
 
@@ -56,7 +56,6 @@ public class BluetoothScan {
 //        // does not work
 //        // filters.add(beaconFilter);
 //        filters.add(filter2);
-
         ScanSettings settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
         mBluetoothLeScanner.startScan(null, settings, mScanCallback);
 
