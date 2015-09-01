@@ -15,6 +15,7 @@ import com.example.indoorbeacon.app.SettingsActivity;
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
 import com.example.indoorbeacon.app.model.RadioMap;
+import com.example.indoorbeacon.app.model.TTS;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
 
@@ -40,6 +41,11 @@ public class MainActivity extends Activity {
 
         connect = Connector.createConnector((WifiManager) getSystemService(WIFI_SERVICE));
 
+        TTS.createTTS(this);
+        TTS.getTTS().speak("Test, Test Test. Das wird ein Test!");
+        TTS.getTTS().speak("TomTheBomb ist am Start!");
+
+//        .speak("Ich bin hier drin. Das ist so einfach, dass ich schreien möchte. Soo einfach.");
 
         BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
         bluetoothScan = BluetoothScan.createBluetoothScan(manager.getAdapter());
