@@ -61,12 +61,12 @@ public class NavigationActivity extends Activity implements SensorEventListener,
         anweisungen[1] = R.raw.anweisung2;
         anweisungen[2] = R.raw.anweisung3;
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(ActivityRecognition.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-        mGoogleApiClient.connect();
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .addApi(ActivityRecognition.API)
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .build();
+//        mGoogleApiClient.connect();
     }
 
     @Override
@@ -120,9 +120,9 @@ public class NavigationActivity extends Activity implements SensorEventListener,
 
         BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
 
-        Intent i = new Intent(this, ActivityRecIntentService.class);
-        PendingIntent actRecPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, actRecPendingIntent);
+//        Intent i = new Intent(this, ActivityRecIntentService.class);
+//        PendingIntent actRecPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+//        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, actRecPendingIntent);
     }
 
     @Override
@@ -134,9 +134,9 @@ public class NavigationActivity extends Activity implements SensorEventListener,
 
         BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
 
-        Intent i = new Intent(this, ActivityRecIntentService.class);
-        PendingIntent actRecPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, actRecPendingIntent);
+//        Intent i = new Intent(this, ActivityRecIntentService.class);
+//        PendingIntent actRecPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+//        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, actRecPendingIntent);
     }
 
     protected void onPause() {
