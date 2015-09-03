@@ -109,7 +109,7 @@ public class Util {
     }
 
     public static boolean hasSufficientSendingFreq(long time){
-        return Util.timeDiff_MillisToNow(time) <= Setup.TIME_LAST_SIGNAL_THRESHOLD;
+        return Util.timeDiff_MillisToNow(time) <= Definitions.TIME_LAST_SIGNAL_THRESHOLD;
     }
 
     public static ArrayList<Integer> convertFloatListToIntegerList(ArrayList<Float> floatArray){

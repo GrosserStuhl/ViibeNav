@@ -116,7 +116,7 @@ public class OnyxBeacon {
      * @return
      */
     private boolean onMeasurementRSSIsFilled(){
-        if(measurementRSSIs.size()<Setup.MEASUREMENT_AMT_THRESHOLD) {
+        if(measurementRSSIs.size()< Definitions.MEASUREMENT_AMT_THRESHOLD) {
             measurementRSSIs.add(rssi);
             return false;
         } else
@@ -149,7 +149,7 @@ public class OnyxBeacon {
             if(!Util.hasSufficientSendingFreq(tmp.lastSignalMeasured)) {
                 tmp.resetMedianMeasurement();
                 it.remove();
-            } else if(tmp.rssi <= Setup.SIGNAL_TOO_BAD_THRESHOLD) {
+            } else if(tmp.rssi <= Definitions.SIGNAL_TOO_BAD_THRESHOLD) {
                 tmp.resetMedianMeasurement();
                 it.remove();
             }
