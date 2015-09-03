@@ -1,16 +1,20 @@
 package com.example.indoorbeacon.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.indoorbeacon.app.model.Definitions;
+
+import java.util.ArrayList;
 
 /**
  * Created by Dima on 04/08/2015.
@@ -19,6 +23,7 @@ public class SensorHelper {
 
     private static final String TAG = "SensorHelper";
 
+    private Context context;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private Sensor mMagnetometer;
@@ -37,10 +42,11 @@ public class SensorHelper {
     private float mLastY = 0;
     private float mLastZ = 0;
 
-    private long startTime = 0L;
-    private long timeSinceLastStep = 0L;
     private boolean enoughTimeForStep = false;
-    private int stepsCount = 0;
+    private int stepCount = 0;
+    //Wird benutzt um zu überprüfen ob es mehere Schritte nacheinander gab
+    private ArrayList<Boolean> multipleStepRegister = new ArrayList<>();
+    private boolean isWalking = false;
 
     //Anzeige
     private int meter = 0;
@@ -57,9 +63,14 @@ public class SensorHelper {
         return orientation;
     }
 
+    public boolean isWalking() {
+        return isWalking;
+    }
+
 
     public SensorHelper(Context c, ImageView arrowImage, TextView instructionText) {
-        initializeAllSensors(c);
+        context = c;
+        initializeAllSensors();
 
         this.arrowImage = arrowImage;
         this.instructionText = instructionText;
@@ -69,8 +80,8 @@ public class SensorHelper {
         this.instructionText.setText(text);
     }
 
-    private void initializeAllSensors(Context c) {
-        mSensorManager = (SensorManager) c.getSystemService(Context.SENSOR_SERVICE);
+    private void initializeAllSensors() {
+        mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
@@ -82,6 +93,11 @@ public class SensorHelper {
             public void run() {
                 if (!enoughTimeForStep)
                     enoughTimeForStep = true;
+                else {
+                    isWalking = false;
+                    multipleStepRegister.clear();
+                    broadcastChange();
+                }
                 new Handler().postDelayed(this, Definitions.TIME_FOR_STEP);
             }
         }, Definitions.TIME_FOR_STEP);
@@ -156,12 +172,17 @@ public class SensorHelper {
                 mLastY = y;
                 mLastZ = z;
 
-                Log.d(TAG, "DeltaY: " + deltaY + ", DeltaX: " + deltaX + ", DeltaZ: " + deltaZ);
+//                Log.d(TAG, "DeltaY: " + deltaY + ", DeltaX: " + deltaX + ", DeltaZ: " + deltaZ);
 
                 if (deltaZ > Definitions.STEP_THRESHOLD_Z && deltaY > Definitions.STEP_THRESHOLD_Y) {
                     enoughTimeForStep = false;
-                    stepsCount = stepsCount + 1;
-                    instructionText.setText(String.valueOf(stepsCount));
+                    stepCount = stepCount + 1;
+                    multipleStepRegister.add(true);
+                    if (multipleStepRegister.size() >= Definitions.MIN_STEP_AMOUNT_FOR_WALKING) {
+                        isWalking = true;
+                        broadcastChange();
+                    }
+                    instructionText.setText(String.valueOf(stepCount));
                 }
 //
 //                if (event.sensor == mStepCounterSensor) {
@@ -198,5 +219,11 @@ public class SensorHelper {
         orientation = grad;
 //        String text = meter + " Meter" + System.lineSeparator() + grad + " Grad";
 //        instructionText.setText(text);
+    }
+
+    private void broadcastChange() {
+        Intent intent = new Intent("walking boolean changed");
+        intent.putExtra("isWalking", isWalking);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 }

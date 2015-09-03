@@ -3,13 +3,18 @@ package com.example.indoorbeacon.app;
 import android.app.Activity;
 import android.app.IntentService;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -20,6 +25,7 @@ import android.widget.Toast;
 
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
+import com.example.indoorbeacon.app.model.Definitions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
@@ -40,6 +46,9 @@ public class NavigationActivity extends Activity implements SensorEventListener,
     private MediaPlayer mp;
     private int[] anweisungen = new int[3];
 
+    private ImageView dotImgView;
+    private BroadcastReceiver mMessageReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mDetector = new GestureDetector(this, new MyGestureListener());
@@ -56,6 +65,34 @@ public class NavigationActivity extends Activity implements SensorEventListener,
         ImageView arrowImage = (ImageView) findViewById(R.id.arrowImageView);
         TextView instructionText = (TextView) findViewById(R.id.instructionTextView);
         sensorHelper = new SensorHelper(this, arrowImage, instructionText);
+
+        dotImgView = (ImageView) findViewById(R.id.walkIndicatorImgView);
+
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (sensorHelper.isWalking())
+//
+//                    new Handler().postDelayed(this, 100);
+//            }
+//        }, 100);
+
+
+        mMessageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean isWalking = intent.getBooleanExtra("isWalking", false);
+
+                if (isWalking)
+                    dotImgView.setImageResource(R.drawable.green_dot);
+                else
+                    dotImgView.setImageResource(R.drawable.red_dot);
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("walking boolean changed"));
+
 
         anweisungen[0] = R.raw.anweisung1;
         anweisungen[1] = R.raw.anweisung2;

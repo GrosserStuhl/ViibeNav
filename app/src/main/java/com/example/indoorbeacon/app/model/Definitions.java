@@ -48,4 +48,6 @@ public class Definitions {
      */
     public static final float STEP_THRESHOLD_Z = 0.5f;
 
+    public static final int MIN_STEP_AMOUNT_FOR_WALKING = 2;
+
 }
