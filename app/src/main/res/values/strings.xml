@@ -28,6 +28,6 @@
     
     <string name="prefDistanceUnit">Einheit der angezeigten Entfernung</string>
     <string name="prefDistanceDefault">Meter</string>
-    <string name="prefOrientationUnit">Einheit der angezeigten Orientation</string>
+    <string name="prefOrientationUnit">Einheit der angezeigten Orientierung</string>
     <string name="prefOrientationDefault">Grad</string>
 </resources>
