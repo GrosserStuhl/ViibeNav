@@ -6,24 +6,6 @@
     android:baselineAligned="false"
     android:weightSum="1">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Filename"
-        android:id="@+id/textView12"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp" />
-
-    <EditText
-        android:layout_width="203dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/exportName"
-        android:nestedScrollingEnabled="false"
-        android:layout_marginLeft="10dp"
-        android:maxLength="35"
-        android:maxWidth="35dp" />
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -34,25 +16,21 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save Bytes"
+            android:text="Import"
             android:id="@+id/saveBytes"
             android:layout_marginLeft="10dp"
-            android:onClick="saveBytes"
+            android:onClick="importClicked"
             android:clickable="true" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="save SQLite"
-            android:id="@+id/saveSQLite"
-            android:layout_marginLeft="5dp" />
+            android:text="Export"
+            android:id="@+id/export"
+            android:layout_marginLeft="5dp"
+            android:nestedScrollingEnabled="false"
+            android:onClick="export" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Save CSV"
-            android:id="@+id/saveCSV"
-            android:layout_marginLeft="5dp" />
     </LinearLayout>
 
 </LinearLayout>

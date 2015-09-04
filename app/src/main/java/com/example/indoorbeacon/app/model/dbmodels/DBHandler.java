@@ -11,6 +11,7 @@ import com.example.indoorbeacon.app.model.Coordinate;
 import com.example.indoorbeacon.app.model.position.neighbor.DeviationToCoord;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -65,12 +66,13 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_ENVIRONMENT = "environment";
     public static final String COLUMN_CATEGORY = "category";
 
+    private Context c;
     private static DBHandler singleton;
 
 
     private DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
-
+        this.c = context;
     }
 
     public static DBHandler createDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
@@ -90,6 +92,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
 
         // CREATE BEACONS TABLE
         String query1 = "CREATE TABLE "+ TABLE_BEACONS + "(" +
@@ -174,6 +177,53 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
 
+    public ArrayList<DeviationToCoord> getAllDistancesFromMedians(MacToMedian[] map, int maxResults, int threshold){
+        SQLiteDatabase db = getWritableDatabase();
+
+        ArrayList<DeviationToCoord> devsToCoords = new ArrayList<>();
+        final String LOCAL_COLUMN_DEVIATION = "deviation";
+
+        for(int i=0;i<map.length;i++) {
+            final String macAddress = map[i].getMacAddressStr();
+            final double median = map[i].getMedian();
+//            Log.d(TAG, "MEDIAN IN LOOP "+median);
+
+            String query = "SELECT " + TABLE_ANCHORS + "." + COLUMN_FLOOR + "," + TABLE_ANCHORS + "." + COLUMN_X + ", " + TABLE_ANCHORS + "." + COLUMN_Y + "," + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + ", " + calcManhattenDB_Cmd(median) + " AS " + LOCAL_COLUMN_DEVIATION + " " +
+                    " FROM '" + TABLE_MEDIANS + "' JOIN '" + TABLE_ANCHORS + "' JOIN '" + TABLE_BEACON_MEDIAN_TO_ANCHOR + "' WHERE macAddress = '" + macAddress  + "' AND " +
+                    " ( "    + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_1 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + " " +
+                    "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_2 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
+                    "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_3 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
+                    "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_4 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
+                    "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_5 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
+                    "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_6 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
+                    "  ) " +
+                    " GROUP BY " + COLUMN_MEDIAN_VALUE + " HAVING deviation <=" + threshold + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + maxResults + ";";
+
+            // IMPORTANT - NOTE:
+            // IT MAKES SENSE TO SET UP THE LIMIT TO 5 WHEN MULTIPLE ANCHORS ARE SET IN THE RADIO MAP
+            // BUT NOW FOR TESTING PURPOSES IT DOES NOT MAKE SENSE -> TESTCASE: I ONLY HAVE 2 ANCHORS IN MY MAP IF I SET LIMIT TO >1
+            // I WILL GET BOTH ANCHORS AS POSSIBLE, BUT I ONLY WANT THE ONE MOST LIKELIEST ANCHORPOINT !
+
+            Cursor c = db.rawQuery(query, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                Coordinate coordinate = new Coordinate(c.getInt(c.getColumnIndex(COLUMN_FLOOR)), c.getInt(c.getColumnIndex(COLUMN_X)), c.getInt(c.getColumnIndex(COLUMN_Y)));
+
+                float deviation = c.getInt(c.getColumnIndex(LOCAL_COLUMN_DEVIATION));
+                devsToCoords.add(new DeviationToCoord(deviation, coordinate));
+
+                Log.d(TAG, "Deviation-Median" + c.getInt(c.getColumnIndex(MEDIANS_COLUMN_ID)) +
+                        " deviation: " + deviation +
+                        " -> Coord: " + coordinate + " macAddress " + macAddress);
+                c.moveToNext();
+            }
+        }
+        db.close();
+//        return devsToCoords.toArray(new DeviationToCoord[devsToCoords.size()]);
+        return devsToCoords;
+    }
+
     /**
      * Gets the most recent ID, which is the latest inserted entry for a specific TABLE
      * @param db
@@ -222,52 +272,7 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
 
-    public ArrayList<DeviationToCoord> getAllDistancesFromMedians(MacToMedian[] map, int maxResults, int threshold){
-        SQLiteDatabase db = getWritableDatabase();
 
-        ArrayList<DeviationToCoord> devsToCoords = new ArrayList<>();
-        final String LOCAL_COLUMN_DEVIATION = "deviation";
-
-        for(int i=0;i<map.length;i++) {
-            final String macAddress = map[i].getMacAddressStr();
-            final double median = map[i].getMedian();
-//            Log.d(TAG, "MEDIAN IN LOOP "+median);
-
-            String query = "SELECT " + TABLE_ANCHORS + "." + COLUMN_FLOOR + "," + TABLE_ANCHORS + "." + COLUMN_X + ", " + TABLE_ANCHORS + "." + COLUMN_Y + "," + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + ", " + calcManhattenDB_Cmd(median) + " AS " + LOCAL_COLUMN_DEVIATION + " " +
-                    " FROM '" + TABLE_MEDIANS + "' JOIN '" + TABLE_ANCHORS + "' WHERE macAddress = '" + macAddress  + "' AND " +
-                    " ( "    + TABLE_ANCHORS + "." + COLUMN_BEACON_1 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + " " +
-                    "   OR " + TABLE_ANCHORS + "." + COLUMN_BEACON_2 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
-                    "   OR " + TABLE_ANCHORS + "." + COLUMN_BEACON_3 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
-                    "   OR " + TABLE_ANCHORS + "." + COLUMN_BEACON_4 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
-                    "   OR " + TABLE_ANCHORS + "." + COLUMN_BEACON_5 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
-                    "   OR " + TABLE_ANCHORS + "." + COLUMN_BEACON_6 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
-                    "  ) " +
-                    " GROUP BY " + COLUMN_MEDIAN_VALUE + " HAVING deviation <=" + threshold + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + maxResults + ";";
-
-            // IMPORTANT - NOTE:
-            // IT MAKES SENSE TO SET UP THE LIMIT TO 5 WHEN MULTIPLE ANCHORS ARE SET IN THE RADIO MAP
-            // BUT NOW FOR TESTING PURPOSES IT DOES NOT MAKE SENSE -> TESTCASE: I ONLY HAVE 2 ANCHORS IN MY MAP IF I SET LIMIT TO >1
-            // I WILL GET BOTH ANCHORS AS POSSIBLE, BUT I ONLY WANT THE ONE MOST LIKELIEST ANCHORPOINT !
-
-            Cursor c = db.rawQuery(query, null);
-            c.moveToFirst();
-
-            while (!c.isAfterLast()) {
-                Coordinate coordinate = new Coordinate(c.getInt(c.getColumnIndex(COLUMN_FLOOR)), c.getInt(c.getColumnIndex(COLUMN_X)), c.getInt(c.getColumnIndex(COLUMN_Y)));
-
-                double deviation = c.getInt(c.getColumnIndex(LOCAL_COLUMN_DEVIATION));
-                devsToCoords.add(new DeviationToCoord(deviation, coordinate));
-
-                Log.d(TAG, "Deviation-Median" + c.getInt(c.getColumnIndex(MEDIANS_COLUMN_ID)) +
-                        " deviation: " + deviation+
-                        " -> Coord: " + coordinate + " macAddress " + macAddress);
-                c.moveToNext();
-            }
-        }
-        db.close();
-
-        return devsToCoords;
-    }
 
 
     public Coordinate getCoordFromAnchorId(int id){
@@ -524,5 +529,13 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
 
         return res;
+    }
+
+    public String getDBPath(){
+        return c.getDatabasePath(DBHandler.DATABASE_NAME).toString();
+    }
+
+    public boolean deleteDBFile(){
+        return new File(c.getDatabasePath(DBHandler.DATABASE_NAME).toString()).delete();
     }
 }

@@ -48,6 +48,17 @@
         </activity>
 
         <activity
+            android:name=".controller.ExportImportDB"
+            android:label="Import"
+            android:parentActivityName=".controller.MainActivity">
+            <intent-filter>
+                <action android:name="com.example.indoorbeacon.app.controller.ExportImportDB"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity
                 android:name=".SearchResultActivity"
                 android:label="Suchergebnisse"
                 android:parentActivityName=".SearchActivity">
