@@ -137,10 +137,6 @@ public class SensorHelper {
 
         if (event.sensor == mAccelerometer
                 && enoughTimeForStep) {
-            float x;
-            float y;
-            float z;
-
 
             Log.d(TAG, "eventX: " + event.values[0] + ", eventY: " + event.values[1] + ", eventZ: " + event.values[2]);
 
@@ -154,9 +150,9 @@ public class SensorHelper {
             gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
 
             // Remove the gravity contribution with the high-pass filter.
-            x = event.values[0] - gravity[0];
-            y = event.values[1] - gravity[1];
-            z = event.values[2] - gravity[2];
+            float x = event.values[0] - gravity[0];
+            float y = event.values[1] - gravity[1];
+            float z = event.values[2] - gravity[2];
 
             if (!mLastAccelerometerSet) {
                 // sensor is used for the first time, initialize the last read values

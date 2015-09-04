@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 
+import android.widget.Button;
 import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.RoomlistActivity;
 import com.example.indoorbeacon.app.SearchActivity;
@@ -51,6 +52,11 @@ public class MainActivity extends Activity {
         bluetoothScan = BluetoothScan.createBluetoothScan(manager.getAdapter());
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+    }
+
+    public void openTestActivity(View view) {
+        Intent intent = new Intent(this, TestActivity.class);
+        startActivity(intent);
     }
 
     public void openSearchActivity(View view) {
