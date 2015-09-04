@@ -34,7 +34,7 @@ public class Definitions {
      * The time it takes a user to make a step.
      * Used to limit stepCount to a realistic rate.
      */
-    public static final int TIME_FOR_STEP = 1000;
+    public static final int TIME_FOR_STEP = 700;
 
     /**
      * The accelerator Y value threshold at which a step is recognized.
@@ -48,6 +48,9 @@ public class Definitions {
      */
     public static final float STEP_THRESHOLD_Z = 0.5f;
 
-    public static final int MIN_STEP_AMOUNT_FOR_WALKING = 2;
+    /**
+     * The minimum amount of steps it takes to tell if the user is walking.
+     */
+    public static final int MIN_STEP_AMOUNT_FOR_WALKING = 3;
 
 }

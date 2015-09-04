@@ -81,6 +81,7 @@ public class NavigationActivity extends Activity implements SensorEventListener,
         mMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                Log.d(TAG, "" + System.currentTimeMillis());
                 boolean isWalking = intent.getBooleanExtra("isWalking", false);
 
                 if (isWalking)

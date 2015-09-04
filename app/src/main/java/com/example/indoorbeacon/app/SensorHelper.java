@@ -224,6 +224,7 @@ public class SensorHelper {
     private void broadcastChange() {
         Intent intent = new Intent("walking boolean changed");
         intent.putExtra("isWalking", isWalking);
+        Log.d(TAG, "" + System.currentTimeMillis());
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 }
