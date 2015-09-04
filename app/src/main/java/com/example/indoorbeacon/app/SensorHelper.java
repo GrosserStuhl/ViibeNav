@@ -141,6 +141,9 @@ public class SensorHelper {
             float y;
             float z;
 
+
+            Log.d(TAG, "eventX: " + event.values[0] + ", eventY: " + event.values[1] + ", eventZ: " + event.values[2]);
+
             final float alpha = 0.8f; // constant for our filter below
 
             float[] gravity = {0, 0, 0};
@@ -172,7 +175,7 @@ public class SensorHelper {
                 mLastY = y;
                 mLastZ = z;
 
-//                Log.d(TAG, "DeltaY: " + deltaY + ", DeltaX: " + deltaX + ", DeltaZ: " + deltaZ);
+                Log.d(TAG, "DeltaX: " + deltaX + ", DeltaY: " + deltaY + ", DeltaZ: " + deltaZ);
 
                 if (deltaZ > Definitions.STEP_THRESHOLD_Z && deltaY > Definitions.STEP_THRESHOLD_Y) {
                     enoughTimeForStep = false;
