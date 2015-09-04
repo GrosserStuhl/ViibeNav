@@ -252,7 +252,7 @@ public class DBHandler extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS '" + TABLE_MEDIANS+"'");
         db.execSQL("DROP TABLE IF EXISTS '" + TABLE_BEACONS+"'");
         db.execSQL("DROP TABLE IF EXISTS '" + TABLE_INFO+"'");
-        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_BEACON_MEDIAN_TO_ANCHOR+"'");
+        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_BEACON_MEDIAN_TO_ANCHOR + "'");
         onCreate(db);
     }
 
@@ -429,10 +429,17 @@ public class DBHandler extends SQLiteOpenHelper{
     public ArrayList<String> getSearchSpecificPersonEntries(String key) {
         ArrayList<String> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
-                "(" +
-                COLUMN_PERSON_NAME + " LIKE " + "'%" + key + "%'"+
-                ");";
+
+//            String[] keys = key.split("\\s+");
+//            StringBuilder sb = new StringBuilder();
+//            for(String k : keys)
+//                sb.append(" OR LIKE '% " + k + " %'");
+
+             String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
+                    "(" +
+                    COLUMN_PERSON_NAME + " LIKE " + "'%" + key + "%'" /*+ sb.toString()*/ +
+                    ");";
+
 
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
