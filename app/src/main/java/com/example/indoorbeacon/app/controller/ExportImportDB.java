@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
-import com.example.indoorbeacon.app.model.dbmodels.InfoDBModel;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,12 +37,15 @@ public class ExportImportDB extends Activity {
     //importing database
     private void importDB() {
         try {
-
             String currentDBPath = DBHandler.getDB().getDBPath();
             String backupDBPath  = Environment.getExternalStorageDirectory() + "/radiomap/radiomap.db";
             File backupDB = new File(backupDBPath);
-            backupDB.setReadable(true, false);
+//            boolean readable = backupDB.setReadable(true, false);
+//            Log.d(TAG, "Backup readable: "+readable);
+
             File currentDB  = new File(currentDBPath);
+            currentDB.delete();
+            currentDB.getParentFile().mkdirs();
 
             FileChannel src = new FileInputStream(backupDB).getChannel();
             FileChannel dst = new FileOutputStream(currentDB).getChannel();
@@ -58,8 +60,6 @@ public class ExportImportDB extends Activity {
             Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
                     .show();
         }
-        DBHandler.getDB().getAllInfo();
-        Log.d("TAG", "IMPORT: " + InfoDBModel.getAllInfo().get(0).getPerson_name());
     }
 
 }

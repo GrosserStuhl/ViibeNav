@@ -503,6 +503,8 @@ public class DBHandler extends SQLiteOpenHelper{
             Log.d("DBHandler", category);
             c.moveToNext();
         }
+        c.close();
+        db.close();
 
         return res;
     }

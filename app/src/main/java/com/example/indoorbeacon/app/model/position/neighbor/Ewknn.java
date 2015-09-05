@@ -110,8 +110,8 @@ public class Ewknn implements PositionAlgorithm {
             if(tmp.getdeviation() < minDeviation)
                 res = tmp;
 
-        if(res== null)
-            throw new NullPointerException("No deviation is less minDeviation! ");
+//        if(res== null)
+//            throw new NullPointerException("No deviation is less minDeviation! ");
 
         return res;
     }

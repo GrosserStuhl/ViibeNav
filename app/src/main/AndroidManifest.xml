@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
     <uses-feature android:name="android.hardware.bluetooth"/>
     <uses-feature android:name=" android.hardware.sensor.magnetometer"/>
@@ -18,9 +20,6 @@
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:theme="@style/CustomTheme">
-        <service
-                android:name=".ActivityRecIntentService"
-                android:exported="false"/>
 
         <activity
                 android:name=".controller.MainActivity"

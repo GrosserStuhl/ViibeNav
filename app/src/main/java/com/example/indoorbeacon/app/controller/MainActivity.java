@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 
 import com.example.indoorbeacon.app.R;
@@ -48,9 +47,8 @@ public class MainActivity extends Activity {
 //        .speak("Ich bin hier drin. Das ist so einfach, dass ich schreien möchte. Soo einfach.");
 
         BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        bluetoothScan = BluetoothScan.createBluetoothScan(manager.getAdapter());
+        bluetoothScan = BluetoothScan.getBluetoothScan(manager.getAdapter());
 
-        Log.d("PA", "PATH " + this.getFilesDir().getAbsolutePath());
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     }
 

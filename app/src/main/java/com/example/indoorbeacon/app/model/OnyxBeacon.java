@@ -100,7 +100,7 @@ public class OnyxBeacon {
         if(measurementStarted)
             if (onMeasurementRSSIsFilled()) {
                 calculateMedian();
-                Log.d(TAG,Util.intListToString(measurementRSSIs)+" "+macAddress);
+                Log.d(TAG, Util.intListToString(measurementRSSIs) + " " + macAddress);
                 Log.d(TAG, "Calculated Median is: " + medianRSSI + " | mac: " + macAddress);
                 measurementDone = true;
             }
@@ -116,7 +116,7 @@ public class OnyxBeacon {
      * @return
      */
     private boolean onMeasurementRSSIsFilled(){
-        if(measurementRSSIs.size()< Definitions.MEASUREMENT_AMT_THRESHOLD) {
+        if(measurementRSSIs.size()<Definitions.MEASUREMENT_AMOUNT) {
             measurementRSSIs.add(rssi);
             return false;
         } else
@@ -135,14 +135,17 @@ public class OnyxBeacon {
         measurementDone = false;
     }
 
-
+    public static OnyxBeacon[] getBeaconMapAsArr(HashMap<CharBuffer,OnyxBeacon> tmpBeaconMap){
+        ArrayList<OnyxBeacon> tmp = new ArrayList<OnyxBeacon>(tmpBeaconMap.values());
+        return tmp.toArray(new OnyxBeacon[tmp.size()]);
+    }
 
     public static ArrayList<OnyxBeacon> getBeaconMapAsList(){
-        return new ArrayList<OnyxBeacon> (beaconMap.values());
+        return new ArrayList<OnyxBeacon>(beaconMap.values());
     }
 
     public static ArrayList<OnyxBeacon> filterSurroundingBeacons(){
-        ArrayList<OnyxBeacon> res = (ArrayList<OnyxBeacon>)getBeaconMapAsList();
+        ArrayList<OnyxBeacon> res = getBeaconMapAsList();
         Iterator it = res.iterator();
         while(it.hasNext()){
             OnyxBeacon tmp = (OnyxBeacon) it.next();
@@ -154,6 +157,7 @@ public class OnyxBeacon {
                 it.remove();
             }
         }
+//        Log.d(TAG, "Beacon RES SIZE: "+res.size());
         return res;
     }
 

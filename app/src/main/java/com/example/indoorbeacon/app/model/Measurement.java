@@ -1,13 +1,11 @@
 package com.example.indoorbeacon.app.model;
 
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.example.indoorbeacon.app.controller.MainActivity;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 
 import java.util.ArrayList;
@@ -19,10 +17,15 @@ import java.util.Iterator;
  */
 public class Measurement {
 
+    private Activity activity;
     public static final String TAG = "Measurement";
-
-    public MainActivity main;
     public Measurement.State state;
+
+    public Measurement(Activity activity){
+        this.activity = activity;
+        setState(State.notMeasuring);
+    }
+
 
     public enum State{
         isMeasuring,notMeasuring;
@@ -37,8 +40,8 @@ public class Measurement {
         this.state = state;
 
         Intent intent = new Intent("measuring boolean changed");
-        intent.putExtra("startedMeasuring", state);
-        LocalBroadcastManager.getInstance(main).sendBroadcast(intent);
+        intent.putExtra("startedMeasuring", isMeasuring());
+        LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
     }
 
     public State getState() {
@@ -73,21 +76,21 @@ public class Measurement {
     public class AsyncOnTheFlyMeasure extends AsyncTask<ArrayList<OnyxBeacon>, Integer, String> {
 
         ArrayList<OnyxBeacon> beacons;
-        ProgressDialog dialog;
+//        ProgressDialog dialog;
 
         @Override
         protected void onPreExecute() {
-            dialog = new ProgressDialog(person.getActivity());
-            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            dialog.setTitle("Messung von " + measurementSize + " Beacons");
-            dialog.setMax(measurementSize);
-            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    cleanUp();
-                }
-            });
-            dialog.show();
+//            dialog = new ProgressDialog(person.getActivity());
+//            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//            dialog.setTitle("Messung von " + measurementSize + " Beacons");
+//            dialog.setMax(measurementSize);
+//            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                @Override
+//                public void onCancel(DialogInterface dialog) {
+//                    cleanUp();
+//                }
+//            });
+//            dialog.show();
         }
 
         @Override
@@ -107,20 +110,21 @@ public class Measurement {
                 if(beacons.isEmpty())
                     setState(State.notMeasuring);
             }
-            dialog.dismiss();
+//            dialog.dismiss();
 
             return "";
         }
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            dialog.incrementProgressBy(values[0]);
+//            dialog.incrementProgressBy(values[0]);
         }
 
         @Override
         protected void onPostExecute(String result) {
             MacToMedian[] data = Util.listToMacToMedianArr(beacons);
             person.estimatePos(data);
+            person.getMostLikelyPosition();
             cleanUp();
         }
 

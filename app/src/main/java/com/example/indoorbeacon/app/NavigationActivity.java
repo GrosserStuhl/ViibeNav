@@ -12,6 +12,7 @@ import android.hardware.SensorEventListener;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -20,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
 import com.example.indoorbeacon.app.model.Person;
@@ -41,8 +43,11 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     private ImageView dotImgView;
     private ImageView arrowImage;
     private TextView instructionTextView;
+    private TextView estimatedCoordTextView;
 
+    private boolean navigating;
     private Person person;
+    private Handler triggerMeasuring;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,15 +67,23 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         initGUI();
         initHandler();
+        startMeasurement();
     }
 
     private void initGUI() {
         dotImgView = (ImageView) findViewById(R.id.walkIndicatorImgView);
         arrowImage = (ImageView) findViewById(R.id.arrowImageView);
         instructionTextView = (TextView) findViewById(R.id.instructionTextView);
+        estimatedCoordTextView = (TextView) findViewById(R.id.estimatedCoords);
     }
 
     private void initHandler() {
+        triggerMeasuring = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                person.getMostLikelyPosition();
+            }
+        };
 
         BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
             @Override
@@ -96,6 +109,18 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             }
         }, 250);
 
+        BroadcastReceiver mCoordReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
+                if (!startedMeasuring)
+                    estimatedCoordTextView.setText("x: " + person.getCoord().getX() + " | y: " + person.getCoord().getY() );
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("measuring boolean changed"));
+
 
         anweisungen[0] = R.raw.anweisung1;
         anweisungen[1] = R.raw.anweisung2;
@@ -107,7 +132,34 @@ public class NavigationActivity extends Activity implements SensorEventListener 
      * It will only start median measurement for the beacons already listed in the onyxBeaconHashMap.
      */
     public void startMeasurement() {
-//        *TODO
+        startNavigation();
+
+        Runnable r = new Runnable(){
+            @Override
+            public void run() {
+                triggerMeasuring.sendEmptyMessage(0);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        Thread th = new Thread(r);
+        th.start();
+
+    }
+
+    private void startNavigation() {
+        navigating = true;
+    }
+
+    private void stopNavigation() {
+        navigating = false;
+    }
+
+    public boolean isNavigating() {
+        return navigating;
     }
 
     @Override
@@ -129,8 +181,8 @@ public class NavigationActivity extends Activity implements SensorEventListener 
          * We need to enforce that Bluetooth is first enabled, and take the
          * user to settings to enable it if they have not done so.
          */
-        if (BluetoothScan.getBluetoothScan().getmBluetoothAdapter() == null || !BluetoothScan.getBluetoothScan().getmBluetoothAdapter().isEnabled()) {
-            BluetoothScan.getBluetoothScan().getmBluetoothAdapter().enable();
+        if (BluetoothScan.getBtScan().getmBluetoothAdapter() == null || !BluetoothScan.getBtScan().getmBluetoothAdapter().isEnabled()) {
+            BluetoothScan.getBtScan().getmBluetoothAdapter().enable();
             return;
         }
 
@@ -145,8 +197,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             return;
         }
 
-        //Begin scanning for LE devices
-        BluetoothScan.getBluetoothScan().startScan();
     }
 
     @Override
@@ -156,7 +206,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         if (!Connector.getConnector().WiFiEnabled())
             Connector.getConnector().enableWiFi();
 
-        BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
+        BluetoothScan.getBtScan().getmBluetoothAdapter().disable();
     }
 
     @Override
@@ -166,7 +216,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         if (!Connector.getConnector().WiFiEnabled())
             Connector.getConnector().enableWiFi();
 
-        BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
+        BluetoothScan.getBtScan().getmBluetoothAdapter().disable();
     }
 
     protected void onPause() {

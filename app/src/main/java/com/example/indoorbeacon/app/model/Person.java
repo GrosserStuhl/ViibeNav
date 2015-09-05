@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.example.indoorbeacon.app.NavigationActivity;
 import com.example.indoorbeacon.app.SensorHelper;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.position.neighbor.Ewknn;
@@ -27,17 +28,17 @@ public class Person {
 
     private Coordinate coord;
     private Measurement measurement;
-    private Activity activity;
+    private NavigationActivity activity;
 
     private PositionAlgorithm algorithm;
 
     private SensorHelper sensorHelper;
     private int walkedDistance;
 
-    public Person(Activity activity) {
+    public Person(NavigationActivity activity) {
         this.activity = activity;
         coord = new Coordinate(-1, -1, -1);
-        measurement = new Measurement();
+        measurement = new Measurement(activity);
 
         algorithm = new Ewknn();
 
@@ -69,13 +70,11 @@ public class Person {
     }
 
     public void getMostLikelyPosition() {
-
-        ArrayList<OnyxBeacon> surrounding = OnyxBeacon.filterSurroundingBeacons();
-        getOnTheFlyMedians(surrounding);
-
+            ArrayList<OnyxBeacon> surrounding = OnyxBeacon.filterSurroundingBeacons();
+            getOnTheFlyMedians(surrounding);
     }
 
-    public void getOnTheFlyMedians(ArrayList<OnyxBeacon> surrounding) {
+    private void getOnTheFlyMedians(ArrayList<OnyxBeacon> surrounding) {
         Log.d(TAG, "SURROUNDING " + surrounding.size());
         ArrayList<Integer> supposedAnchorPointIds = new ArrayList<>();
 
