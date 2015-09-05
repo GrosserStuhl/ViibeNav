@@ -40,13 +40,13 @@ public class Definitions {
      * The accelerator Y value threshold at which a step is recognized.
      * (Used in combination with the Z value threshold)
      */
-    public static final float STEP_THRESHOLD_Y = 0.15f;
+    public static final float STEP_THRESHOLD_Y = 0.05f;
 
     /**
      * The accelerator Z value threshold at which a step is recognized.
      * (Used in combination with the Y value threshold)
      */
-    public static final float STEP_THRESHOLD_Z = 0.4f;
+    public static final float STEP_THRESHOLD_Z = 0.2f;
 
     /**
      * The minimum amount of steps it takes to tell if the user is walking.
