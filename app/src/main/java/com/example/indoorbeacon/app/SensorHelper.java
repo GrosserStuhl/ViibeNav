@@ -25,6 +25,8 @@ public class SensorHelper {
 
     private Context context;
     private SensorManager mSensorManager;
+    private static SensorHelper singleton;
+
     private Sensor mAccelerometer;
     private Sensor mMagnetometer;
     private float[] mLastAccelerometer = new float[3];
@@ -51,15 +53,14 @@ public class SensorHelper {
     //Anzeige
     private int meter = 0;
     private int grad = 0;
-    private TextView instructionText;
-    private ImageView arrowImage;
+    private String instructionText;
 
     /**
      * Ausrichtung des Smartphones zum Nordpol
      */
-    private static int orientation = 0;
+    private static float orientation = 0;
 
-    public static int getOrientation() {
+    public static float getOrientation() {
         return orientation;
     }
 
@@ -68,23 +69,28 @@ public class SensorHelper {
     }
 
 
-    public SensorHelper(Context c, ImageView arrowImage, TextView instructionText) {
+    public static SensorHelper getSensorHelper(Context c) {
+        synchronized (SensorHelper.class) {
+            if (singleton == null)
+                singleton = new SensorHelper(c);
+        }
+        return singleton;
+    }
+
+
+    public SensorHelper(Context c) {
         context = c;
         initializeAllSensors();
 
-        this.arrowImage = arrowImage;
-        this.instructionText = instructionText;
         meter = 2;
         grad = 45;
-        String text = meter + " Meter \n" + grad + " Grad";
-        this.instructionText.setText(text);
+        instructionText = meter + " Meter \n" + grad + " Grad";
     }
 
     private void initializeAllSensors() {
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        Log.d(TAG, "maxRange: " + mAccelerometer.getMaximumRange() + ", resolustion: " + mAccelerometer.getResolution());
 
         mStepCounterSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         mStepDetectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
@@ -132,14 +138,13 @@ public class SensorHelper {
             SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
             SensorManager.getOrientation(mR, mOrientation);
             float azimuthInRadians = mOrientation[0];
-            float azimuthInDegrees = (float) (Math.toDegrees(azimuthInRadians) + 360) % 360;
-            animateImage(azimuthInDegrees);
+            orientation = (float) (Math.toDegrees(azimuthInRadians) + 360) % 360;
         }
 
         if (event.sensor == mAccelerometer
                 && enoughTimeForStep) {
 
-            Log.d(TAG, "eventX: " + event.values[0] + ", eventY: " + event.values[1] + ", eventZ: " + event.values[2]);
+//            Log.d(TAG, "eventX: " + event.values[0] + ", eventY: " + event.values[1] + ", eventZ: " + event.values[2]);
 
             final float alpha = 0.8f; // constant for our filter below
 
@@ -172,7 +177,7 @@ public class SensorHelper {
                 mLastY = y;
                 mLastZ = z;
 
-                Log.d(TAG, "DeltaX: " + deltaX + ", DeltaY: " + deltaY + ", DeltaZ: " + deltaZ);
+//                Log.d(TAG, "DeltaX: " + deltaX + ", DeltaY: " + deltaY + ", DeltaZ: " + deltaZ);
 
                 if (deltaZ > Definitions.STEP_THRESHOLD_Z && deltaY > Definitions.STEP_THRESHOLD_Y) {
                     enoughTimeForStep = false;
@@ -182,43 +187,38 @@ public class SensorHelper {
                         isWalking = true;
                         broadcastChange();
                     }
-                    instructionText.setText(String.valueOf(stepCount));
+                    instructionText = String.valueOf(stepCount);
                 }
-//
-//                if (event.sensor == mStepCounterSensor) {
-//                    float[] values = event.values;
-//                    int value = -1;
-//                    if (values.length > 0) value = (int) values[0];
-//                    instructionText.setText("Step Counter Detected : " + value);
-//                } else if (event.sensor == mStepDetectorSensor) {
-//                    float[] values = event.values;
-//                    int value = -1;
-//                    if (values.length > 0) value = (int) values[0];
-//                    // For test only. Only allowed value is 1.0 i.e. for step taken
-//                    instructionText.setText("Step Detector Detected : " + value);
+//                else {
+//                    isWalking = false;
+//                    multipleStepRegister.clear();
+//                    broadcastChange();
 //                }
             }
         }
     }
 
-    private void animateImage(float degrees) {
+    public void updateImage(ImageView arrowImage) {
         RotateAnimation ra = new RotateAnimation(
                 mCurrentDegree,
-                -degrees,
+                -orientation,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF,
                 0.5f);
 
-        ra.setDuration(250);
+        ra.setDuration(230);
         ra.setFillAfter(true);
 
         arrowImage.startAnimation(ra);
 
-        mCurrentDegree = -degrees;
+        mCurrentDegree = -orientation;
         grad = (int) -mCurrentDegree;
-        orientation = grad;
 //        String text = meter + " Meter" + System.lineSeparator() + grad + " Grad";
 //        instructionText.setText(text);
+    }
+
+    public void updateText(TextView text) {
+        text.setText(instructionText);
     }
 
     private void broadcastChange() {

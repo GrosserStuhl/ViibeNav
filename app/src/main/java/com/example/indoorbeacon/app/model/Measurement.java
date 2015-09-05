@@ -2,7 +2,9 @@ package com.example.indoorbeacon.app.model;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.indoorbeacon.app.controller.MainActivity;
@@ -33,6 +35,10 @@ public class Measurement {
     public void setState(State state) {
         Log.d(TAG, "STATE: "+state);
         this.state = state;
+
+        Intent intent = new Intent("measuring boolean changed");
+        intent.putExtra("startedMeasuring", state);
+        LocalBroadcastManager.getInstance(main).sendBroadcast(intent);
     }
 
     public State getState() {

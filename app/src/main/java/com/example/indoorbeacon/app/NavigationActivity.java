@@ -47,7 +47,8 @@ public class NavigationActivity extends Activity implements SensorEventListener,
     private int[] anweisungen = new int[3];
 
     private ImageView dotImgView;
-    private BroadcastReceiver mMessageReceiver;
+    private ImageView arrowImage;
+    private TextView instructionTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,23 +63,13 @@ public class NavigationActivity extends Activity implements SensorEventListener,
         Intent intent = getIntent();
         String ziel = intent.getStringExtra("Ziel");
 
-        ImageView arrowImage = (ImageView) findViewById(R.id.arrowImageView);
-        TextView instructionText = (TextView) findViewById(R.id.instructionTextView);
-        sensorHelper = new SensorHelper(this, arrowImage, instructionText);
+        sensorHelper = SensorHelper.getSensorHelper(this);
 
         dotImgView = (ImageView) findViewById(R.id.walkIndicatorImgView);
+        arrowImage = (ImageView) findViewById(R.id.arrowImageView);
+        instructionTextView = (TextView) findViewById(R.id.instructionTextView);
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (sensorHelper.isWalking())
-//
-//                    new Handler().postDelayed(this, 100);
-//            }
-//        }, 100);
-
-
-        mMessageReceiver = new BroadcastReceiver() {
+        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean isWalking = intent.getBooleanExtra("isWalking", false);
@@ -92,6 +83,15 @@ public class NavigationActivity extends Activity implements SensorEventListener,
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("walking boolean changed"));
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sensorHelper.updateImage(arrowImage);
+                sensorHelper.updateText(instructionTextView);
+                new Handler().postDelayed(this, 250);
+            }
+        }, 250);
 
 
         anweisungen[0] = R.raw.anweisung1;

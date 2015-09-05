@@ -1,8 +1,16 @@
 package com.example.indoorbeacon.app.model;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.example.indoorbeacon.app.R;
+import com.example.indoorbeacon.app.SensorHelper;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.position.neighbor.Ewknn;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
@@ -24,33 +32,61 @@ public class Person {
 
     private PositionAlgorithm algorithm;
 
+    private SensorHelper sensorHelper;
+    private int walkedDistance;
+
     public Person(Activity activity) {
         this.activity = activity;
-        coord = new Coordinate(-1,-1,-1);
+        coord = new Coordinate(-1, -1, -1);
         measurement = new Measurement();
 
         algorithm = new Ewknn();
+
+        sensorHelper = SensorHelper.getSensorHelper(activity);
+
+        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
+
+                if (startedMeasuring) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (measurement.isMeasuring() && sensorHelper.isWalking()) {
+                                walkedDistance += Definitions.WALKED_METERS_PER_SECOND / 2;
+                                new Handler().postDelayed(this, 500);
+                            }
+                        }
+                    }, 500);
+                }
+            }
+        };
+
+        LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver,
+                new IntentFilter("measuring boolean changed"));
     }
 
-    public void getMostLikelyPosition(){
+    public void getMostLikelyPosition() {
 
         ArrayList<OnyxBeacon> surrounding = OnyxBeacon.filterSurroundingBeacons();
         getOnTheFlyMedians(surrounding);
 
     }
 
-    public void getOnTheFlyMedians(ArrayList<OnyxBeacon> surrounding){
+    public void getOnTheFlyMedians(ArrayList<OnyxBeacon> surrounding) {
         Log.d(TAG, "SURROUNDING " + surrounding.size());
         ArrayList<Integer> supposedAnchorPointIds = new ArrayList<>();
 
         measurement.setState(Measurement.State.isMeasuring);
-        for(OnyxBeacon tmp : surrounding)
+        for (OnyxBeacon tmp : surrounding)
             if (!tmp.isMeasurementStarted())
                 tmp.setMeasurementStarted(true);
         measurement.overallOnTheFlyCalcProcess(surrounding, this);
     }
 
-    public void estimatePos(MacToMedian[] data){
+    public void estimatePos(MacToMedian[] data) {
         setCoord(getAlgorithm().estimatePos(data));
 
         /**TODO**
@@ -63,7 +99,7 @@ public class Person {
     }
 
 
-    private Coordinate getCoordFromAnchorId(int id){
+    private Coordinate getCoordFromAnchorId(int id) {
         return DBHandler.getDB().getCoordFromAnchorId(id);
     }
 

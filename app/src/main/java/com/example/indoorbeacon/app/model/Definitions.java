@@ -53,4 +53,5 @@ public class Definitions {
      */
     public static final int MIN_STEP_AMOUNT_FOR_WALKING = 2;
 
+    public static final float WALKED_METERS_PER_SECOND = 0.7f;
 }
