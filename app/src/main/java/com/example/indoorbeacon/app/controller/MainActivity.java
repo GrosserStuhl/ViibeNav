@@ -15,16 +15,17 @@ import com.example.indoorbeacon.app.SearchActivity;
 import com.example.indoorbeacon.app.SettingsActivity;
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
+import com.example.indoorbeacon.app.model.Measurement;
 import com.example.indoorbeacon.app.model.RadioMap;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
 
 public class MainActivity extends Activity {
 
-    Application applicationUI;
     RadioMap radioMap;
     BluetoothScan bluetoothScan;
     DBHandler dbHandler;
+    Measurement measurement;
 
     Connector connect;
 
@@ -37,7 +38,6 @@ public class MainActivity extends Activity {
 
         radioMap = RadioMap.createRadioMap();
         dbHandler = DBHandler.createDB(this, null, null, 1);
-        applicationUI = new Application(this);
 
         connect = Connector.createConnector((WifiManager) getSystemService(WIFI_SERVICE));
 
@@ -74,9 +74,6 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
-    public Application getApplicationUI() {
-        return applicationUI;
-    }
 
     //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {

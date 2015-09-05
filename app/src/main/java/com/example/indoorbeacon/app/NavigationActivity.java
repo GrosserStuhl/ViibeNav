@@ -12,6 +12,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
+import com.example.indoorbeacon.app.model.Measurement;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
@@ -47,6 +50,9 @@ public class NavigationActivity extends Activity implements SensorEventListener,
     private ImageView arrowImage;
     private TextView instructionTextView;
 
+    private Measurement measurement;
+    private Handler calcMediansHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mDetector = new GestureDetector(this, new MyGestureListener());
@@ -65,6 +71,18 @@ public class NavigationActivity extends Activity implements SensorEventListener,
         dotImgView = (ImageView) findViewById(R.id.walkIndicatorImgView);
         arrowImage = (ImageView) findViewById(R.id.arrowImageView);
         instructionTextView = (TextView) findViewById(R.id.instructionTextView);
+
+
+
+        initGUI();
+        initHandler();
+    }
+
+    private void initGUI(){
+
+    };
+
+    private void initHandler(){
 
         BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
             @Override
@@ -101,6 +119,24 @@ public class NavigationActivity extends Activity implements SensorEventListener,
                 .addOnConnectionFailedListener(this)
                 .build();
         mGoogleApiClient.connect();
+
+
+        calcMediansHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                // sets device state to measuring, which deactivates GUI elements
+                startMeasurement();
+            }
+        };
+
+    }
+
+    /**
+     * By invoking this method you start median measurement for the beacons found nearby.
+     * It will only start median measurement for the beacons already listed in the onyxBeaconHashMap.
+     */
+    public void startMeasurement(){
+        calcMediansHandler.sendEmptyMessage(0);
     }
 
     @Override
@@ -123,9 +159,6 @@ public class NavigationActivity extends Activity implements SensorEventListener,
          * user to settings to enable it if they have not done so.
          */
         if (BluetoothScan.getBluetoothScan().getmBluetoothAdapter() == null || !BluetoothScan.getBluetoothScan().getmBluetoothAdapter().isEnabled()) {
-            //Bluetooth is disabled
-//            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//            startActivity(enableBtIntent);
             BluetoothScan.getBluetoothScan().getmBluetoothAdapter().enable();
             return;
         }
