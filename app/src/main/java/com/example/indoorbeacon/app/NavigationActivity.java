@@ -1,7 +1,6 @@
 package com.example.indoorbeacon.app;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,24 +21,17 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
-import com.example.indoorbeacon.app.model.Measurement;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.ActivityRecognition;
 
 /**
  * Created by #Dima on 28/07/2015.
  */
-public class NavigationActivity extends Activity implements SensorEventListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+public class NavigationActivity extends Activity implements SensorEventListener {
 
     private static final String TAG = "NavigationActivity";
 
     private SensorHelper sensorHelper;
-    private GoogleApiClient mGoogleApiClient;
 
     private GestureDetector mDetector;
 
@@ -49,9 +41,6 @@ public class NavigationActivity extends Activity implements SensorEventListener,
     private ImageView dotImgView;
     private ImageView arrowImage;
     private TextView instructionTextView;
-
-    private Measurement measurement;
-    private Handler calcMediansHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,16 +62,17 @@ public class NavigationActivity extends Activity implements SensorEventListener,
         instructionTextView = (TextView) findViewById(R.id.instructionTextView);
 
 
-
         initGUI();
         initHandler();
     }
 
-    private void initGUI(){
+    private void initGUI() {
 
-    };
+    }
 
-    private void initHandler(){
+    ;
+
+    private void initHandler() {
 
         BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
             @Override
@@ -112,31 +102,14 @@ public class NavigationActivity extends Activity implements SensorEventListener,
         anweisungen[0] = R.raw.anweisung1;
         anweisungen[1] = R.raw.anweisung2;
         anweisungen[2] = R.raw.anweisung3;
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(ActivityRecognition.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-        mGoogleApiClient.connect();
-
-
-        calcMediansHandler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                // sets device state to measuring, which deactivates GUI elements
-                startMeasurement();
-            }
-        };
-
     }
 
     /**
      * By invoking this method you start median measurement for the beacons found nearby.
      * It will only start median measurement for the beacons already listed in the onyxBeaconHashMap.
      */
-    public void startMeasurement(){
-        calcMediansHandler.sendEmptyMessage(0);
+    public void startMeasurement() {
+//        *TODO
     }
 
     @Override
@@ -186,10 +159,6 @@ public class NavigationActivity extends Activity implements SensorEventListener,
             Connector.getConnector().enableWiFi();
 
         BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
-
-        Intent i = new Intent(this, ActivityRecIntentService.class);
-        PendingIntent actRecPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, actRecPendingIntent);
     }
 
     @Override
@@ -200,10 +169,6 @@ public class NavigationActivity extends Activity implements SensorEventListener,
             Connector.getConnector().enableWiFi();
 
         BluetoothScan.getBluetoothScan().getmBluetoothAdapter().disable();
-
-        Intent i = new Intent(this, ActivityRecIntentService.class);
-        PendingIntent actRecPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, actRecPendingIntent);
     }
 
     protected void onPause() {
@@ -224,24 +189,6 @@ public class NavigationActivity extends Activity implements SensorEventListener,
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        Log.d(TAG, "Connected to GoogleApiClient");
-        Intent i = new Intent(this, ActivityRecIntentService.class);
-        PendingIntent actRecPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mGoogleApiClient, 100, actRecPendingIntent);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.d(TAG, "Connection to GoogleApiClient suspended");
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e(TAG, "Connection to GoogleApiClient failed");
     }
 
 //    @Override

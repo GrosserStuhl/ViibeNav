@@ -54,8 +54,9 @@ public class Person {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (measurement.isMeasuring() && sensorHelper.isWalking()) {
-                                walkedDistance += Definitions.WALKED_METERS_PER_SECOND / 2;
+                            if (measurement.isMeasuring()) {
+                                if (sensorHelper.isWalking())
+                                    walkedDistance += Definitions.WALKED_METERS_PER_SECOND / 2;
                                 new Handler().postDelayed(this, 500);
                             }
                         }
