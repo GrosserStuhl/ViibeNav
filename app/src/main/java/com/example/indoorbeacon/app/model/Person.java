@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.SensorHelper;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.position.neighbor.Ewknn;
@@ -90,7 +89,7 @@ public class Person {
     public void estimatePos(MacToMedian[] data) {
         setCoord(getAlgorithm().estimatePos(data));
 
-        /**TODO**
+        /**TODO
          *
          * AFTER getAlgorithm().estimatePos(data) is done
          * Persons coordinates have changed to an estimated value!

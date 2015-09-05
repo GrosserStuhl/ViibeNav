@@ -12,7 +12,6 @@ import android.hardware.SensorEventListener;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -21,8 +20,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
+import com.example.indoorbeacon.app.model.Person;
 
 /**
  * Created by #Dima on 28/07/2015.
@@ -42,6 +43,8 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     private ImageView arrowImage;
     private TextView instructionTextView;
 
+    private Person person;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mDetector = new GestureDetector(this, new MyGestureListener());
@@ -55,22 +58,19 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         Intent intent = getIntent();
         String ziel = intent.getStringExtra("Ziel");
 
+        person = new Person(this);
         sensorHelper = SensorHelper.getSensorHelper(this);
-
-        dotImgView = (ImageView) findViewById(R.id.walkIndicatorImgView);
-        arrowImage = (ImageView) findViewById(R.id.arrowImageView);
-        instructionTextView = (TextView) findViewById(R.id.instructionTextView);
-
 
         initGUI();
         initHandler();
     }
 
     private void initGUI() {
-
+        dotImgView = (ImageView) findViewById(R.id.walkIndicatorImgView);
+        arrowImage = (ImageView) findViewById(R.id.arrowImageView);
+        instructionTextView = (TextView) findViewById(R.id.instructionTextView);
     }
 
-    ;
 
     private void initHandler() {
 
