@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="links">links</string>
+    <string name="rechts">rechts</string>
+    <string name="gerade">geradeaus</string>
+    <string name="nach">nach</string>
+    <string name="meter">Meter</string>
+    <string name="schritte">Schritte</string>
+</resources>

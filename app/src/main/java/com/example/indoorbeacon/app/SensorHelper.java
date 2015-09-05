@@ -51,17 +51,14 @@ public class SensorHelper {
     private ArrayList<Boolean> multipleStepRegister = new ArrayList<>();
     private boolean isWalking = false;
 
-    //Anzeige
-    private int meter = 0;
     private int grad = 0;
-    private String instructionText;
 
     /**
      * Ausrichtung des Smartphones zum Nordpol
      */
-    private static float orientation = 0;
+    private float orientation = 0;
 
-    public static float getOrientation() {
+    public float getOrientation() {
         return orientation;
     }
 
@@ -82,10 +79,6 @@ public class SensorHelper {
     public SensorHelper(Context c) {
         context = c;
         initializeAllSensors();
-
-        meter = 2;
-        grad = 45;
-        instructionText = meter + " Meter \n" + grad + " Grad";
     }
 
     private void initializeAllSensors() {
@@ -183,7 +176,6 @@ public class SensorHelper {
                         isWalking = true;
                         broadcastChange();
                     }
-                    instructionText = String.valueOf(stepCount);
                 }
 //                else {
 //                    isWalking = false;
@@ -192,29 +184,6 @@ public class SensorHelper {
 //                }
             }
         }
-    }
-
-    public void updateImage(ImageView arrowImage) {
-        RotateAnimation ra = new RotateAnimation(
-                mCurrentDegree,
-                -orientation,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f);
-
-        ra.setDuration(230);
-        ra.setFillAfter(true);
-
-        arrowImage.startAnimation(ra);
-
-        mCurrentDegree = -orientation;
-        grad = (int) -mCurrentDegree;
-//        String text = meter + " Meter" + System.lineSeparator() + grad + " Grad";
-//        instructionText.setText(text);
-    }
-
-    public void updateText(TextView text) {
-        text.setText(instructionText);
     }
 
     private void broadcastChange() {

@@ -13,10 +13,7 @@ import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.RoomlistActivity;
 import com.example.indoorbeacon.app.SearchActivity;
 import com.example.indoorbeacon.app.SettingsActivity;
-import com.example.indoorbeacon.app.model.BluetoothScan;
-import com.example.indoorbeacon.app.model.Connector;
-import com.example.indoorbeacon.app.model.Measurement;
-import com.example.indoorbeacon.app.model.RadioMap;
+import com.example.indoorbeacon.app.model.*;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
 
@@ -49,6 +46,8 @@ public class MainActivity extends Activity {
 
         BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
         bluetoothScan = BluetoothScan.createBluetoothScan(manager.getAdapter());
+
+        TTS.createTTS(this);
 
         Log.d("PA", "PATH " + this.getFilesDir().getAbsolutePath());
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
