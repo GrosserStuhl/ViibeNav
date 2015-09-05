@@ -37,8 +37,9 @@ public class SensorHelper {
     private float[] mOrientation = new float[3];
     private float mCurrentDegree = 0f;
 
-    private Sensor mStepCounterSensor;
-    private Sensor mStepDetectorSensor;
+    private float relativeZThreshold = 0;
+    private float relativeYThreshold = 0;
+    private final static float SONY_Z_MAXRANGE = 19.6133f;
 
     private float mLastX = 0;
     private float mLastY = 0;
@@ -92,8 +93,9 @@ public class SensorHelper {
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-        mStepCounterSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        mStepDetectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+        float maxRangeMultRatio = SONY_Z_MAXRANGE / mAccelerometer.getMaximumRange();
+        relativeZThreshold = Definitions.STEP_THRESHOLD_Z * maxRangeMultRatio;
+        relativeYThreshold = Definitions.STEP_THRESHOLD_Y * maxRangeMultRatio;
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -113,17 +115,11 @@ public class SensorHelper {
     public void onResumeOperation(NavigationActivity n) {
         mSensorManager.registerListener(n, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
         mSensorManager.registerListener(n, mMagnetometer, SensorManager.SENSOR_DELAY_FASTEST);
-
-        mSensorManager.registerListener(n, mStepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
-        mSensorManager.registerListener(n, mStepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     public void onPauseOperation(NavigationActivity n) {
         mSensorManager.unregisterListener(n, mAccelerometer);
         mSensorManager.unregisterListener(n, mMagnetometer);
-
-        mSensorManager.unregisterListener(n, mStepCounterSensor);
-        mSensorManager.unregisterListener(n, mStepDetectorSensor);
     }
 
     public void onSensorChangedOperation(SensorEvent event) {
@@ -179,7 +175,7 @@ public class SensorHelper {
 
 //                Log.d(TAG, "DeltaX: " + deltaX + ", DeltaY: " + deltaY + ", DeltaZ: " + deltaZ);
 
-                if (deltaZ > Definitions.STEP_THRESHOLD_Z && deltaY > Definitions.STEP_THRESHOLD_Y) {
+                if (deltaZ > relativeZThreshold && deltaY > relativeYThreshold) {
                     enoughTimeForStep = false;
                     stepCount = stepCount + 1;
                     multipleStepRegister.add(true);
