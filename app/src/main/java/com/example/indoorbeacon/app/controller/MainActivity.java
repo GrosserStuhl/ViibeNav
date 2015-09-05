@@ -47,7 +47,9 @@ public class MainActivity extends Activity {
 //        .speak("Ich bin hier drin. Das ist so einfach, dass ich schreien möchte. Soo einfach.");
 
         BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        bluetoothScan = BluetoothScan.getBluetoothScan(manager.getAdapter());
+        bluetoothScan = BluetoothScan.createBluetoothScan(manager.getAdapter());
+        
+        TTS.createTTS(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     }

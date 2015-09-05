@@ -21,7 +21,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
 import com.example.indoorbeacon.app.model.Person;
@@ -34,6 +33,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     private static final String TAG = "NavigationActivity";
 
     private SensorHelper sensorHelper;
+    private NavigationHelper navigationHelper;
 
     private GestureDetector mDetector;
 
@@ -44,7 +44,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     private ImageView arrowImage;
     private TextView instructionTextView;
     private TextView estimatedCoordTextView;
-
+    
     private boolean navigating;
     private Person person;
     private Handler triggerMeasuring;
@@ -64,6 +64,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         person = new Person(this);
         sensorHelper = SensorHelper.getSensorHelper(this);
+        navigationHelper = new NavigationHelper(this);
 
         initGUI();
         initHandler();
@@ -103,8 +104,9 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                sensorHelper.updateImage(arrowImage);
-                sensorHelper.updateText(instructionTextView);
+                navigationHelper.updateImage(arrowImage, sensorHelper.getOrientation());
+                //TODO  2. TextView von Tom statt das null da reinsetzen
+                navigationHelper.updateTextViews(instructionTextView, null);
                 new Handler().postDelayed(this, 250);
             }
         }, 250);
@@ -120,11 +122,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("measuring boolean changed"));
-
-
-        anweisungen[0] = R.raw.anweisung1;
-        anweisungen[1] = R.raw.anweisung2;
-        anweisungen[2] = R.raw.anweisung3;
     }
 
     /**
@@ -274,38 +271,16 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD
                     && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                 if (distanceX > 0) {
-                    Log.d("SWIPE GESTURES", "Swipe right");
-                    Toast.makeText(NavigationActivity.this, "Swipe Right", Toast.LENGTH_SHORT).show();
-
-                    if (pointer > 0) pointer--;
+                    navigationHelper.previousInstruction();
                 } else {
-                    Log.d("SWIPE GESTURES", "Swipe Left");
-                    Toast.makeText(NavigationActivity.this, "Swipe Left", Toast.LENGTH_SHORT).show();
-                    if (pointer < 2) {
-                        pointer++;
-                    }
+                    navigationHelper.nextInstruction();
                 }
-
-                if (mp != null) {
-                    mp.release();
-                    mp = null;
-                }
-                mp = MediaPlayer.create(NavigationActivity.this, anweisungen[pointer]);
-                mp.start();
-
                 return true;
+
             } else if (Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > SWIPE_DISTANCE_THRESHOLD
                     && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                 if (distanceY < 0) {
-                    Log.d("SWIPE GESTURES", "Swipe up");
-                    Toast.makeText(NavigationActivity.this, "Swipe Up", Toast.LENGTH_SHORT).show();
-
-                    if (mp != null) {
-                        mp.release();
-                        mp = null;
-                    }
-                    mp = MediaPlayer.create(NavigationActivity.this, anweisungen[pointer]);
-                    mp.start();
+                    navigationHelper.repeatInstruction();
                 }
             }
             return false;

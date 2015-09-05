@@ -60,7 +60,6 @@
                 android:parentActivityName=".SearchActivity">
             <intent-filter>
                 <action android:name="com.example.indoorbeacon.app.SearchResultActivity"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>

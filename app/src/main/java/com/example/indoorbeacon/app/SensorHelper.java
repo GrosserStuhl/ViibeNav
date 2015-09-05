@@ -37,8 +37,9 @@ public class SensorHelper {
     private float[] mOrientation = new float[3];
     private float mCurrentDegree = 0f;
 
-    private Sensor mStepCounterSensor;
-    private Sensor mStepDetectorSensor;
+    private float relativeZThreshold = 0;
+    private float relativeYThreshold = 0;
+    private final static float SONY_Z_MAXRANGE = 19.6133f;
 
     private float mLastX = 0;
     private float mLastY = 0;
@@ -50,17 +51,14 @@ public class SensorHelper {
     private ArrayList<Boolean> multipleStepRegister = new ArrayList<>();
     private boolean isWalking = false;
 
-    //Anzeige
-    private int meter = 0;
     private int grad = 0;
-    private String instructionText;
 
     /**
      * Ausrichtung des Smartphones zum Nordpol
      */
-    private static float orientation = 0;
+    private float orientation = 0;
 
-    public static float getOrientation() {
+    public float getOrientation() {
         return orientation;
     }
 
@@ -81,10 +79,6 @@ public class SensorHelper {
     public SensorHelper(Context c) {
         context = c;
         initializeAllSensors();
-
-        meter = 2;
-        grad = 45;
-        instructionText = meter + " Meter \n" + grad + " Grad";
     }
 
     private void initializeAllSensors() {
@@ -92,8 +86,9 @@ public class SensorHelper {
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-        mStepCounterSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        mStepDetectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+        float maxRangeMultRatio = SONY_Z_MAXRANGE / mAccelerometer.getMaximumRange();
+        relativeZThreshold = Definitions.STEP_THRESHOLD_Z * maxRangeMultRatio;
+        relativeYThreshold = Definitions.STEP_THRESHOLD_Y * maxRangeMultRatio;
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -113,17 +108,11 @@ public class SensorHelper {
     public void onResumeOperation(NavigationActivity n) {
         mSensorManager.registerListener(n, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
         mSensorManager.registerListener(n, mMagnetometer, SensorManager.SENSOR_DELAY_FASTEST);
-
-        mSensorManager.registerListener(n, mStepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
-        mSensorManager.registerListener(n, mStepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     public void onPauseOperation(NavigationActivity n) {
         mSensorManager.unregisterListener(n, mAccelerometer);
         mSensorManager.unregisterListener(n, mMagnetometer);
-
-        mSensorManager.unregisterListener(n, mStepCounterSensor);
-        mSensorManager.unregisterListener(n, mStepDetectorSensor);
     }
 
     public void onSensorChangedOperation(SensorEvent event) {
@@ -179,7 +168,7 @@ public class SensorHelper {
 
 //                Log.d(TAG, "DeltaX: " + deltaX + ", DeltaY: " + deltaY + ", DeltaZ: " + deltaZ);
 
-                if (deltaZ > Definitions.STEP_THRESHOLD_Z && deltaY > Definitions.STEP_THRESHOLD_Y) {
+                if (deltaZ > relativeZThreshold && deltaY > relativeYThreshold) {
                     enoughTimeForStep = false;
                     stepCount = stepCount + 1;
                     multipleStepRegister.add(true);
@@ -187,7 +176,6 @@ public class SensorHelper {
                         isWalking = true;
                         broadcastChange();
                     }
-                    instructionText = String.valueOf(stepCount);
                 }
 //                else {
 //                    isWalking = false;
@@ -196,29 +184,6 @@ public class SensorHelper {
 //                }
             }
         }
-    }
-
-    public void updateImage(ImageView arrowImage) {
-        RotateAnimation ra = new RotateAnimation(
-                mCurrentDegree,
-                -orientation,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f);
-
-        ra.setDuration(230);
-        ra.setFillAfter(true);
-
-        arrowImage.startAnimation(ra);
-
-        mCurrentDegree = -orientation;
-        grad = (int) -mCurrentDegree;
-//        String text = meter + " Meter" + System.lineSeparator() + grad + " Grad";
-//        instructionText.setText(text);
-    }
-
-    public void updateText(TextView text) {
-        text.setText(instructionText);
     }
 
     private void broadcastChange() {

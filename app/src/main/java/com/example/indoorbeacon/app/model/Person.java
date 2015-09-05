@@ -60,7 +60,7 @@ public class Person {
                                 new Handler().postDelayed(this, 500);
                             }
                         }
-                    }, 500);
+                    }, 0);
                 }
             }
         };
