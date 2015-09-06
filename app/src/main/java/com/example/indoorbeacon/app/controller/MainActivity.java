@@ -12,7 +12,11 @@ import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.RoomlistActivity;
 import com.example.indoorbeacon.app.SearchActivity;
 import com.example.indoorbeacon.app.SettingsActivity;
-import com.example.indoorbeacon.app.model.*;
+import com.example.indoorbeacon.app.model.BluetoothScan;
+import com.example.indoorbeacon.app.model.Connector;
+import com.example.indoorbeacon.app.model.Measurement;
+import com.example.indoorbeacon.app.model.RadioMap;
+import com.example.indoorbeacon.app.model.TTS;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
 

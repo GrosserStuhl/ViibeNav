@@ -14,13 +14,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
 import com.example.indoorbeacon.app.model.Person;
@@ -68,7 +68,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         initGUI();
         initHandler();
-        startMeasurement();
+        startMeasurementLoop();
     }
 
     private void initGUI() {
@@ -111,52 +111,31 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             }
         }, 250);
 
+        // setup GUI updates
         BroadcastReceiver mCoordReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
-                if (!startedMeasuring)
-                    estimatedCoordTextView.setText("x: " + person.getCoord().getX() + " | y: " + person.getCoord().getY() );
+                if (!startedMeasuring) {
+                    estimatedCoordTextView.setText("x: " + person.getCoord().getX() + " | y: " + person.getCoord().getY());
+                }
             }
         };
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+        LocalBroadcastManager.getInstance(this).registerReceiver(mCoordReceiver,
                 new IntentFilter("measuring boolean changed"));
+
     }
 
     /**
      * By invoking this method you start median measurement for the beacons found nearby.
      * It will only start median measurement for the beacons already listed in the onyxBeaconHashMap.
      */
-    public void startMeasurement() {
-        startNavigation();
-
-        Runnable r = new Runnable(){
-            @Override
-            public void run() {
-                triggerMeasuring.sendEmptyMessage(0);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        Thread th = new Thread(r);
-        th.start();
-
-    }
-
-    private void startNavigation() {
-        navigating = true;
-    }
-
-    private void stopNavigation() {
-        navigating = false;
-    }
-
-    public boolean isNavigating() {
-        return navigating;
+    public void startMeasurementLoop() {
+        // trigger measurement loop
+        if (!person.getMeasurement().isMeasuring()) {
+            estimatedCoordTextView.setText("x: " + person.getCoord().getX() + " | y: " + person.getCoord().getY());
+            triggerMeasuring.sendEmptyMessage(0);
+        }
     }
 
     @Override

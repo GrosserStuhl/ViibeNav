@@ -1,6 +1,8 @@
 package com.example.indoorbeacon.app.model;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
@@ -76,21 +78,21 @@ public class Measurement {
     public class AsyncOnTheFlyMeasure extends AsyncTask<ArrayList<OnyxBeacon>, Integer, String> {
 
         ArrayList<OnyxBeacon> beacons;
-//        ProgressDialog dialog;
+        ProgressDialog dialog;
 
         @Override
         protected void onPreExecute() {
-//            dialog = new ProgressDialog(person.getActivity());
-//            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-//            dialog.setTitle("Messung von " + measurementSize + " Beacons");
-//            dialog.setMax(measurementSize);
-//            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-//                @Override
-//                public void onCancel(DialogInterface dialog) {
-//                    cleanUp();
-//                }
-//            });
-//            dialog.show();
+            dialog = new ProgressDialog(person.getActivity());
+            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            dialog.setTitle("Messung von " + measurementSize + " Beacons");
+            dialog.setMax(measurementSize);
+            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    cleanUp();
+                }
+            });
+            dialog.show();
         }
 
         @Override
@@ -110,22 +112,25 @@ public class Measurement {
                 if(beacons.isEmpty())
                     setState(State.notMeasuring);
             }
-//            dialog.dismiss();
+            dialog.dismiss();
 
             return "";
         }
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-//            dialog.incrementProgressBy(values[0]);
+            dialog.incrementProgressBy(values[0]);
         }
 
         @Override
         protected void onPostExecute(String result) {
             MacToMedian[] data = Util.listToMacToMedianArr(beacons);
             person.estimatePos(data);
-            person.getMostLikelyPosition();
+
+            // IMPORTANT:
+            // need to clean up data before restarting measurement
             cleanUp();
+            person.getMostLikelyPosition();
         }
 
         private void cleanUp(){
