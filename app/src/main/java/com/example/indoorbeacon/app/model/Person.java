@@ -11,7 +11,6 @@ import com.example.indoorbeacon.app.model.position.neighbor.Ewknn;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 import com.example.indoorbeacon.app.model.position.neighbor.PositionAlgorithm;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -22,7 +21,7 @@ public class Person {
 
     private static final String TAG = "Person";
 
-    private Coordinate coord;
+    private Coordinate currentPos;
     private Measurement measurement;
     private NavigationActivity activity;
 
@@ -34,7 +33,7 @@ public class Person {
 
     public Person(NavigationActivity activity) {
         this.activity = activity;
-        coord = new Coordinate(-1, -1, -1);
+        currentPos = new Coordinate(-1, -1, -1);
         measurement = new Measurement(activity);
 
         algorithm = new Ewknn();
@@ -88,7 +87,7 @@ public class Person {
         Coordinate estimatedPos = getAlgorithm().estimatePos(data);
 
         if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_M) {
-            setCoord(estimatedPos);
+            setCurrentPos(estimatedPos);
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_M
                 && walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_M * 2) {
             //TODO
@@ -97,9 +96,10 @@ public class Person {
             // x o x
             // x x x  (3x3 Matrix)
 
-            ArrayList<Coordinate> neighbours = new ArrayList<>();
+            ArrayList<Coordinate> neighbours;
+            neighbours = DBHandler.getDB().getDirectNeighborAnchors(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
-            setCoord(newEstimatedPos);
+            setCurrentPos(newEstimatedPos);
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_M * 2) {
             //TODO
             //Die Matrix mit den ÜBERnächsten Nachbarn zu estimatedPos bekommen
@@ -112,9 +112,10 @@ public class Person {
             // * x x x |*|
             // * * * * *
 
-            ArrayList<Coordinate> neighbours = new ArrayList<>();
+            ArrayList<Coordinate> neighbours;
+            neighbours = DBHandler.getDB().getDirectNeighborAnchors(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
-            setCoord(newEstimatedPos);
+            setCurrentPos(newEstimatedPos);
         }
 
         walkedDistance = 0;
@@ -163,12 +164,12 @@ public class Person {
         return DBHandler.getDB().getCoordFromAnchorId(id);
     }
 
-    public void setCoord(Coordinate coord) {
-        this.coord = coord;
+    public void setCurrentPos(Coordinate currentPos) {
+        this.currentPos = currentPos;
     }
 
-    public Coordinate getCoord() {
-        return coord;
+    public Coordinate getCurrentPos() {
+        return currentPos;
     }
 
     public Activity getActivity() {

@@ -1,6 +1,7 @@
 package com.example.indoorbeacon.app;
 
 import android.content.Context;
+import android.media.Image;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -15,8 +16,9 @@ import java.util.LinkedList;
  */
 public class NavigationHelper {
     private Coordinate goal;
+    private Coordinate nextSubGoal;
+    private Coordinate previousPos;
     private LinkedList<Coordinate> path;
-    private Coordinate nextPartGoal;
     private TTS tts;
     private String instructionText;
     private int distance;
@@ -25,10 +27,10 @@ public class NavigationHelper {
     private String distanceUnit;
     private String directionUnit;
 
-    public NavigationHelper(Context context) {
+    public NavigationHelper(Context context, float orientation, ImageView arrowImage) {
         distance = 0;
         distanceUnit = " m";
-        previousOrientation = 0;
+        previousOrientation = orientation;
         previousDirection = 90;
         directionUnit = " °";
         tts = TTS.createTTS(context);
@@ -56,6 +58,19 @@ public class NavigationHelper {
 
         previousOrientation = newOrientation;
         previousDirection = direction;
+    }
+
+    private void setupImage(ImageView arrowImage, float firstDirection) {
+        RotateAnimation ra = new RotateAnimation(
+                0,
+                firstDirection,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f);
+
+        ra.setDuration(250);
+        ra.setFillAfter(true);
+        arrowImage.startAnimation(ra);
     }
 
     public void nextInstruction() {

@@ -63,11 +63,11 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         person = new Person(this);
         sensorHelper = SensorHelper.getSensorHelper(this);
-        navigationHelper = new NavigationHelper(this);
+        navigationHelper = new NavigationHelper(this, sensorHelper.getOrientation(), arrowImage);
 
         initGUI();
         initHandler();
-        startMeasurementLoop();
+//        startMeasurementLoop();
     }
 
     private void initGUI() {
@@ -116,7 +116,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             public void onReceive(Context context, Intent intent) {
                 boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
                 if (!startedMeasuring) {
-                    estimatedCoordTextView.setText("x: " + person.getCoord().getX() + " | y: " + person.getCoord().getY());
+                    estimatedCoordTextView.setText("x: " + person.getCurrentPos().getX() + " | y: " + person.getCurrentPos().getY());
                 }
             }
         };
@@ -132,7 +132,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     public void startMeasurementLoop() {
         // trigger measurement loop
         if (!person.getMeasurement().isMeasuring()) {
-            estimatedCoordTextView.setText("x: " + person.getCoord().getX() + " | y: " + person.getCoord().getY());
+            estimatedCoordTextView.setText("x: " + person.getCurrentPos().getX() + " | y: " + person.getCurrentPos().getY());
             triggerMeasuring.sendEmptyMessage(0);
         }
     }
@@ -205,26 +205,9 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
     }
 
-//    @Override
-//    public Intent getSupportParentActivityIntent() {
-//        Intent parentIntent = getIntent();
-//        String className = parentIntent.getStringExtra("ParentClassName"); //getting the parent class name
-//
-//        Intent newIntent = null;
-//        try {
-//            //you need to define the class with package name
-//            newIntent = new Intent(NavigationActivity.this, Class.forName("com.myapplication." + className));
-//
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        return newIntent;
-//    }
-
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_DISTANCE_THRESHOLD = 100;
         private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-        private int pointer = 0;
 
         @Override
         public boolean onDown(MotionEvent e) {
