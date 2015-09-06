@@ -31,9 +31,14 @@ public class Person {
     private int walkedDistance;
     private boolean trackingActivated = false;
 
+    private ArrayList<Coordinate> tmpCoordinates;
+    private Coordinate medianCoordinate;
+
     public Person(NavigationActivity activity) {
         this.activity = activity;
+        tmpCoordinates = new ArrayList<>();
         currentPos = new Coordinate(-1, -1, -1);
+        medianCoordinate = new Coordinate(-1,-1,-1);
         measurement = new Measurement(activity);
 
         algorithm = new Ewknn();
@@ -84,7 +89,6 @@ public class Person {
 
         Coordinate estimatedPos = getAlgorithm().estimatePos(data);
 //        setCoord(estimatedPos);
-        Log.d(TAG,"walked distance: "+walkedDistance);
         if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_M) {
             setCurrentPos(currentPos);
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_M
@@ -148,12 +152,16 @@ public class Person {
     }
 
     private void startTrackingDistance() {
+        Log.d(TAG,"started Tracking: ");
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (trackingActivated) {
-                    if (sensorHelper.isWalking())
+                    if (sensorHelper.isWalking()) {
                         walkedDistance += Definitions.WALKED_METERS_PER_SECOND / 2;
+
+
+                    }
                     new Handler().postDelayed(this, 500);
                 }
             }
