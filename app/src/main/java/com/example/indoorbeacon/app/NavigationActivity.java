@@ -117,8 +117,15 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             public void onReceive(Context context, Intent intent) {
                 boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
                 if (!startedMeasuring) {
-                    estimatedCoordTextView.setText("x: " + person.getCurrentPos().getX() + " | y: " + person.getCurrentPos().getY());
-                    triggerMeasuring.sendEmptyMessage(0);
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            estimatedCoordTextView.setText("x: " + person.getCurrentPos().getX() + " | y: " + person.getCurrentPos().getY());
+                            triggerMeasuring.sendEmptyMessage(0);
+                        }
+                    },1000);
+
                 }
             }
         };
