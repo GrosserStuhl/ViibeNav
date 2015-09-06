@@ -130,7 +130,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
                             }
                         }, 1500);
                     }
-
                 }
             }
         };
