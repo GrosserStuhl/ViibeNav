@@ -21,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
 import com.example.indoorbeacon.app.model.Person;
 
@@ -153,14 +152,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         if (Connector.getConnector().WiFiEnabled())
             Connector.getConnector().disableWiFi();
 
-        /*
-         * We need to enforce that Bluetooth is first enabled, and take the
-         * user to settings to enable it if they have not done so.
-         */
-        if (BluetoothScan.getBtScan().getmBluetoothAdapter() == null || !BluetoothScan.getBtScan().getmBluetoothAdapter().isEnabled()) {
-            BluetoothScan.getBtScan().getmBluetoothAdapter().enable();
-            return;
-        }
+
 
         /*
          * Check for Bluetooth LE Support.  In production, our manifest entry will keep this
@@ -182,7 +174,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         if (!Connector.getConnector().WiFiEnabled())
             Connector.getConnector().enableWiFi();
 
-        BluetoothScan.getBtScan().getmBluetoothAdapter().disable();
     }
 
     @Override
@@ -192,7 +183,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         if (!Connector.getConnector().WiFiEnabled())
             Connector.getConnector().enableWiFi();
 
-        BluetoothScan.getBtScan().getmBluetoothAdapter().disable();
     }
 
     protected void onPause() {

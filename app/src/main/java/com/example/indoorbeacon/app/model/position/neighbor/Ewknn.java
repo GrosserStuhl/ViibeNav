@@ -24,13 +24,8 @@ import java.util.Iterator;
  */
 public class Ewknn implements PositionAlgorithm {
 
-    private static int threshold;
-    private static int limit;
-
-    static{
-        threshold = 10;
-        limit = 5;
-    }
+    private static float threshold = 2.5f;
+    private static int limit = 10;
 
     @Override
     public Coordinate estimatePos(MacToMedian[] map){

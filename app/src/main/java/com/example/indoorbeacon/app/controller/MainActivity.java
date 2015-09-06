@@ -1,7 +1,6 @@
 package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothManager;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -47,8 +46,7 @@ public class MainActivity extends Activity {
 
 //        .speak("Ich bin hier drin. Das ist so einfach, dass ich schreien möchte. Soo einfach.");
 
-        BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        bluetoothScan = BluetoothScan.getBluetoothScan(manager.getAdapter());
+        BluetoothScan btscan = BluetoothScan.getBtScan(this);
         
         TTS.createTTS(this);
 

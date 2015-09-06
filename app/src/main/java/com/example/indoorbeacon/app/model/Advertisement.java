@@ -1,8 +1,14 @@
 package com.example.indoorbeacon.app.model;
 
+import android.content.Context;
 import android.util.Log;
+
 import com.example.indoorbeacon.app.model.beaconFilter.MinorFilter;
+
 import java.nio.CharBuffer;
+
+
+
 /**
  * Created by TomTheBomb on 23.06.2015.
  */
@@ -10,8 +16,14 @@ public class Advertisement {
 
     public static final String filterUUID = "20CAE8A0-A9CF-11E3-A5E2-0800200C9A66" ;
     private static final String TAG = "Advertisement";
+    private Context c;
 
-    public static boolean validateUUID(byte[] scanRecord){
+    public Advertisement(Context c){
+        this.c = c;
+    }
+
+
+    public boolean validateUUID(byte[] scanRecord){
         int startByte = 2;
         boolean patternFound = false;
         while (startByte <= 5) {
@@ -45,7 +57,7 @@ public class Advertisement {
         return false;
     }
 
-    public static OnyxBeacon extractAD(final String deviceAddress, final int rssi, final byte[] scanRecord){
+    public OnyxBeacon extractAD(final String deviceAddress, final int rssi, final byte[] scanRecord){
         int startByte = 2;
         boolean patternFound = false;
         while (startByte <= 5) {
@@ -63,7 +75,7 @@ public class Advertisement {
         if (patternFound) {
             //Convert to hex String
             byte[] uuidBytes = new byte[16];
-            System.arraycopy(scanRecord, startByte+4, uuidBytes, 0, 16);
+            System.arraycopy(scanRecord, startByte + 4, uuidBytes, 0, 16);
             String hexString = bytesToHex(uuidBytes);
 
             //Here is your UUID
@@ -87,19 +99,15 @@ public class Advertisement {
 
             // ADDITIONAL FILTER TO BE DELETED LATER ON!!!!
             if(MinorFilter.inFilter(minor)) {
-
                 //creates new OnyxBeacon
                 if (!OnyxBeacon.inBeaconMap(macAddress)) {
-                    OnyxBeacon newBeacon = new OnyxBeacon(macAddress, uuid, major, minor, rssi, txPower);
-                    newBeacon.setLastSignalMeasured(System.currentTimeMillis());
+                    OnyxBeacon newBeacon = new OnyxBeacon(macAddress, uuid, major, minor, rssi, txPower , System.currentTimeMillis());
+                    OnyxBeacon.addBeaconToHashMap( c , newBeacon);
                 } else {
                     OnyxBeacon.updateBeaconRSSIinMap(macAddress, rssi, System.currentTimeMillis());
                 }
-
-
                 //need to return this beacon which is listed in HashMap!
                 return OnyxBeacon.getBeaconInMap(macAddress);
-
             }
 
         }

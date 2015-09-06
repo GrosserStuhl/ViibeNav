@@ -1,5 +1,6 @@
 package com.example.indoorbeacon.app.model;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.nio.CharBuffer;
@@ -41,16 +42,17 @@ public class OnyxBeacon {
         beaconMap = new HashMap<>();
     }
 
-    public OnyxBeacon(CharBuffer deviceAddress, String uuid, int major, int minor, int rssi, int txPower) {
+    public OnyxBeacon(CharBuffer deviceAddress, String uuid, int major, int minor, int rssi, int txPower, long lastSignalMeasured) {
         this.macAddress = deviceAddress;
         this.uuid = uuid;
         this.major = major;
         this.minor = minor;
         this.rssi = rssi;
         this.txPower = txPower;
+        this.lastSignalMeasured = lastSignalMeasured;
 
         init();
-        addBeaconToHashMap(this);
+//        addBeaconToHashMap(this);
     }
 
     private void init(){
@@ -59,11 +61,11 @@ public class OnyxBeacon {
         measurementRSSIs = new ArrayList<>();
     }
 
-    private void addBeaconToHashMap(OnyxBeacon beacon){
+    public static void addBeaconToHashMap(Context context, OnyxBeacon beacon){
         if(beacon == null)
             throw new NullPointerException("Can Not Add a NULL beacon to HashMap!");
         // puts the Beacon object in the HashMap
-        beaconMap.put(macAddress, beacon);
+        beaconMap.put(beacon.getMacAddress(), beacon);
     }
 
     /**
@@ -84,16 +86,16 @@ public class OnyxBeacon {
     }
 
     public static void updateBeaconRSSIinMap(CharBuffer key,int rssi, long timeSignalMeasured){
-        if(key == null)
-            throw new NullPointerException("Passed Key is invalid or not set.");
-        if(!beaconMap.containsKey(key))
-            throw new IllegalArgumentException("Passed key can not be found in beaconMap.");
-        else{
+//        if(key == null)
+//            throw new NullPointerException("Passed Key is invalid or not set.");
+//        if(!beaconMap.containsKey(key))
+//            throw new IllegalArgumentException("Passed key can not be found in beaconMap.");
+
             OnyxBeacon temp = getBeaconInMap(key);
             temp.setRssi(rssi);
             temp.setLastSignalMeasured(timeSignalMeasured);
             beaconMap.put(key, temp);
-        }
+
     }
 
     public void checkState(){
@@ -106,6 +108,8 @@ public class OnyxBeacon {
             }
 
     }
+
+
 
     public boolean isMeasurementDone(){
         return measurementDone;
