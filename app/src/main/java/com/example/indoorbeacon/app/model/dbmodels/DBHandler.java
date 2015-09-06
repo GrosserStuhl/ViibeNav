@@ -18,7 +18,7 @@ import java.util.ArrayList;
 /**
  * Created by TomTheBomb on 14.07.2015.
  */
-public class DBHandler extends SQLiteOpenHelper{
+public class DBHandler extends SQLiteOpenHelper {
 
     private static final String TAG = "DBHandler";
 
@@ -75,9 +75,9 @@ public class DBHandler extends SQLiteOpenHelper{
         this.c = context;
     }
 
-    public static DBHandler createDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
+    public static DBHandler createDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         // Avoid possible errors with multiple threads accessing this method -> synchronized
-        synchronized(DBHandler.class) {
+        synchronized (DBHandler.class) {
             if (singleton == null) {
                 singleton = new DBHandler(context, name, factory, version);
             }
@@ -85,7 +85,7 @@ public class DBHandler extends SQLiteOpenHelper{
         return singleton;
     }
 
-    public static DBHandler getDB(){
+    public static DBHandler getDB() {
         return singleton;
     }
 
@@ -95,58 +95,57 @@ public class DBHandler extends SQLiteOpenHelper{
 
 
         // CREATE BEACONS TABLE
-        String query1 = "CREATE TABLE "+ TABLE_BEACONS + "(" +
-                "'"+ BEACONS_COLUMN_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'"+ COLUMN_MACADDRESS +"'"+ " TEXT UNIQUE, " +
-                "'"+ COLUMN_MAJOR+"'"+ " INTEGER, "+
-                "'"+ COLUMN_MINOR +"'"+ " INTEGER "+
+        String query1 = "CREATE TABLE " + TABLE_BEACONS + "(" +
+                "'" + BEACONS_COLUMN_ID + "'" + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "'" + COLUMN_MACADDRESS + "'" + " TEXT UNIQUE, " +
+                "'" + COLUMN_MAJOR + "'" + " INTEGER, " +
+                "'" + COLUMN_MINOR + "'" + " INTEGER " +
                 ");";
         db.execSQL(query1);
 
         // CREATE MEDIANS TABLE - laut: http://www.w3schools.com/sql/sql_foreignkey.asp
-        String query2 = "CREATE TABLE "+ TABLE_MEDIANS + "(" +
-                "'"+ MEDIANS_COLUMN_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'"+ COLUMN_MEDIAN_VALUE+"'"+ " INTEGER, "+
-                "'"+ COLUMN_MACADDRESS +"'"+ " TEXT "/*FOREIGN KEY REFERENCES "+TABLE_BEACONS+"("+BEACONS_COLUMN_ID+")"*/+
+        String query2 = "CREATE TABLE " + TABLE_MEDIANS + "(" +
+                "'" + MEDIANS_COLUMN_ID + "'" + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "'" + COLUMN_MEDIAN_VALUE + "'" + " INTEGER, " +
+                "'" + COLUMN_MACADDRESS + "'" + " TEXT "/*FOREIGN KEY REFERENCES "+TABLE_BEACONS+"("+BEACONS_COLUMN_ID+")"*/ +
                 ");";
         db.execSQL(query2);
 
         // CREATE ANCHORS TABLE
-        String query3 = "CREATE TABLE "+ TABLE_ANCHORS + "(" +
-                "'"+ ANCHORS_COLUMN_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'"+ COLUMN_X +"'"+ " INTEGER, "+
-                "'"+ COLUMN_Y +"'"+ " INTEGER, "+
-                "'"+ COLUMN_FLOOR +"'"+ " INTEGER, "+
+        String query3 = "CREATE TABLE " + TABLE_ANCHORS + "(" +
+                "'" + ANCHORS_COLUMN_ID + "'" + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "'" + COLUMN_X + "'" + " INTEGER, " +
+                "'" + COLUMN_Y + "'" + " INTEGER, " +
+                "'" + COLUMN_FLOOR + "'" + " INTEGER, " +
                 // 90 degrees
-                "'"+ COLUMN_FRONT +"'"+ " INTEGER,"+
+                "'" + COLUMN_FRONT + "'" + " INTEGER," +
                 // 270 degrees
-                "'"+ COLUMN_BACK +"'"+ " INTEGER,"+
-                "'"+ COLUMN_INFO_ID +"'"+ " INTEGER  " +
+                "'" + COLUMN_BACK + "'" + " INTEGER," +
+                "'" + COLUMN_INFO_ID + "'" + " INTEGER  " +
                 ");";
         db.execSQL(query3);
 
         // CREATE INFO TABLE
-        String query4 = "CREATE TABLE "+ TABLE_INFO + "(" +
-                "'"+ INFO_COLUMN_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'"+ COLUMN_PERSON_NAME +"'"+ " TEXT, "+
-                "'"+ COLUMN_ROOM_NAME +"'"+ " TEXT, "+
-                "'"+ COLUMN_ENVIRONMENT +"'"+ " TEXT, "+
-                "'"+ COLUMN_CATEGORY+"'"+ " TEXT "+
+        String query4 = "CREATE TABLE " + TABLE_INFO + "(" +
+                "'" + INFO_COLUMN_ID + "'" + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "'" + COLUMN_PERSON_NAME + "'" + " TEXT, " +
+                "'" + COLUMN_ROOM_NAME + "'" + " TEXT, " +
+                "'" + COLUMN_ENVIRONMENT + "'" + " TEXT, " +
+                "'" + COLUMN_CATEGORY + "'" + " TEXT " +
                 ");";
         db.execSQL(query4);
 
         // CREATE INFO TABLE
-        String query5 = "CREATE TABLE "+ TABLE_BEACON_MEDIAN_TO_ANCHOR + "(" +
-                "'"+ BEACON_MEDIAN_TO_ANCHOR_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'"+ COLUMN_BEACON_1 +"'"+ " INTEGER, "+
-                "'"+ COLUMN_BEACON_2 +"'"+ " INTEGER, "+
-                "'"+ COLUMN_BEACON_3 +"'"+ " INTEGER, "+
-                "'"+ COLUMN_BEACON_4 +"'"+ " INTEGER, "+
-                "'"+ COLUMN_BEACON_5 +"'"+ " INTEGER, "+
-                "'"+ COLUMN_BEACON_6 +"'"+ " INTEGER "+
+        String query5 = "CREATE TABLE " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "(" +
+                "'" + BEACON_MEDIAN_TO_ANCHOR_ID + "'" + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "'" + COLUMN_BEACON_1 + "'" + " INTEGER, " +
+                "'" + COLUMN_BEACON_2 + "'" + " INTEGER, " +
+                "'" + COLUMN_BEACON_3 + "'" + " INTEGER, " +
+                "'" + COLUMN_BEACON_4 + "'" + " INTEGER, " +
+                "'" + COLUMN_BEACON_5 + "'" + " INTEGER, " +
+                "'" + COLUMN_BEACON_6 + "'" + " INTEGER " +
                 ");";
         db.execSQL(query5);
-
 
 
         // TEST ZWECKE
@@ -177,20 +176,20 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
 
-    public ArrayList<DeviationToCoord> getAllDistancesFromMedians(MacToMedian[] map, int maxResults, int threshold){
+    public ArrayList<DeviationToCoord> getAllDistancesFromMedians(MacToMedian[] map, int maxResults, int threshold) {
         SQLiteDatabase db = getWritableDatabase();
 
         ArrayList<DeviationToCoord> devsToCoords = new ArrayList<>();
         final String LOCAL_COLUMN_DEVIATION = "deviation";
 
-        for(int i=0;i<map.length;i++) {
+        for (int i = 0; i < map.length; i++) {
             final String macAddress = map[i].getMacAddressStr();
             final double median = map[i].getMedian();
 //            Log.d(TAG, "MEDIAN IN LOOP "+median);
 
             String query = "SELECT " + TABLE_ANCHORS + "." + COLUMN_FLOOR + "," + TABLE_ANCHORS + "." + COLUMN_X + ", " + TABLE_ANCHORS + "." + COLUMN_Y + "," + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + ", " + calcManhattenDB_Cmd(median) + " AS " + LOCAL_COLUMN_DEVIATION + " " +
-                    " FROM '" + TABLE_MEDIANS + "' JOIN '" + TABLE_ANCHORS + "' JOIN '" + TABLE_BEACON_MEDIAN_TO_ANCHOR + "' WHERE macAddress = '" + macAddress  + "' AND " +
-                    " ( "    + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_1 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + " " +
+                    " FROM '" + TABLE_MEDIANS + "' JOIN '" + TABLE_ANCHORS + "' JOIN '" + TABLE_BEACON_MEDIAN_TO_ANCHOR + "' WHERE macAddress = '" + macAddress + "' AND " +
+                    " ( " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_1 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + " " +
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_2 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_3 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_4 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
@@ -226,13 +225,14 @@ public class DBHandler extends SQLiteOpenHelper{
 
     /**
      * Gets the most recent ID, which is the latest inserted entry for a specific TABLE
+     *
      * @param db
      * @param TABLE
      * @param id
      * @return
      */
     public int getLastID(SQLiteDatabase db, final String TABLE, final String id) {
-        final String query = "SELECT MAX("+id+") FROM '" + TABLE+ "'";
+        final String query = "SELECT MAX(" + id + ") FROM '" + TABLE + "'";
         Cursor cur = db.rawQuery(query, null);
         cur.moveToFirst();
         int ID = cur.getInt(0);
@@ -241,17 +241,17 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     //Delete an anchor from the database
-    public void deleteAnchor(String anchorName){
+    public void deleteAnchor(String anchorName) {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_ANCHORS + " WHERE " + anchorName + "=\"" + anchorName + "\";");
     }
 
-    public void deleteAllTables(){
+    public void deleteAllTables() {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_ANCHORS+"'");
-        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_MEDIANS+"'");
-        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_BEACONS+"'");
-        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_INFO+"'");
+        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_ANCHORS + "'");
+        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_MEDIANS + "'");
+        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_BEACONS + "'");
+        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_INFO + "'");
         db.execSQL("DROP TABLE IF EXISTS '" + TABLE_BEACON_MEDIAN_TO_ANCHOR + "'");
         onCreate(db);
     }
@@ -260,27 +260,24 @@ public class DBHandler extends SQLiteOpenHelper{
     /*
     Uses euclidean distance
      */
-    private String calcEuclideanDB_Cmd(double median){
-        return "SQRT(ABS(MAX(POWER("+COLUMN_MEDIAN_VALUE+" - "+median+"))))";
+    private String calcEuclideanDB_Cmd(double median) {
+        return "SQRT(ABS(MAX(POWER(" + COLUMN_MEDIAN_VALUE + " - " + median + "))))";
     }
 
     /*
     Uses Manhatten distrance for DB
      */
-    private String calcManhattenDB_Cmd(double median){
-       return "ABS(MIN("+COLUMN_MEDIAN_VALUE+" - "+median+"))";
+    private String calcManhattenDB_Cmd(double median) {
+        return "ABS(MIN(" + COLUMN_MEDIAN_VALUE + " - " + median + "))";
     }
 
 
-
-
-
-    public Coordinate getCoordFromAnchorId(int id){
+    public Coordinate getCoordFromAnchorId(int id) {
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT "+COLUMN_X+", "+COLUMN_Y+", "+COLUMN_FLOOR+" FROM '"+TABLE_ANCHORS + "' WHERE "+ANCHORS_COLUMN_ID+" = '"+id+"';";
+        String query = "SELECT " + COLUMN_X + ", " + COLUMN_Y + ", " + COLUMN_FLOOR + " FROM '" + TABLE_ANCHORS + "' WHERE " + ANCHORS_COLUMN_ID + " = '" + id + "';";
 
         // Cursor point to a location in your results
-        Cursor c = db.rawQuery(query,null);
+        Cursor c = db.rawQuery(query, null);
         // Move to the first row in your results
         c.moveToFirst();
 
@@ -288,7 +285,7 @@ public class DBHandler extends SQLiteOpenHelper{
         int y = -1;
         int floor = -1;
 
-        while(!c.isAfterLast()){
+        while (!c.isAfterLast()) {
             x = c.getInt(c.getColumnIndex(COLUMN_X));
             y = c.getInt(c.getColumnIndex(COLUMN_Y));
             floor = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
@@ -296,18 +293,18 @@ public class DBHandler extends SQLiteOpenHelper{
         }
 
         db.close();
-        Coordinate coord = new Coordinate(floor,x,y);
+        Coordinate coord = new Coordinate(floor, x, y);
         return coord;
     }
 
 
-    public void getAllAnchors(){
+    public void getAllAnchors() {
         ArrayList<AnchorPointDBModel> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '"+TABLE_ANCHORS + "';";
+        String query = "SELECT * FROM '" + TABLE_ANCHORS + "';";
 
         // Cursor point to a location in your results
-        Cursor c = db.rawQuery(query,null);
+        Cursor c = db.rawQuery(query, null);
         // Move to the first row in your results
         c.moveToFirst();
 
@@ -317,7 +314,7 @@ public class DBHandler extends SQLiteOpenHelper{
         int floor = 0;
         int addInfoID = 0;
 
-        while(!c.isAfterLast()){
+        while (!c.isAfterLast()) {
             _id = c.getInt(c.getColumnIndex(ANCHORS_COLUMN_ID));
             x = c.getInt(c.getColumnIndex(COLUMN_X));
             y = c.getInt(c.getColumnIndex(COLUMN_Y));
@@ -331,22 +328,23 @@ public class DBHandler extends SQLiteOpenHelper{
             beaconIds.add(c.getInt(c.getColumnIndex(COLUMN_BEACON_6)));
             addInfoID = c.getInt(c.getColumnIndex(COLUMN_INFO_ID));
 
-            res.add(new AnchorPointDBModel(_id,new Coordinate(floor,x,y),beaconIds,addInfoID));
+            res.add(new AnchorPointDBModel(_id, new Coordinate(floor, x, y), beaconIds, addInfoID));
             c.moveToNext();
         }
 
-        Log.d(TAG,"DONE FETCHING ANCHORLIST "+res.size());
+        Log.d(TAG, "DONE FETCHING ANCHORLIST " + res.size());
         db.close();
         AnchorPointDBModel.setAllAnchors(res);
     }
-//
-    public void getAllBeacons(){
+
+    //
+    public void getAllBeacons() {
         ArrayList<OnyxBeaconDBModel> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '"+TABLE_BEACONS + "';";
+        String query = "SELECT * FROM '" + TABLE_BEACONS + "';";
 
         // Cursor point to a location in your results
-        Cursor c = db.rawQuery(query,null);
+        Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
 
         int _id = 0;
@@ -354,53 +352,53 @@ public class DBHandler extends SQLiteOpenHelper{
         int minor = 0;
         String macAddress = "";
 
-        while(!c.isAfterLast()){
+        while (!c.isAfterLast()) {
             _id = c.getInt(c.getColumnIndex(BEACONS_COLUMN_ID));
             major = c.getInt(c.getColumnIndex(COLUMN_MAJOR));
             minor = c.getInt(c.getColumnIndex(COLUMN_MINOR));
             macAddress = c.getString(c.getColumnIndex(COLUMN_MACADDRESS));
-            res.add(new OnyxBeaconDBModel(_id,major,minor,macAddress));
+            res.add(new OnyxBeaconDBModel(_id, major, minor, macAddress));
             c.moveToNext();
         }
 
-        Log.d(TAG,"DONE FETCHING BEACONSLIST "+res.size());
+        Log.d(TAG, "DONE FETCHING BEACONSLIST " + res.size());
         db.close();
         OnyxBeaconDBModel.setAllBeacons(res);
     }
 
-    public void getAllMedians(){
+    public void getAllMedians() {
         ArrayList<MedianDBModel> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '"+TABLE_MEDIANS + "';";
+        String query = "SELECT * FROM '" + TABLE_MEDIANS + "';";
 
         // Cursor point to a location in your results
-        Cursor c = db.rawQuery(query,null);
+        Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
 
         int _id = 0;
         double median = 0;
         String macAddress = "";
 
-        while(!c.isAfterLast()){
+        while (!c.isAfterLast()) {
             _id = c.getInt(c.getColumnIndex(MEDIANS_COLUMN_ID));
             median = c.getDouble(c.getColumnIndex(COLUMN_MEDIAN_VALUE));
             macAddress = c.getString(c.getColumnIndex(COLUMN_MACADDRESS));
-            res.add(new MedianDBModel(_id,median,macAddress));
+            res.add(new MedianDBModel(_id, median, macAddress));
             c.moveToNext();
         }
 
-        Log.d(TAG,"DONE FETCHING MEDIANSLIST "+res.size());
+        Log.d(TAG, "DONE FETCHING MEDIANSLIST " + res.size());
         db.close();
         MedianDBModel.setAllMedians(res);
     }
 
-    public void getAllInfo(){
+    public void getAllInfo() {
         ArrayList<InfoDBModel> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '"+TABLE_INFO + "';";
+        String query = "SELECT * FROM '" + TABLE_INFO + "';";
 
         // Cursor point to a location in your results
-        Cursor c = db.rawQuery(query,null);
+        Cursor c = db.rawQuery(query, null);
         // Move to the first row in your results
         c.moveToFirst();
 
@@ -410,17 +408,17 @@ public class DBHandler extends SQLiteOpenHelper{
         String environment = "";
         String category;
 
-        while(!c.isAfterLast()){
+        while (!c.isAfterLast()) {
             id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
             person_name = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
             room_name = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
             environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
             category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
-            res.add(new InfoDBModel(id,person_name,room_name,environment,category));
+            res.add(new InfoDBModel(id, person_name, room_name, environment, category));
             c.moveToNext();
         }
 
-        Log.d(TAG,"DONE FETCHING INFOLIST "+res.size());
+        Log.d(TAG, "DONE FETCHING INFOLIST " + res.size());
         db.close();
         InfoDBModel.setAllInfo(res);
     }
@@ -435,10 +433,10 @@ public class DBHandler extends SQLiteOpenHelper{
 //            for(String k : keys)
 //                sb.append(" OR LIKE '% " + k + " %'");
 
-             String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
-                    "(" +
-                    COLUMN_PERSON_NAME + " LIKE " + "'%" + key + "%'" /*+ sb.toString()*/ +
-                    ");";
+        String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
+                "(" +
+                COLUMN_PERSON_NAME + " LIKE " + "'%" + key + "%'" /*+ sb.toString()*/ +
+                ");";
 
 
         Cursor c = db.rawQuery(query, null);
@@ -465,7 +463,7 @@ public class DBHandler extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
                 "(" +
-                COLUMN_ROOM_NAME + " LIKE " + "'%" + key + "%'"+
+                COLUMN_ROOM_NAME + " LIKE " + "'%" + key + "%'" +
                 ");";
 
         Cursor c = db.rawQuery(query, null);
@@ -487,7 +485,7 @@ public class DBHandler extends SQLiteOpenHelper{
         return res;
     }
 
-    public ArrayList<String> getAllDistinctCategories(){
+    public ArrayList<String> getAllDistinctCategories() {
         ArrayList<String> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT DISTINCT CATEGORY FROM '" + TABLE_INFO + "';";
@@ -509,7 +507,7 @@ public class DBHandler extends SQLiteOpenHelper{
         return res;
     }
 
-    public ArrayList<InfoDBModel> getAllEntriesForSpecificCategory(String key){
+    public ArrayList<InfoDBModel> getAllEntriesForSpecificCategory(String key) {
         ArrayList<InfoDBModel> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM '" + TABLE_INFO + "' WHERE CATEGORY ='" + key + "';";
@@ -529,7 +527,7 @@ public class DBHandler extends SQLiteOpenHelper{
             room_name = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
             environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
             category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
-            res.add(new InfoDBModel(id, person_name, room_name, environment,category));
+            res.add(new InfoDBModel(id, person_name, room_name, environment, category));
             c.moveToNext();
         }
 
@@ -540,11 +538,21 @@ public class DBHandler extends SQLiteOpenHelper{
         return res;
     }
 
-    public String getDBPath(){
+    public Coordinate[][] getNeighborAnchors(Coordinate centerPos) {
+        ArrayList<Coordinate> neighbors = new ArrayList<>();
+        neighbors.add(centerPos);
+        double x = centerPos.getX();
+        double y = centerPos.getY();
+
+
+        return null;
+    }
+
+    public String getDBPath() {
         return c.getDatabasePath(DBHandler.DATABASE_NAME).toString();
     }
 
-    public boolean deleteDBFile(){
+    public boolean deleteDBFile() {
         return new File(c.getDatabasePath(DBHandler.DATABASE_NAME).toString()).delete();
     }
 }

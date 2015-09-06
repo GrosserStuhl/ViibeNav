@@ -1,12 +1,7 @@
 package com.example.indoorbeacon.app.model;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Handler;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.indoorbeacon.app.NavigationActivity;
@@ -34,6 +29,7 @@ public class Person {
 
     private SensorHelper sensorHelper;
     private int walkedDistance;
+    private boolean trackingActivated = false;
 
     public Person(NavigationActivity activity) {
         this.activity = activity;
@@ -44,34 +40,34 @@ public class Person {
 
         sensorHelper = SensorHelper.getSensorHelper(activity);
 
-        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
-
-                if (startedMeasuring) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (measurement.isMeasuring()) {
-                                if (sensorHelper.isWalking())
-                                    walkedDistance += Definitions.WALKED_METERS_PER_SECOND / 2;
-                                new Handler().postDelayed(this, 500);
-                            }
-                        }
-                    }, 0);
-                }
-            }
-        };
-
-        LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver,
-                new IntentFilter("measuring boolean changed"));
+//        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context context, Intent intent) {
+//
+//                boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
+//
+//                if (startedMeasuring) {
+//                    new Handler().postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            if (measurement.isMeasuring()) {
+//                                if (sensorHelper.isWalking())
+//                                    walkedDistance += Definitions.WALKED_METERS_PER_SECOND / 2;
+//                                new Handler().postDelayed(this, 500);
+//                            }
+//                        }
+//                    }, 0);
+//                }
+//            }
+//        };
+//
+//        LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver,
+//                new IntentFilter("measuring boolean changed"));
     }
 
     public void getMostLikelyPosition() {
-            ArrayList<OnyxBeacon> surrounding = OnyxBeacon.filterSurroundingBeacons();
-            getOnTheFlyMedians(surrounding);
+        ArrayList<OnyxBeacon> surrounding = OnyxBeacon.filterSurroundingBeacons();
+        getOnTheFlyMedians(surrounding);
     }
 
     private void getOnTheFlyMedians(ArrayList<OnyxBeacon> surrounding) {
@@ -86,15 +82,82 @@ public class Person {
     }
 
     public void estimatePos(MacToMedian[] data) {
-        setCoord(getAlgorithm().estimatePos(data));
+        trackingActivated = false;
 
-        /**TODO
-         *
-         * AFTER getAlgorithm().estimatePos(data) is done
-         * Persons coordinates have changed to an estimated value!
-         * Therefore HERE NEEDS to be the Code to set estimated Location on UI
-         *
-         */
+        Coordinate estimatedPos = getAlgorithm().estimatePos(data);
+
+        if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_M) {
+            setCoord(estimatedPos);
+        } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_M
+                && walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_M * 2) {
+            //TODO
+            //Die Matrix mit den nächsten Nachbarn zu estimatedPos
+            // x x x
+            // x o x
+            // x x x  (3x3 Matrix)
+
+            Coordinate[][] matrix = new Coordinate[3][3];
+            Coordinate newEstimatedPos = findNextBestPos(matrix, estimatedPos);
+            setCoord(newEstimatedPos);
+        } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_M * 2) {
+            //TODO
+            //Die Matrix mit den ÜBERnächsten Nachbarn zu estimatedPos bekommen
+            //Auf jeder Seite werden 4 ersten Punkte genommen, der letzte wird ausgelassen
+            //Dieser ist dann wiederum der Anfangspunkt für die nächste Seite, somit 4x4 Matrix
+            //
+            // * * * * |*| (Beispiel linke Seite)
+            // * x x x |*|
+            // * x o x |*|
+            // * x x x |*|
+            // * * * * *
+
+            Coordinate[][] matrix = new Coordinate[4][4];
+            Coordinate newEstimatedPos = findNextBestPos(matrix, estimatedPos);
+            setCoord(newEstimatedPos);
+        }
+
+        walkedDistance = 0;
+        trackingActivated = true;
+        startTrackingDistance();
+    }
+
+    private Coordinate findNextBestPos(Coordinate[][] matrix, Coordinate estimatedPos) {
+        Coordinate newEstimatedPos = estimatedPos;
+        double smallestDistance = 0;
+
+        outerLoop:
+        for (Coordinate[] aMatrix : matrix) {
+            for (Coordinate tempPos : aMatrix) {
+                if (tempPos.equals(estimatedPos))
+                    break outerLoop;
+                else {
+                    double t_X = tempPos.getX();
+                    double t_Y = tempPos.getY();
+                    double e_X = estimatedPos.getX();
+                    double e_Y = estimatedPos.getY();
+
+                    double euclideanDistance = Math.pow(e_X - t_X, 2) + Math.pow(e_Y - t_Y, 2);
+                    if (euclideanDistance < smallestDistance && tempPos.isValid()) {
+                        smallestDistance = euclideanDistance;
+                        newEstimatedPos = tempPos;
+                    }
+                }
+            }
+        }
+        return newEstimatedPos;
+    }
+
+    private void startTrackingDistance() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (trackingActivated) {
+                    if (sensorHelper.isWalking())
+                        walkedDistance += Definitions.WALKED_METERS_PER_SECOND / 2;
+                    new Handler().postDelayed(this, 500);
+                }
+            }
+        }, 0);
     }
 
 

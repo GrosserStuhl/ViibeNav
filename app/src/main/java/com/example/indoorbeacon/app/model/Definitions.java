@@ -52,9 +52,11 @@ public class Definitions {
     public static final float STEP_THRESHOLD_Z = 0.4f;
 
     /**
-     * The minimum amount of steps it takes to tell if the user is walking.
+     * The minimum amount of steps it takes for the System to tell if the user is walking.
      */
     public static final int MIN_STEP_AMOUNT_FOR_WALKING = 2;
 
     public static final float WALKED_METERS_PER_SECOND = 0.7f;
+
+    public static final int ANCHORPOINT_DISTANCE_IN_M = 1;
 }

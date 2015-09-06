@@ -80,8 +80,6 @@
             android:src="@drawable/settings"
             android:background="@drawable/custom_button"
             android:contentDescription="@string/settingsButtonText"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:onClick="openSettingsActivity"
             android:layout_alignTop="@+id/listeImgButton"
             android:layout_alignParentStart="true"

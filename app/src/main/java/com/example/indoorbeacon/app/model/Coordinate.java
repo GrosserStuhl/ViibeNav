@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Created by TomTheBomb on 23.06.2015.
  */
-public class Coordinate{
+public class Coordinate {
 
     private double floor;
     private double x;
@@ -18,19 +18,21 @@ public class Coordinate{
         this.y = y;
     }
 
-    public void setY_up(){
+    public void setY_up() {
         y++;
     }
 
-    public void setY_down(){
+    public void setY_down() {
         y--;
     }
 
-    public void setX_up(){
+    public void setX_up() {
         x++;
     }
 
-    public void setX_down(){ x--; }
+    public void setX_down() {
+        x--;
+    }
 
     public double getX() {
         return x;
@@ -40,7 +42,9 @@ public class Coordinate{
         return y;
     }
 
-    public double getFloor() { return floor; }
+    public double getFloor() {
+        return floor;
+    }
 
     public void setFloor(int floor) {
         this.floor = floor;
@@ -52,6 +56,10 @@ public class Coordinate{
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public boolean isValid() {
+        return x >= 0 && y >= 0;
     }
 
     @Override
@@ -71,6 +79,6 @@ public class Coordinate{
 
     @Override
     public String toString() {
-        return "x: "+getX()+" | "+"y: "+getY()+" | "+"floor: "+getFloor();
+        return "x: " + getX() + " | " + "y: " + getY() + " | " + "floor: " + getFloor();
     }
 }
