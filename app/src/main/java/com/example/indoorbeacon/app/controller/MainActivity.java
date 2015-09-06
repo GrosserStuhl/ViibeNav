@@ -12,10 +12,7 @@ import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.RoomlistActivity;
 import com.example.indoorbeacon.app.SearchActivity;
 import com.example.indoorbeacon.app.SettingsActivity;
-import com.example.indoorbeacon.app.model.BluetoothScan;
-import com.example.indoorbeacon.app.model.Connector;
-import com.example.indoorbeacon.app.model.Measurement;
-import com.example.indoorbeacon.app.model.RadioMap;
+import com.example.indoorbeacon.app.model.*;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
 
@@ -47,16 +44,11 @@ public class MainActivity extends Activity {
 //        .speak("Ich bin hier drin. Das ist so einfach, dass ich schreien möchte. Soo einfach.");
 
         BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        bluetoothScan = BluetoothScan.createBluetoothScan(manager.getAdapter());
+        bluetoothScan = BluetoothScan.getBluetoothScan(manager.getAdapter());
         
         TTS.createTTS(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-    }
-
-    public void openTestActivity(View view) {
-        Intent intent = new Intent(this, ExportImportDB.class);
-        startActivity(intent);
     }
 
     public void openSearchActivity(View view) {

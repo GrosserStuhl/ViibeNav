@@ -88,14 +88,4 @@
             android:layout_marginTop="130dp"
             android:layout_marginStart="5dp"
             android:stateListAnimator="@drawable/button_press_animator"/>
-
-    <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Import Data"
-            android:onClick="openTestActivity"
-            android:id="@+id/importButton"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"/>
 </RelativeLayout>
