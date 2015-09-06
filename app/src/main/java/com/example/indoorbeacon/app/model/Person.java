@@ -11,6 +11,7 @@ import com.example.indoorbeacon.app.model.position.neighbor.Ewknn;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 import com.example.indoorbeacon.app.model.position.neighbor.PositionAlgorithm;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -96,8 +97,8 @@ public class Person {
             // x o x
             // x x x  (3x3 Matrix)
 
-            Coordinate[][] matrix = new Coordinate[3][3];
-            Coordinate newEstimatedPos = findNextBestPos(matrix, estimatedPos);
+            ArrayList<Coordinate> neighbours = new ArrayList<>();
+            Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             setCoord(newEstimatedPos);
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_M * 2) {
             //TODO
@@ -111,8 +112,8 @@ public class Person {
             // * x x x |*|
             // * * * * *
 
-            Coordinate[][] matrix = new Coordinate[4][4];
-            Coordinate newEstimatedPos = findNextBestPos(matrix, estimatedPos);
+            ArrayList<Coordinate> neighbours = new ArrayList<>();
+            Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             setCoord(newEstimatedPos);
         }
 
@@ -121,26 +122,23 @@ public class Person {
         startTrackingDistance();
     }
 
-    private Coordinate findNextBestPos(Coordinate[][] matrix, Coordinate estimatedPos) {
+    private Coordinate findNextBestPos(ArrayList<Coordinate> neighbours, Coordinate estimatedPos) {
         Coordinate newEstimatedPos = estimatedPos;
         double smallestDistance = 0;
 
-        outerLoop:
-        for (Coordinate[] aMatrix : matrix) {
-            for (Coordinate tempPos : aMatrix) {
-                if (tempPos.equals(estimatedPos))
-                    break outerLoop;
-                else {
-                    double t_X = tempPos.getX();
-                    double t_Y = tempPos.getY();
-                    double e_X = estimatedPos.getX();
-                    double e_Y = estimatedPos.getY();
+        for (Coordinate tempPos : neighbours) {
+            if (tempPos.equals(estimatedPos))
+                break;
+            else {
+                double t_X = tempPos.getX();
+                double t_Y = tempPos.getY();
+                double e_X = estimatedPos.getX();
+                double e_Y = estimatedPos.getY();
 
-                    double euclideanDistance = Math.pow(e_X - t_X, 2) + Math.pow(e_Y - t_Y, 2);
-                    if (euclideanDistance < smallestDistance && tempPos.isValid()) {
-                        smallestDistance = euclideanDistance;
-                        newEstimatedPos = tempPos;
-                    }
+                double euclideanDistance = Math.pow(e_X - t_X, 2) + Math.pow(e_Y - t_Y, 2);
+                if (euclideanDistance < smallestDistance && tempPos.isValid()) {
+                    smallestDistance = euclideanDistance;
+                    newEstimatedPos = tempPos;
                 }
             }
         }

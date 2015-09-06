@@ -188,16 +188,16 @@ public class DBHandler extends SQLiteOpenHelper {
 //            Log.d(TAG, "MEDIAN IN LOOP "+median);
 
             String query = "SELECT " + TABLE_ANCHORS + "." + COLUMN_FLOOR + "," + TABLE_ANCHORS + "." + COLUMN_X + ", " + TABLE_ANCHORS + "." + COLUMN_Y + "," + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + ", " + calcManhattenDB_Cmd(median) + " AS " + LOCAL_COLUMN_DEVIATION + " " +
-                    " FROM '" + TABLE_MEDIANS + "' JOIN '" + TABLE_ANCHORS + "' JOIN '" + TABLE_BEACON_MEDIAN_TO_ANCHOR + "' WHERE macAddress = '" + macAddress  + "' AND " +
-                    " ( "    + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_1 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + " " +
+                    " FROM '" + TABLE_MEDIANS + "' JOIN '" + TABLE_ANCHORS + "' JOIN '" + TABLE_BEACON_MEDIAN_TO_ANCHOR + "' WHERE macAddress = '" + macAddress + "' AND " +
+                    " ( " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_1 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + " " +
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_2 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_3 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_4 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_5 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_6 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "  ) AND " +
-                    "( " +  TABLE_ANCHORS + "." + COLUMN_FRONT + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID +
-                    " OR " +    TABLE_ANCHORS + "." + COLUMN_BACK + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID +
+                    "( " + TABLE_ANCHORS + "." + COLUMN_FRONT + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID +
+                    " OR " + TABLE_ANCHORS + "." + COLUMN_BACK + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID +
                     " ) " +
                     " GROUP BY " + COLUMN_MEDIAN_VALUE + " HAVING deviation <=" + threshold + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + maxResults + ";";
 
@@ -541,11 +541,91 @@ public class DBHandler extends SQLiteOpenHelper {
         return res;
     }
 
-    public Coordinate[][] getNeighborAnchors(Coordinate centerPos) {
+    public ArrayList<Coordinate> getDirectNeighborAnchors(Coordinate centerPos) {
         ArrayList<Coordinate> neighbors = new ArrayList<>();
         neighbors.add(centerPos);
         double x = centerPos.getX();
         double y = centerPos.getY();
+        double floor = -1;
+
+        //Untere Seite
+        y -= 1;
+        x -= 1;
+        Coordinate temp = new Coordinate(floor, x, y);
+        neighbors.add(temp);
+        x += 1;
+        temp = new Coordinate(floor, x, y);
+        neighbors.add(temp);
+        x += 1;
+        temp = new Coordinate(floor, x, y);
+        neighbors.add(temp);
+
+        //Obere Seite
+        y += 2;
+        x -= 2;
+        temp = new Coordinate(floor, x, y);
+        neighbors.add(temp);
+        x += 1;
+        temp = new Coordinate(floor, x, y);
+        neighbors.add(temp);
+        x += 1;
+        temp = new Coordinate(floor, x, y);
+        neighbors.add(temp);
+
+        //Rechter und Linker Punkt in der Mitte
+        y -= 1;
+        temp = new Coordinate(floor, x, y);
+        neighbors.add(temp);
+        x -= 2;
+        temp = new Coordinate(floor, x, y);
+        neighbors.add(temp);
+
+
+        return null;
+    }
+
+    public ArrayList<Coordinate> getOuterNeighborAnchors(Coordinate centerPos) {
+        ArrayList<Coordinate> neighbors = new ArrayList<>();
+        neighbors.add(centerPos);
+        double x = centerPos.getX();
+        double y = centerPos.getY();
+        double floor = -1;
+
+        //Untere Seite
+        y -= 2;
+        x -= 2;
+        Coordinate temp = new Coordinate(floor, x, y);
+        neighbors.add(temp);
+        for (int i = 0; i < 4; i++) {
+            x += 1;
+            temp = new Coordinate(floor, x, y);
+            neighbors.add(temp);
+        }
+
+        //Obere Seite
+        y += 4;
+        x -= 4;
+        for (int i = 0; i < 4; i++) {
+            x += 1;
+            temp = new Coordinate(floor, x, y);
+            neighbors.add(temp);
+        }
+
+        //Rechte Seite
+        for (int i = 0; i < 3; i++) {
+            y -= 1;
+            temp = new Coordinate(floor, x, y);
+            neighbors.add(temp);
+        }
+
+        //Linke Seite
+        x -= 4;
+        y += 2;
+        for (int i = 0; i < 2; i++) {
+            y -= 1;
+            temp = new Coordinate(floor, x, y);
+            neighbors.add(temp);
+        }
 
 
         return null;
