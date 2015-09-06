@@ -84,9 +84,9 @@ public class Person {
 
         Coordinate estimatedPos = getAlgorithm().estimatePos(data);
 //        setCoord(estimatedPos);
-
+        Log.d(TAG,"walked distance: "+walkedDistance);
         if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_M) {
-            setCurrentPos(estimatedPos);
+            setCurrentPos(currentPos);
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_M
                 && walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_M * 2) {
             //TODO
@@ -112,7 +112,7 @@ public class Person {
             // * * * * *
 
             ArrayList<Coordinate> neighbours;
-            neighbours = DBHandler.getDB().getDirectNeighborAnchors(currentPos);
+            neighbours = DBHandler.getDB().getOuterNeighborAnchors(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             setCurrentPos(newEstimatedPos);
         }
