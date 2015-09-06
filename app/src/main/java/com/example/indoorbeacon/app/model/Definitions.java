@@ -56,7 +56,7 @@ public class Definitions {
      */
     public static final int MIN_STEP_AMOUNT_FOR_WALKING = 2;
 
-    public static final float WALKED_METERS_PER_SECOND = 0.7f;
+    public static final float WALKED_WALKED_CENTIMETERS_PER_SECOND = 70f;
 
-    public static final int ANCHORPOINT_DISTANCE_IN_M = 1;
+    public static final int ANCHORPOINT_DISTANCE_IN_CM = 100;
 }
