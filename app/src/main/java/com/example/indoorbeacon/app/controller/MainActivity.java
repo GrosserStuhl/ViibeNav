@@ -53,11 +53,6 @@ public class MainActivity extends Activity {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     }
 
-    public void openTestActivity(View view) {
-        Intent intent = new Intent(this, ExportImportDB.class);
-        startActivity(intent);
-    }
-
     public void openSearchActivity(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);

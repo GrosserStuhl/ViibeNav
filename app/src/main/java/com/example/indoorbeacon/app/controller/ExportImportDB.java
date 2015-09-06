@@ -1,13 +1,9 @@
 package com.example.indoorbeacon.app.controller;
 
-import android.app.Activity;
-import android.os.Bundle;
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
-
-import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
 import java.io.File;
@@ -19,23 +15,18 @@ import java.nio.channels.FileChannel;
 /**
  * Created by TomTheBomb on 04.09.2015.
  */
-public class ExportImportDB extends Activity {
+public class ExportImportDB {
 
     public static final String TAG = "ExportImportDB";
     public static final String SAVE_DB_FILENAME = "radiomap.db";
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_export);
-    }
+    private Context context;
 
-    public void importClicked(View view){
-        importDB();
+    public ExportImportDB(Context context) {
+        this.context = context;
     }
-
 
     //importing database
-    private void importDB() {
+    public void importDB() {
         try {
             String currentDBPath = DBHandler.getDB().getDBPath();
 //            String backupDBPath  = Environment.getExternalStorageDirectory() + "/radiomap/radiomap.db";
@@ -53,12 +44,12 @@ public class ExportImportDB extends Activity {
             dst.transferFrom(src, 0, src.size());
             src.close();
             dst.close();
-            Toast.makeText(getBaseContext(), currentDB.toString()+" worked! ",
+            Toast.makeText(context, currentDB.toString()+" worked! ",
                     Toast.LENGTH_LONG).show();
 
         } catch (Exception e) {
             Log.e("ERROR",e.toString());
-            Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
+            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG)
                     .show();
         }
     }
