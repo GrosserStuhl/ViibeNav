@@ -23,15 +23,17 @@ public class NavigationHelper {
     private String instructionText;
     private int distance;
     private float previousOrientation;
+    private float firstDirection;
     private float previousDirection;
     private String distanceUnit;
     private String directionUnit;
 
-    public NavigationHelper(Context context, float orientation, ImageView arrowImage) {
+    public NavigationHelper(Context context, float orientation) {
         distance = 0;
         distanceUnit = " m";
         previousOrientation = orientation;
-        previousDirection = 90;
+        firstDirection = 90;
+        previousDirection = 0;
         directionUnit = " °";
         tts = TTS.createTTS(context);
     }
@@ -60,7 +62,7 @@ public class NavigationHelper {
         previousDirection = direction;
     }
 
-    private void setupImage(ImageView arrowImage, float firstDirection) {
+    public void setupImage(ImageView arrowImage) {
         RotateAnimation ra = new RotateAnimation(
                 0,
                 firstDirection,
@@ -71,6 +73,8 @@ public class NavigationHelper {
         ra.setDuration(250);
         ra.setFillAfter(true);
         arrowImage.startAnimation(ra);
+
+        previousDirection = firstDirection;
     }
 
     public void nextInstruction() {

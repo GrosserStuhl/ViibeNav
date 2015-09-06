@@ -43,7 +43,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     private ImageView arrowImage;
     private TextView instructionTextView;
     private TextView estimatedCoordTextView;
-    
+
     private boolean navigating;
     private Person person;
     private Handler triggerMeasuring;
@@ -63,11 +63,11 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         person = new Person(this);
         sensorHelper = SensorHelper.getSensorHelper(this);
-        navigationHelper = new NavigationHelper(this, sensorHelper.getOrientation(), arrowImage);
+        navigationHelper = new NavigationHelper(this, sensorHelper.getOrientation());
 
         initGUI();
         initHandler();
-        startMeasurementLoop();
+//        startMeasurementLoop();
     }
 
     private void initGUI() {
@@ -75,10 +75,11 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         arrowImage = (ImageView) findViewById(R.id.arrowImageView);
         instructionTextView = (TextView) findViewById(R.id.instructionTextView);
         estimatedCoordTextView = (TextView) findViewById(R.id.estimatedCoords);
+        navigationHelper.setupImage(arrowImage);
     }
 
     private void initHandler() {
-        triggerMeasuring = new Handler(){
+        triggerMeasuring = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 person.getMostLikelyPosition();
@@ -116,7 +117,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             public void onReceive(Context context, Intent intent) {
                 boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
                 if (!startedMeasuring) {
-                    estimatedCoordTextView.setText("x: " + person.getCoord().getX() + " | y: " + person.getCoord().getY());
+                    estimatedCoordTextView.setText("x: " + person.getCurrentPos().getX() + " | y: " + person.getCurrentPos().getY());
                     triggerMeasuring.sendEmptyMessage(0);
                 }
             }
@@ -136,7 +137,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         triggerMeasuring.sendEmptyMessage(0);
     }
 
-    private void setNavigating(boolean navigating){
+    private void setNavigating(boolean navigating) {
         this.navigating = navigating;
     }
 
