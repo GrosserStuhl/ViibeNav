@@ -38,7 +38,8 @@ public class ExportImportDB extends Activity {
     private void importDB() {
         try {
             String currentDBPath = DBHandler.getDB().getDBPath();
-            String backupDBPath  = Environment.getExternalStorageDirectory() + "/radiomap/radiomap.db";
+//            String backupDBPath  = Environment.getExternalStorageDirectory() + "/radiomap/radiomap.db";
+            String backupDBPath  = Environment.getDownloadCacheDirectory()+ "/radiomap.db";
             File backupDB = new File(backupDBPath);
 //            boolean readable = backupDB.setReadable(true, false);
 //            Log.d(TAG, "Backup readable: "+readable);
