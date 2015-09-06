@@ -432,7 +432,7 @@
                     android:text="Werte messen"
                     android:id="@+id/startMeasurement"
                     android:clickable="true"
-                    android:onClick="startMeasurement"
+                    android:onClick="startMeasurementLoop"
                     android:layout_alignParentBottom="true"
                     android:layout_toStartOf="@+id/x_koord"
                     android:layout_alignEnd="@+id/x_koord"
