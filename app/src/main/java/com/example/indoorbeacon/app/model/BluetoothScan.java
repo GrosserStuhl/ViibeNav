@@ -133,9 +133,6 @@ public class BluetoothScan {
              */
             OnyxBeacon beacon = advert.extractAD(result.getDevice().getAddress(), result.getRssi(), result.getScanRecord().getBytes());
 
-            if(beacon != null)
-                beacon.checkState();
-
 //            Message msg = Message.obtain();
 //            msg.obj = beacon;
 //            mHandler.sendMessage(msg);

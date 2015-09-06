@@ -66,25 +66,24 @@ public class Person {
     }
 
     public void getMostLikelyPosition() {
+        measurement.setState(Measurement.State.isMeasuring);
         ArrayList<OnyxBeacon> surrounding = OnyxBeacon.filterSurroundingBeacons();
         getOnTheFlyMedians(surrounding);
     }
 
     private void getOnTheFlyMedians(ArrayList<OnyxBeacon> surrounding) {
         Log.d(TAG, "SURROUNDING " + surrounding.size());
-        ArrayList<Integer> supposedAnchorPointIds = new ArrayList<>();
-
-        measurement.setState(Measurement.State.isMeasuring);
-        for (OnyxBeacon tmp : surrounding)
-            if (!tmp.isMeasurementStarted())
-                tmp.setMeasurementStarted(true);
-        measurement.overallOnTheFlyCalcProcess(surrounding, this);
+//        for (OnyxBeacon tmp : surrounding)
+//            if (!tmp.isMeasurementStarted())
+//                tmp.setMeasurementStarted(true);
+        measurement.onTheFlyCalcProcess(surrounding, this);
     }
 
     public void estimatePos(MacToMedian[] data) {
         trackingActivated = false;
 
         Coordinate estimatedPos = getAlgorithm().estimatePos(data);
+//        setCoord(estimatedPos);
 
         if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_M) {
             setCurrentPos(estimatedPos);
@@ -117,6 +116,8 @@ public class Person {
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             setCurrentPos(newEstimatedPos);
         }
+
+        measurement.setState(Measurement.State.notMeasuring);
 
         walkedDistance = 0;
         trackingActivated = true;

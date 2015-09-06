@@ -37,7 +37,7 @@ public class OnyxBeacon {
     // ON THE FLY MEASUREMENT
     private ArrayList<Integer> measurementRSSIs;
     private boolean measurementStarted,measurementDone;
-
+    private int listPointer = 0;
     static{
         beaconMap = new HashMap<>();
     }
@@ -51,8 +51,8 @@ public class OnyxBeacon {
         this.txPower = txPower;
         this.lastSignalMeasured = lastSignalMeasured;
 
+
         init();
-//        addBeaconToHashMap(this);
     }
 
     private void init(){
@@ -94,19 +94,30 @@ public class OnyxBeacon {
             OnyxBeacon temp = getBeaconInMap(key);
             temp.setRssi(rssi);
             temp.setLastSignalMeasured(timeSignalMeasured);
+            temp.fillMeasurementRSSIs();
+            temp.calculateMedian();
             beaconMap.put(key, temp);
-
     }
 
-    public void checkState(){
-        if(measurementStarted)
-            if (onMeasurementRSSIsFilled()) {
-                calculateMedian();
-                Log.d(TAG, Util.intListToString(measurementRSSIs) + " " + macAddress);
-                Log.d(TAG, "Calculated Median is: " + medianRSSI + " | mac: " + macAddress);
-                measurementDone = true;
-            }
+    public void fillMeasurementRSSIs(){
+        if(measurementRSSIs.size()<Definitions.MEASUREMENT_AMOUNT)
+            measurementRSSIs.add(rssi);
+        else
+            measurementRSSIs.set(listPointer,rssi);
 
+        if(listPointer<Definitions.MEASUREMENT_AMOUNT-1)
+            listPointer++;
+        else
+            listPointer=0;
+
+        if(getMajor() == 7)
+            Log.d(TAG,Util.intListToString(measurementRSSIs));
+    }
+
+    public boolean allRSSIsForMeasurement(){
+        if(measurementRSSIs.size()>=Definitions.MEASUREMENT_AMOUNT)
+            return true;
+        return false;
     }
 
 
@@ -115,20 +126,21 @@ public class OnyxBeacon {
         return measurementDone;
     }
 
-    /**
-     * Returns true if the amount of measured RSSIs equals the predefined size of a set for later on median calculation.
-     * @return
-     */
-    private boolean onMeasurementRSSIsFilled(){
-        if(measurementRSSIs.size()<Definitions.MEASUREMENT_AMOUNT) {
-            measurementRSSIs.add(rssi);
-            return false;
-        } else
-            measurementStarted = false;
-        return true;
-    }
+//    /**
+//     * Returns true if the amount of measured RSSIs equals the predefined size of a set for later on median calculation.
+//     * @return
+//     */
+//    private boolean onMeasurementRSSIsFilled(){
+//        if(measurementRSSIs.size()<Definitions.MEASUREMENT_AMOUNT) {
+//            measurementRSSIs.add(rssi);
+//            return false;
+//        } else
+//            measurementStarted = false;
+//        return true;
+//    }
 
     private void calculateMedian(){
+        if(allRSSIsForMeasurement())
             medianRSSI = (float) Statistics.calcMedian(measurementRSSIs);
     }
 

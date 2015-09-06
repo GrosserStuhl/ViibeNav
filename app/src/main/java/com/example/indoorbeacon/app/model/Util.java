@@ -100,7 +100,7 @@ public class Util {
         return res;
     }
 
-    public static MacToMedian[] listToMacToMedianArr(final ArrayList<OnyxBeacon> input){
+    public static MacToMedian[] listToMacToMedianArr(ArrayList<OnyxBeacon> input){
         MacToMedian[] res = new MacToMedian[input.size()];
         for(int i=0;i<input.size();i++)
             res[i] = new MacToMedian(input.get(i).getMacAddress(), input.get(i).getMedianRSSI());
