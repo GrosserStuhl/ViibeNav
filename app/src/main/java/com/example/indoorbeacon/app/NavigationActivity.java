@@ -65,9 +65,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         person = new Person(this);
         sensorHelper = SensorHelper.getSensorHelper(this);
-        navigationHelper = new NavigationHelper(this, sensorHelper.getOrientation());
-        navigationHelper = new NavigationHelper(this, sensorHelper.getOrientation(), arrowImage);
-        initialized = false;
+        navigationHelper = new NavigationHelper(this);
 
         initGUI();
         initHandler();
@@ -79,7 +77,8 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         arrowImage = (ImageView) findViewById(R.id.arrowImageView);
         instructionTextView = (TextView) findViewById(R.id.instructionTextView);
         estimatedCoordTextView = (TextView) findViewById(R.id.estimatedCoords);
-        navigationHelper.setupImage(arrowImage);
+
+        navigationHelper.setupImage(arrowImage, sensorHelper.getOrientation());
     }
 
     private void initHandler() {

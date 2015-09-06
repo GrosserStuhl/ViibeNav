@@ -28,10 +28,10 @@ public class NavigationHelper {
     private String distanceUnit;
     private String directionUnit;
 
-    public NavigationHelper(Context context, float orientation) {
+    public NavigationHelper(Context context) {
         distance = 0;
         distanceUnit = " m";
-        previousOrientation = orientation;
+        previousOrientation = 0;
         firstDirection = 90;
         previousDirection = 0;
         directionUnit = " °";
@@ -62,7 +62,7 @@ public class NavigationHelper {
         previousDirection = direction;
     }
 
-    public void setupImage(ImageView arrowImage) {
+    public void setupImage(ImageView arrowImage, float initialOrientation) {
         RotateAnimation ra = new RotateAnimation(
                 0,
                 firstDirection,
@@ -75,6 +75,7 @@ public class NavigationHelper {
         arrowImage.startAnimation(ra);
 
         previousDirection = firstDirection;
+        previousOrientation = initialOrientation;
     }
 
     public void nextInstruction() {

@@ -152,7 +152,6 @@ public class Person {
     }
 
     private void startTrackingDistance() {
-        Log.d(TAG,"started Tracking: ");
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
