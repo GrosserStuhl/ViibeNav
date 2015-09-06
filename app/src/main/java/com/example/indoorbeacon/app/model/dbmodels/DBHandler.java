@@ -176,7 +176,7 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
 
-    public ArrayList<DeviationToCoord> getAllDistancesFromMedians(MacToMedian[] map, int maxResults, int threshold) {
+    public ArrayList<DeviationToCoord> getAllDistancesFromMedians(MacToMedian[] map, int maxResults, float threshold) {
         SQLiteDatabase db = getWritableDatabase();
 
         ArrayList<DeviationToCoord> devsToCoords = new ArrayList<>();
