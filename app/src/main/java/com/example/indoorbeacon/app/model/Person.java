@@ -57,7 +57,7 @@ public class Person {
 //                        public void run() {
 //                            if (measurement.isMeasuring()) {
 //                                if (sensorHelper.isWalking())
-//                                    walkedDistance += Definitions.WALKED_METERS_PER_SECOND / 2;
+//                                    walkedDistance += Definitions.WALKED_WALKED_CENTIMETERS_PER_SECOND / 2;
 //                                new Handler().postDelayed(this, 500);
 //                            }
 //                        }
@@ -89,10 +89,10 @@ public class Person {
 
         Coordinate estimatedPos = getAlgorithm().estimatePos(data);
 //        setCoord(estimatedPos);
-        if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_M) {
+        if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM) {
             setCurrentPos(currentPos);
-        } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_M
-                && walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_M * 2) {
+        } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
+                && walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM * 2) {
             //TODO
             //Die Matrix mit den nächsten Nachbarn zu estimatedPos
             // x x x
@@ -103,7 +103,7 @@ public class Person {
             neighbours = DBHandler.getDB().getDirectNeighborAnchors(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             setCurrentPos(newEstimatedPos);
-        } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_M * 2) {
+        } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM * 2) {
             //TODO
             //Die Matrix mit den ÜBERnächsten Nachbarn zu estimatedPos bekommen
             //Auf jeder Seite werden 4 ersten Punkte genommen, der letzte wird ausgelassen
@@ -158,8 +158,8 @@ public class Person {
             public void run() {
                 if (trackingActivated) {
                     if (sensorHelper.isWalking()) {
-                        walkedDistance += Definitions.WALKED_METERS_PER_SECOND / 2;
-
+                        walkedDistance += Definitions.WALKED_WALKED_CENTIMETERS_PER_SECOND / 2;
+                        Log.d(TAG,"walkedDistance "+walkedDistance);
 
                     }
                     new Handler().postDelayed(this, 500);

@@ -48,6 +48,8 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     private Person person;
     private Handler triggerMeasuring;
 
+    private boolean initialized;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mDetector = new GestureDetector(this, new MyGestureListener());
@@ -64,10 +66,12 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         person = new Person(this);
         sensorHelper = SensorHelper.getSensorHelper(this);
         navigationHelper = new NavigationHelper(this, sensorHelper.getOrientation());
+        navigationHelper = new NavigationHelper(this, sensorHelper.getOrientation(), arrowImage);
+        initialized = false;
 
         initGUI();
         initHandler();
-//        startMeasurementLoop();
+        startMeasurementLoop();
     }
 
     private void initGUI() {
@@ -82,6 +86,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         triggerMeasuring = new Handler() {
             @Override
             public void handleMessage(Message msg) {
+                initialized = false;
                 person.getMostLikelyPosition();
             }
         };
@@ -117,14 +122,15 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             public void onReceive(Context context, Intent intent) {
                 boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
                 if (!startedMeasuring) {
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            estimatedCoordTextView.setText("x: " + person.getCurrentPos().getX() + " | y: " + person.getCurrentPos().getY());
-                            triggerMeasuring.sendEmptyMessage(0);
-                        }
-                    },1000);
+                    if(!initialized) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                estimatedCoordTextView.setText("x: " + person.getCurrentPos().getX() + " | y: " + person.getCurrentPos().getY());
+                                triggerMeasuring.sendEmptyMessage(0);
+                            }
+                        }, 1500);
+                    }
 
                 }
             }

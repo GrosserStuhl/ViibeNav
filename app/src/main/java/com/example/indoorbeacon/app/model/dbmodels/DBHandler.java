@@ -584,9 +584,9 @@ public class DBHandler extends SQLiteOpenHelper {
         String subQuery = "";
         for(int i=0;i<neighbors.size();i++)
             if(i!=neighbors.size()-1)
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AMD " + COLUMN_Y + "=" + neighbors.get(i).getY() + " AND ";
+                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + " AND ";
             else
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AMD " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
+                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
 
         ArrayList<Coordinate> result = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
@@ -659,9 +659,9 @@ public class DBHandler extends SQLiteOpenHelper {
         String subQuery = "";
         for(int i=0;i<neighbors.size();i++)
             if(i!=neighbors.size()-1)
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AMD " + COLUMN_Y + "=" + neighbors.get(i).getY() + " AND ";
+                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + " AND ";
             else
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AMD " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
+                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
 
         ArrayList<Coordinate> result = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
