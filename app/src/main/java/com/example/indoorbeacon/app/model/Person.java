@@ -38,12 +38,25 @@ public class Person {
         this.activity = activity;
         tmpCoordinates = new ArrayList<>();
         currentPos = new Coordinate(-1, -1, -1);
-        medianCoordinate = new Coordinate(-1,-1,-1);
+        medianCoordinate = new Coordinate(-1, -1, -1);
         measurement = new Measurement(activity);
 
         algorithm = new Ewknn();
 
         sensorHelper = SensorHelper.getSensorHelper(activity);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (trackingActivated) {
+                    if (sensorHelper.isWalking()) {
+                        walkedDistance += Definitions.WALKED_WALKED_CENTIMETERS_PER_SECOND / 2;
+                        Log.d(TAG, "walkedDistance " + walkedDistance);
+                    }
+                }
+                new Handler().postDelayed(this, 500);
+            }
+        }, 0);
 
 //        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 //            @Override
@@ -125,7 +138,6 @@ public class Person {
 
         walkedDistance = 0;
         trackingActivated = true;
-        startTrackingDistance();
     }
 
     private Coordinate findNextBestPos(ArrayList<Coordinate> neighbours, Coordinate estimatedPos) {
@@ -150,23 +162,6 @@ public class Person {
         }
         return newEstimatedPos;
     }
-
-    private void startTrackingDistance() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (trackingActivated) {
-                    if (sensorHelper.isWalking()) {
-                        walkedDistance += Definitions.WALKED_WALKED_CENTIMETERS_PER_SECOND / 2;
-                        Log.d(TAG,"walkedDistance "+walkedDistance);
-
-                    }
-                    new Handler().postDelayed(this, 500);
-                }
-            }
-        }, 0);
-    }
-
 
     private Coordinate getCoordFromAnchorId(int id) {
         return DBHandler.getDB().getCoordFromAnchorId(id);
