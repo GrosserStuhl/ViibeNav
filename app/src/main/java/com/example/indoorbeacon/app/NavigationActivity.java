@@ -110,13 +110,14 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             }
         }, 250);
 
-        // setup GUI updates
+        // setup GUI updates + new Measurements
         BroadcastReceiver mCoordReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
                 if (!startedMeasuring) {
                     estimatedCoordTextView.setText("x: " + person.getCoord().getX() + " | y: " + person.getCoord().getY());
+                    triggerMeasuring.sendEmptyMessage(0);
                 }
             }
         };
@@ -130,11 +131,13 @@ public class NavigationActivity extends Activity implements SensorEventListener 
      * It will only start median measurement for the beacons already listed in the onyxBeaconHashMap.
      */
     public void startMeasurementLoop() {
+        navigating = true;
         // trigger measurement loop
-        if (!person.getMeasurement().isMeasuring()) {
-            estimatedCoordTextView.setText("x: " + person.getCoord().getX() + " | y: " + person.getCoord().getY());
-            triggerMeasuring.sendEmptyMessage(0);
-        }
+        triggerMeasuring.sendEmptyMessage(0);
+    }
+
+    private void setNavigating(boolean navigating){
+        this.navigating = navigating;
     }
 
     @Override

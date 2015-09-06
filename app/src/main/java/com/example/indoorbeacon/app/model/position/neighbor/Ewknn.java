@@ -43,12 +43,16 @@ public class Ewknn implements PositionAlgorithm {
         // Step 1/3 done -> I RPs filtering
         ArrayList<DeviationToCoord> data = DBHandler.getDB().getAllDistancesFromMedians(map,limit,threshold);
 
+        if(data == null || data.isEmpty())
+                return new Coordinate(-1,-1,-1);
         // Step 2/3 done -> II RPs filtering
         // Remove minDeviation from list and calculate next threshold with it
         // after that the filtered list with minDeviation added is returned
         DeviationToCoord minDeviation = getMinDevToCoord(data);
         data = filterRPsII(minDeviation, data);
 
+        if(data == null || data.isEmpty())
+            return new Coordinate(-1,-1,-1);
         // Step 3/3 done -> Position estimate
         return estimatePosFromData(data);
     }
