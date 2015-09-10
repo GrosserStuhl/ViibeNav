@@ -22,6 +22,8 @@ public class Person {
     private static final String TAG = "Person";
 
     private Coordinate currentPos;
+    private Coordinate currentPosAlgorithm;
+
     private Measurement measurement;
     private NavigationActivity activity;
 
@@ -32,13 +34,12 @@ public class Person {
     private boolean trackingActivated = false;
 
     private ArrayList<Coordinate> tmpCoordinates;
-    private Coordinate medianCoordinate;
 
     public Person(NavigationActivity activity) {
         this.activity = activity;
         tmpCoordinates = new ArrayList<>();
         currentPos = new Coordinate(-1, -1, -1);
-        medianCoordinate = new Coordinate(-1, -1, -1);
+        currentPosAlgorithm = new Coordinate(-1,-1,-1);
         measurement = new Measurement(activity);
 
         algorithm = new Ewknn();
@@ -101,7 +102,10 @@ public class Person {
         trackingActivated = false;
 
         Coordinate estimatedPos = getAlgorithm().estimatePos(data);
+        setCurrentPosAlgorithm(estimatedPos);
 //        setCoord(estimatedPos);
+
+        ArrayList<Coordinate> neighbours;
         if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM) {
             setCurrentPos(currentPos);
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
@@ -112,10 +116,12 @@ public class Person {
             // x o x
             // x x x  (3x3 Matrix)
 
-            ArrayList<Coordinate> neighbours;
+
             neighbours = DBHandler.getDB().getDirectNeighborAnchors(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             setCurrentPos(newEstimatedPos);
+
+            Log.d(TAG, "SIZE of neighbors nächster: " + neighbours.size());
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM * 2) {
             //TODO
             //Die Matrix mit den ÜBERnächsten Nachbarn zu estimatedPos bekommen
@@ -128,12 +134,12 @@ public class Person {
             // * x x x |*|
             // * * * * *
 
-            ArrayList<Coordinate> neighbours;
             neighbours = DBHandler.getDB().getOuterNeighborAnchors(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             setCurrentPos(newEstimatedPos);
-        }
 
+            Log.d(TAG, "SIZE of neighbors übernächster: " + neighbours.size());
+        }
         measurement.setState(Measurement.State.notMeasuring);
 
         walkedDistance = 0;
@@ -185,5 +191,13 @@ public class Person {
 
     public PositionAlgorithm getAlgorithm() {
         return algorithm;
+    }
+
+    public Coordinate getCurrentPosAlgorithm() {
+        return currentPosAlgorithm;
+    }
+
+    public void setCurrentPosAlgorithm(Coordinate currentPosAlgorithm) {
+        this.currentPosAlgorithm = currentPosAlgorithm;
     }
 }

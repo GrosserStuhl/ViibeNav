@@ -15,18 +15,12 @@ public class OnyxBeacon {
 
     private static final String TAG = "OnyxBeacon";
 
-    private String name;
-    private int signal;
-
     private CharBuffer macAddress;
 
     private String uuid;
     private int minor,major,rssi,txPower;
-    private float distanceFSPL;
-    private float distanceRegression;
-
-
     private float medianRSSI;
+    private Orientation orientation;
 
     public static HashMap<CharBuffer, OnyxBeacon> beaconMap;
 
@@ -42,13 +36,15 @@ public class OnyxBeacon {
         beaconMap = new HashMap<>();
     }
 
-    public OnyxBeacon(CharBuffer deviceAddress, String uuid, int major, int minor, int rssi, int txPower, long lastSignalMeasured) {
+    public OnyxBeacon(CharBuffer deviceAddress, String uuid, int major, int minor, int rssi, int txPower,
+                      Orientation orientation, long lastSignalMeasured) {
         this.macAddress = deviceAddress;
         this.uuid = uuid;
         this.major = major;
         this.minor = minor;
         this.rssi = rssi;
         this.txPower = txPower;
+        this.orientation = orientation;
         this.lastSignalMeasured = lastSignalMeasured;
 
 
@@ -85,7 +81,7 @@ public class OnyxBeacon {
             return beaconMap.get(key);
     }
 
-    public static void updateBeaconRSSIinMap(CharBuffer key,int rssi, long timeSignalMeasured){
+    public static void updateBeaconRSSIinMap(CharBuffer key,int rssi, Orientation orientation, long timeSignalMeasured){
 //        if(key == null)
 //            throw new NullPointerException("Passed Key is invalid or not set.");
 //        if(!beaconMap.containsKey(key))
@@ -94,6 +90,7 @@ public class OnyxBeacon {
             OnyxBeacon temp = getBeaconInMap(key);
             temp.setRssi(rssi);
             temp.setLastSignalMeasured(timeSignalMeasured);
+            temp.setOrientation(orientation);
             temp.fillMeasurementRSSIs();
             temp.calculateMedian();
             beaconMap.put(key, temp);
@@ -119,25 +116,6 @@ public class OnyxBeacon {
             return true;
         return false;
     }
-
-
-
-    public boolean isMeasurementDone(){
-        return measurementDone;
-    }
-
-//    /**
-//     * Returns true if the amount of measured RSSIs equals the predefined size of a set for later on median calculation.
-//     * @return
-//     */
-//    private boolean onMeasurementRSSIsFilled(){
-//        if(measurementRSSIs.size()<Definitions.MEASUREMENT_AMOUNT) {
-//            measurementRSSIs.add(rssi);
-//            return false;
-//        } else
-//            measurementStarted = false;
-//        return true;
-//    }
 
     private void calculateMedian(){
         if(allRSSIsForMeasurement())
@@ -199,9 +177,6 @@ public class OnyxBeacon {
     public static HashMap<CharBuffer, OnyxBeacon> getbeaconMap() {
         return beaconMap;
     }
-    public String getName() {
-        return name;
-    }
     public CharBuffer getMacAddress() {
         return macAddress;
     }
@@ -238,5 +213,13 @@ public class OnyxBeacon {
     }
     public void setRssi(int rssi) {
         this.rssi = rssi;
+    }
+
+    public void setOrientation(Orientation orientation) {
+        this.orientation = orientation;
+    }
+
+    public Orientation getOrientation() {
+        return orientation;
     }
 }

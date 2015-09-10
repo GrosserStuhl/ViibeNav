@@ -2,8 +2,6 @@ package com.example.indoorbeacon.app.model;
 
 import android.widget.EditText;
 
-import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
-
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -12,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
 /**
  * Created by TomTheBomb on 26.06.2015.
  */
@@ -87,25 +84,6 @@ public class Util {
 
     public static long timeDiff_MillisToNow(long millisAgo){
         return System.currentTimeMillis()-millisAgo;
-    }
-
-
-    public static MacToMedian[] mapToMacToMedianArr(HashMap<CharBuffer,OnyxBeacon> input){
-        MacToMedian[] res = new MacToMedian[input.size()];
-        final ArrayList<OnyxBeacon> convert = new ArrayList<>(input.values());
-
-        for(int i=0;i<input.values().size();i++)
-            res[i] = new MacToMedian(convert.get(i).getMacAddress(),convert.get(i).getMedianRSSI());
-
-        return res;
-    }
-
-    public static MacToMedian[] listToMacToMedianArr(ArrayList<OnyxBeacon> input){
-        MacToMedian[] res = new MacToMedian[input.size()];
-        for(int i=0;i<input.size();i++)
-            res[i] = new MacToMedian(input.get(i).getMacAddress(), input.get(i).getMedianRSSI());
-
-        return res;
     }
 
     public static boolean hasSufficientSendingFreq(long time){

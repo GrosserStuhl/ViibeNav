@@ -55,7 +55,7 @@ public class Measurement {
      */
     public void onTheFlyCalcProcess(ArrayList<OnyxBeacon> beacons, Person person){
 
-            MacToMedian[] data = Util.listToMacToMedianArr(beacons);
+            MacToMedian[] data = MacToMedian.listToMacToMedianArr(beacons);
             person.estimatePos(data);
     }
 }
