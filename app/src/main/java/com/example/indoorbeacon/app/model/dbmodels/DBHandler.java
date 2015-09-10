@@ -584,33 +584,28 @@ public class DBHandler extends SQLiteOpenHelper {
         temp = new Coordinate(floor, x, y);
         neighbors.add(temp);
 
-
-        String subQuery = "";
-        for(int i=0;i<neighbors.size();i++)
-            if(i!=neighbors.size()-1)
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + " AND ";
-            else
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
-
-        ArrayList<Coordinate> result = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE "+ subQuery +";";
+        ArrayList<Coordinate> result = new ArrayList<>();
+        String subquery = "";
 
-        Cursor c = db.rawQuery(query, null);
-        c.moveToFirst();
+        for(int i=0;i<neighbors.size();i++) {
+            String subQuery = COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
+            String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE "+ subQuery +";";
+            Cursor c = db.rawQuery(query, null);
+            c.moveToFirst();
 
-        int f_coord = -1;
-        int x_coord = 0;
-        int y_coord = 0;
+            int f_coord = -1;
+            int x_coord = 0;
+            int y_coord = 0;
 
-        while (!c.isAfterLast()) {
-            Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
-            result.add(tmp);
-            c.moveToNext();
+            while (!c.isAfterLast()) {
+                Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
+                result.add(tmp);
+                c.moveToNext();
+            }
+            c.close();
         }
-
         Log.d(TAG, "GOT ADJESCENT COORDS: " + result.size());
-        c.close();
         db.close();
 
 
@@ -660,32 +655,29 @@ public class DBHandler extends SQLiteOpenHelper {
             neighbors.add(temp);
         }
 
-        String subQuery = "";
-        for(int i=0;i<neighbors.size();i++)
-            if(i!=neighbors.size()-1)
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + " AND ";
-            else
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
-
-        ArrayList<Coordinate> result = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE "+ subQuery +";";
+        ArrayList<Coordinate> result = new ArrayList<>();
+        String subquery = "";
 
-        Cursor c = db.rawQuery(query, null);
-        c.moveToFirst();
+        for(int i=0;i<neighbors.size();i++) {
+            String subQuery = COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
+            String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE "+ subQuery +";";
+            Cursor c = db.rawQuery(query, null);
+            c.moveToFirst();
 
-        int f_coord = -1;
-        int x_coord = 0;
-        int y_coord = 0;
+            int f_coord = -1;
+            int x_coord = 0;
+            int y_coord = 0;
 
-        while (!c.isAfterLast()) {
-            Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
-            result.add(tmp);
-            c.moveToNext();
+            while (!c.isAfterLast()) {
+                Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
+                result.add(tmp);
+                c.moveToNext();
+            }
+            c.close();
         }
 
-        Log.d(TAG, "GOT ADJESCENT COORDS: " + result.size());
-        c.close();
+        Log.d(TAG, "GOT OUTER ADJESCENT COORDS: " + result.size());
         db.close();
 
 
