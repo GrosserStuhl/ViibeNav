@@ -8,10 +8,7 @@ import android.preference.PreferenceManager;
 import android.view.View;
 
 import com.example.indoorbeacon.app.R;
-import com.example.indoorbeacon.app.RoomlistActivity;
-import com.example.indoorbeacon.app.SearchActivity;
-import com.example.indoorbeacon.app.SensorHelper;
-import com.example.indoorbeacon.app.SettingsActivity;
+import com.example.indoorbeacon.app.model.SensorHelper;
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
 import com.example.indoorbeacon.app.model.Measurement;

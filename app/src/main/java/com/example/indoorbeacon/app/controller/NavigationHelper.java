@@ -1,4 +1,4 @@
-package com.example.indoorbeacon.app;
+package com.example.indoorbeacon.app.controller;
 
 import android.content.Context;
 import android.view.animation.Animation;

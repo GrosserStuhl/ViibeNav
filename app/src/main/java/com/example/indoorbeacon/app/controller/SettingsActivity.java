@@ -1,12 +1,12 @@
-package com.example.indoorbeacon.app;
+package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.widget.Toast;
-import com.example.indoorbeacon.app.controller.ExportImportDB;
+
+import com.example.indoorbeacon.app.R;
+import com.example.indoorbeacon.app.model.ExportImportDB;
 
 /**
  * Created by Dima on 28/07/2015.

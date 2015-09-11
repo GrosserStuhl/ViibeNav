@@ -1,4 +1,4 @@
-package com.example.indoorbeacon.app;
+package com.example.indoorbeacon.app.model;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +12,8 @@ import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
-import com.example.indoorbeacon.app.model.Definitions;
+
+import com.example.indoorbeacon.app.controller.NavigationActivity;
 
 import java.util.ArrayList;
 

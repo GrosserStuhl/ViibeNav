@@ -3,7 +3,6 @@ package com.example.indoorbeacon.app.model;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.indoorbeacon.app.SensorHelper;
 import com.example.indoorbeacon.app.model.beaconFilter.MinorFilter;
 
 import java.nio.CharBuffer;

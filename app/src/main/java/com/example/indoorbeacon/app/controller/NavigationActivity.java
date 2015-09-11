@@ -1,4 +1,4 @@
-package com.example.indoorbeacon.app;
+package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -22,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.indoorbeacon.app.R;
+import com.example.indoorbeacon.app.model.SensorHelper;
 import com.example.indoorbeacon.app.model.Connector;
 import com.example.indoorbeacon.app.model.Person;
 

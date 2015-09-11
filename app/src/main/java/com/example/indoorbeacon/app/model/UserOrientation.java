@@ -2,8 +2,6 @@ package com.example.indoorbeacon.app.model;
 
 import android.app.Activity;
 
-import com.example.indoorbeacon.app.SensorHelper;
-
 /**
  * Created by TomTheBomb on 01.09.2015.
  */

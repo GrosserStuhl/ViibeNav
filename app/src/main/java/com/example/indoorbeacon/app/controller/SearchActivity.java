@@ -1,4 +1,4 @@
-package com.example.indoorbeacon.app;
+package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.example.indoorbeacon.app.R;
 
 import java.util.ArrayList;
 import java.util.Locale;

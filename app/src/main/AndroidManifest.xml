@@ -32,7 +32,7 @@
         </activity>
 
         <activity
-                android:name=".SearchActivity"
+                android:name=".controller.SearchActivity"
                 android:label="Nach Ziel suchen"
                 android:parentActivityName=".controller.MainActivity">
             <intent-filter>
@@ -43,9 +43,9 @@
         </activity>
 
         <activity
-                android:name=".SearchResultActivity"
+                android:name=".controller.SearchResultActivity"
                 android:label="Suchergebnisse"
-                android:parentActivityName=".SearchActivity">
+                android:parentActivityName=".controller.SearchActivity">
             <intent-filter>
                 <action android:name="com.example.indoorbeacon.app.SearchResultActivity"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -53,7 +53,7 @@
         </activity>
 
         <activity
-                android:name=".RoomlistActivity"
+                android:name=".controller.RoomlistActivity"
                 android:label="Raumliste"
                 android:parentActivityName=".controller.MainActivity">
             <intent-filter>
@@ -64,7 +64,7 @@
         </activity>
 
         <activity
-                android:name=".SettingsActivity"
+                android:name=".controller.SettingsActivity"
                 android:label="Einstellungen"
                 android:parentActivityName=".controller.MainActivity">
             <intent-filter>
@@ -75,7 +75,7 @@
         </activity>
 
         <activity
-                android:name=".NavigationActivity"
+                android:name=".controller.NavigationActivity"
                 android:label="Navigation"
                 android:screenOrientation="portrait">
             <intent-filter>

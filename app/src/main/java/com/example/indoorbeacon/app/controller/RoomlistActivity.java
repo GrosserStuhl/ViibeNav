@@ -1,4 +1,4 @@
-package com.example.indoorbeacon.app;
+package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.ExpandableListView;
+
+import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 import com.example.indoorbeacon.app.view.adapter.CustomResultExpListAdapter;

@@ -4,8 +4,7 @@ import android.app.Activity;
 import android.os.Handler;
 import android.util.Log;
 
-import com.example.indoorbeacon.app.NavigationActivity;
-import com.example.indoorbeacon.app.SensorHelper;
+import com.example.indoorbeacon.app.controller.NavigationActivity;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.position.neighbor.Ewknn;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;

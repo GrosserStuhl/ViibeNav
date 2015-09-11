@@ -22,7 +22,7 @@
             android:title="Import"
             android:summary="Import Database from Radiomapper">
         <!--<intent-->
-                <!--android:action="com.example.indoorbeacon.app.controller.ExportImportDB"-->
+                <!--android:action="com.example.indoorbeacon.app.model.ExportImportDB"-->
                 <!--/>-->
     </Preference>
 </PreferenceScreen>
