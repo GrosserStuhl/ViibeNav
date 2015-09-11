@@ -31,6 +31,16 @@ public class TTS extends UtteranceProgressListener {
 
     private TTS(Context c){
         this.c = c;
+        tts = new TextToSpeech(c, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    tts.setLanguage(Locale.GERMANY);
+                    Bundle params = new Bundle();
+                    params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "Unique");
+                }
+            }
+        });
     }
 
     @Override
@@ -65,7 +75,6 @@ public class TTS extends UtteranceProgressListener {
                     tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, params, "UniqueID");
                     tts.setOnUtteranceProgressListener(singleton);
                 }
-
             }
         });
     }
