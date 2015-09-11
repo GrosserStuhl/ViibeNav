@@ -32,6 +32,7 @@ public class BluetoothScan {
     private Advertisement advert;
     private BroadcastReceiver mReceiver;
     private Activity act;
+    private Handler mHandler;
 
     private BluetoothScan(Activity act) {
         this.act = act;
@@ -162,7 +163,7 @@ public class BluetoothScan {
     }
 
     private boolean isSetup(){
-        Log.d(TAG, "MEthod is setup! ");
+        Log.d(TAG, "Method is setup! ");
         Log.d(TAG,"BTAdapter null "+(mBluetoothAdapter == null));
         Log.d(TAG,"BTAdapter enabled "+(mBluetoothAdapter.isEnabled()));
         Log.d(TAG,"BTScanner scanner "+(mBluetoothLeScanner == null));
@@ -171,6 +172,34 @@ public class BluetoothScan {
             return true;
         return false;
     }
+
+//    private void scanLeDevice(final boolean enable) {
+//        if (enable) {
+//            mHandler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    // < 21
+//                    if (Build.VERSION.SDK_INT < 21) {
+//                        mBluetoothAdapter.stopLeScan(mLeScanCallback);
+//                    } else {
+//                        mLEScanner.stopScan(mScanCallback);
+//
+//                    }
+//                }
+//            }, 250);
+//            if (Build.VERSION.SDK_INT < 21) {
+//                mBluetoothAdapter.startLeScan(mLeScanCallback);
+//            } else {
+//                mLEScanner.startScan(filters, settings, mScanCallback);
+//            }
+//        } else {
+//            if (Build.VERSION.SDK_INT < 21) {
+//                mBluetoothAdapter.stopLeScan(mLeScanCallback);
+//            } else {
+//                mLEScanner.stopScan(mScanCallback);
+//            }
+//        }
+//    }
 
 
 
@@ -191,14 +220,6 @@ public class BluetoothScan {
 
         }
     };
-
-
-
-    public Handler mHandler;
-
-    public void setmHandler(Handler mHandler) {
-        this.mHandler = mHandler;
-    }
 
     public BluetoothAdapter getmBluetoothAdapter() {
         return mBluetoothAdapter;

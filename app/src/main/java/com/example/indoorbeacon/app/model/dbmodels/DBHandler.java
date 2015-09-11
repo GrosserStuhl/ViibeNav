@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.example.indoorbeacon.app.model.Coordinate;
 import com.example.indoorbeacon.app.model.Orientation;
+import com.example.indoorbeacon.app.model.Util;
 import com.example.indoorbeacon.app.model.position.neighbor.DeviationToCoord;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 
@@ -599,15 +600,19 @@ public class DBHandler extends SQLiteOpenHelper {
             int y_coord = 0;
 
             while (!c.isAfterLast()) {
+                f_coord = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
+                x_coord = c.getInt(c.getColumnIndex(COLUMN_X));
+                y_coord = c.getInt(c.getColumnIndex(COLUMN_Y));
                 Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
                 result.add(tmp);
                 c.moveToNext();
             }
             c.close();
         }
-        Log.d(TAG, "GOT ADJESCENT COORDS: " + result.size());
+//        Log.d(TAG, "GOT ADJESCENT COORDS: " + result.size());
         db.close();
 
+        Log.d(TAG, "DIRECT NEIGHBOR:\n"+ Util.coordsListToString(result));
 
         return result;
     }
@@ -670,6 +675,9 @@ public class DBHandler extends SQLiteOpenHelper {
             int y_coord = 0;
 
             while (!c.isAfterLast()) {
+                f_coord = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
+                x_coord = c.getInt(c.getColumnIndex(COLUMN_X));
+                y_coord = c.getInt(c.getColumnIndex(COLUMN_Y));
                 Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
                 result.add(tmp);
                 c.moveToNext();
@@ -677,7 +685,8 @@ public class DBHandler extends SQLiteOpenHelper {
             c.close();
         }
 
-        Log.d(TAG, "GOT OUTER ADJESCENT COORDS: " + result.size());
+//        Log.d(TAG, "GOT OUTER ADJESCENT COORDS: " + result.size());
+        Log.d(TAG, "OUTER NEIGHBOR:\n"+ Util.coordsListToString(result));
         db.close();
 
 
