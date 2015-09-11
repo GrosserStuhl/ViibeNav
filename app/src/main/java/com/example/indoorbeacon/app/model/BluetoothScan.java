@@ -31,8 +31,10 @@ public class BluetoothScan {
     private static BluetoothScan singleton;
     private Advertisement advert;
     private BroadcastReceiver mReceiver;
+    private Activity act;
 
     private BluetoothScan(Activity act) {
+        this.act = act;
         advert = new Advertisement(act.getApplicationContext());
 
         BluetoothManager manager = (BluetoothManager) act.getSystemService(act.BLUETOOTH_SERVICE);
@@ -78,6 +80,7 @@ public class BluetoothScan {
         act.registerReceiver(mReceiver, filter);
     }
 
+
     public static BluetoothScan getBtScan(Activity act){
         synchronized (BluetoothScan.class){
             if(singleton == null)
@@ -107,13 +110,13 @@ public class BluetoothScan {
     private ScanCallback mScanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-//            Log.d(TAG, "onScanResult");
+            Log.d(TAG, "onScanResult");
             processResult(result);
         }
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
-//            Log.d(TAG, "onBatchScanResults: "+results.size()+" results");
+            Log.d(TAG, "onBatchScanResults: "+results.size()+" results");
             for (ScanResult result : results) {
                 processResult(result);
             }
@@ -125,7 +128,7 @@ public class BluetoothScan {
         }
 
         private void processResult(ScanResult result) {
-//            Log.d(TAG, "New LE Device: " + result.getDevice().getName() + " @ " + result.getRssi());
+            Log.d(TAG, "New LE Device: " + result.getDevice().getName() + " @ " + result.getRssi());
 
             /*
              * Create a new beacon from the list of obtains AD structures
@@ -151,6 +154,7 @@ public class BluetoothScan {
 //            mBluetoothAdapter.enable();
 //        }
 
+        Log.d(TAG, "Turn on BT method");
         if(!mBluetoothAdapter.isEnabled())
             mBluetoothAdapter.enable();
         else
@@ -158,6 +162,7 @@ public class BluetoothScan {
     }
 
     private boolean isSetup(){
+        Log.d(TAG, "MEthod is setup! ");
         Log.d(TAG,"BTAdapter null "+(mBluetoothAdapter == null));
         Log.d(TAG,"BTAdapter enabled "+(mBluetoothAdapter.isEnabled()));
         Log.d(TAG,"BTScanner scanner "+(mBluetoothLeScanner == null));
@@ -166,6 +171,9 @@ public class BluetoothScan {
             return true;
         return false;
     }
+
+
+
 
     public void stopScan() {
         mBluetoothLeScanner.stopScan(mScanCallback);

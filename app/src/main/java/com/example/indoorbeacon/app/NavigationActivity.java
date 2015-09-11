@@ -44,6 +44,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     private ImageView arrowImage;
     private TextView instructionTextView;
     private TextView estimatedCoordTextView;
+    private TextView estimatedAlgorithm;
 
     private boolean navigating;
     private Person person;
@@ -79,7 +80,8 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         arrowImage = (ImageView) findViewById(R.id.arrowImageView);
         instructionTextView = (TextView) findViewById(R.id.instructionTextView);
         estimatedCoordTextView = (TextView) findViewById(R.id.estimatedCoords);
-    }
+        estimatedAlgorithm = (TextView) findViewById(R.id.estimatedAlgorithm);
+ }
 
     private void initHandler() {
         triggerMeasuring = new Handler() {
@@ -126,11 +128,11 @@ public class NavigationActivity extends Activity implements SensorEventListener 
                             @Override
                             public void run() {
                                 estimatedCoordTextView.setText("x: " + person.getCurrentPos().getX() + " | y: " + person.getCurrentPos().getY());
+                                estimatedAlgorithm.setText("x: "+person.getCurrentPosAlgorithm() + " | y: " + person.getCurrentPosAlgorithm());
                                 triggerMeasuring.sendEmptyMessage(0);
                             }
                         }, 1500);
                     }
-
                 }
             }
         };

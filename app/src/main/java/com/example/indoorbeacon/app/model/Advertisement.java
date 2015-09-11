@@ -3,6 +3,7 @@ package com.example.indoorbeacon.app.model;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.indoorbeacon.app.SensorHelper;
 import com.example.indoorbeacon.app.model.beaconFilter.MinorFilter;
 
 import java.nio.CharBuffer;
@@ -17,8 +18,10 @@ public class Advertisement {
     public static final String filterUUID = "20CAE8A0-A9CF-11E3-A5E2-0800200C9A66" ;
     private static final String TAG = "Advertisement";
     private Context c;
+    private SensorHelper sh;
 
     public Advertisement(Context c){
+        this.sh = SensorHelper.getSensorHelper(c);
         this.c = c;
     }
 
@@ -101,10 +104,11 @@ public class Advertisement {
             if(MinorFilter.inFilter(minor)) {
                 //creates new OnyxBeacon
                 if (!OnyxBeacon.inBeaconMap(macAddress)) {
-                    OnyxBeacon newBeacon = new OnyxBeacon(macAddress, uuid, major, minor, rssi, txPower , System.currentTimeMillis());
+                    OnyxBeacon newBeacon = new OnyxBeacon(macAddress, uuid, major, minor, rssi, txPower ,
+                            UserOrientation.getOrientationFromDegree(sh.getOrientation()), System.currentTimeMillis());
                     OnyxBeacon.addBeaconToHashMap( c , newBeacon);
                 } else {
-                    OnyxBeacon.updateBeaconRSSIinMap(macAddress, rssi, System.currentTimeMillis());
+                    OnyxBeacon.updateBeaconRSSIinMap(macAddress, rssi, UserOrientation.getOrientationFromDegree(sh.getOrientation()), System.currentTimeMillis());
                 }
                 //need to return this beacon which is listed in HashMap!
                 return OnyxBeacon.getBeaconInMap(macAddress);

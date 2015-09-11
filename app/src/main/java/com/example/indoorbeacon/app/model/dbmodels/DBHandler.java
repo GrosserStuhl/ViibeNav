@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.indoorbeacon.app.model.Coordinate;
+import com.example.indoorbeacon.app.model.Orientation;
 import com.example.indoorbeacon.app.model.position.neighbor.DeviationToCoord;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 
@@ -187,6 +188,12 @@ public class DBHandler extends SQLiteOpenHelper {
             final double median = map[i].getMedian();
 //            Log.d(TAG, "MEDIAN IN LOOP "+median);
 
+            String queryOrientation = "";
+            if(map[i].getOrientation().equals(Orientation.back))
+                queryOrientation = "( " + TABLE_ANCHORS + "." + COLUMN_BACK + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID + " ) ";
+            else if (map[i].getOrientation().equals(Orientation.front))
+                queryOrientation = "( " + TABLE_ANCHORS + "." + COLUMN_FRONT + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID + " ) ";
+
             String query = "SELECT " + TABLE_ANCHORS + "." + COLUMN_FLOOR + "," + TABLE_ANCHORS + "." + COLUMN_X + ", " + TABLE_ANCHORS + "." + COLUMN_Y + "," + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + ", " + calcManhattenDB_Cmd(median) + " AS " + LOCAL_COLUMN_DEVIATION + " " +
                     " FROM '" + TABLE_MEDIANS + "' JOIN '" + TABLE_ANCHORS + "' JOIN '" + TABLE_BEACON_MEDIAN_TO_ANCHOR + "' WHERE macAddress = '" + macAddress + "' AND " +
                     " ( " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_1 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + " " +
@@ -195,10 +202,7 @@ public class DBHandler extends SQLiteOpenHelper {
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_4 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_5 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_6 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
-                    "  ) AND " +
-                    "( " + TABLE_ANCHORS + "." + COLUMN_FRONT + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID +
-                    " OR " + TABLE_ANCHORS + "." + COLUMN_BACK + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID +
-                    " ) " +
+                    "  ) AND " + queryOrientation +
                     " GROUP BY " + COLUMN_MEDIAN_VALUE + " HAVING deviation <=" + threshold + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + maxResults + ";";
 
             // IMPORTANT - NOTE:
@@ -215,9 +219,9 @@ public class DBHandler extends SQLiteOpenHelper {
                 float deviation = c.getInt(c.getColumnIndex(LOCAL_COLUMN_DEVIATION));
                 devsToCoords.add(new DeviationToCoord(deviation, coordinate));
 
-                Log.d(TAG, "Deviation-Median" + c.getInt(c.getColumnIndex(MEDIANS_COLUMN_ID)) +
-                        " deviation: " + deviation +
-                        " -> Coord: " + coordinate + " macAddress " + macAddress);
+//                Log.d(TAG, "Deviation-Median" + c.getInt(c.getColumnIndex(MEDIANS_COLUMN_ID)) +
+//                        " deviation: " + deviation +
+//                        " -> Coord: " + coordinate + " macAddress " + macAddress);
                 c.moveToNext();
             }
         }
@@ -580,33 +584,28 @@ public class DBHandler extends SQLiteOpenHelper {
         temp = new Coordinate(floor, x, y);
         neighbors.add(temp);
 
-
-        String subQuery = "";
-        for(int i=0;i<neighbors.size();i++)
-            if(i!=neighbors.size()-1)
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + " AND ";
-            else
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
-
-        ArrayList<Coordinate> result = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE "+ subQuery +";";
+        ArrayList<Coordinate> result = new ArrayList<>();
+        String subquery = "";
 
-        Cursor c = db.rawQuery(query, null);
-        c.moveToFirst();
+        for(int i=0;i<neighbors.size();i++) {
+            String subQuery = COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
+            String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE "+ subQuery +";";
+            Cursor c = db.rawQuery(query, null);
+            c.moveToFirst();
 
-        int f_coord = -1;
-        int x_coord = 0;
-        int y_coord = 0;
+            int f_coord = -1;
+            int x_coord = 0;
+            int y_coord = 0;
 
-        while (!c.isAfterLast()) {
-            Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
-            result.add(tmp);
-            c.moveToNext();
+            while (!c.isAfterLast()) {
+                Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
+                result.add(tmp);
+                c.moveToNext();
+            }
+            c.close();
         }
-
         Log.d(TAG, "GOT ADJESCENT COORDS: " + result.size());
-        c.close();
         db.close();
 
 
@@ -656,32 +655,29 @@ public class DBHandler extends SQLiteOpenHelper {
             neighbors.add(temp);
         }
 
-        String subQuery = "";
-        for(int i=0;i<neighbors.size();i++)
-            if(i!=neighbors.size()-1)
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + " AND ";
-            else
-                subQuery += COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
-
-        ArrayList<Coordinate> result = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE "+ subQuery +";";
+        ArrayList<Coordinate> result = new ArrayList<>();
+        String subquery = "";
 
-        Cursor c = db.rawQuery(query, null);
-        c.moveToFirst();
+        for(int i=0;i<neighbors.size();i++) {
+            String subQuery = COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
+            String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE "+ subQuery +";";
+            Cursor c = db.rawQuery(query, null);
+            c.moveToFirst();
 
-        int f_coord = -1;
-        int x_coord = 0;
-        int y_coord = 0;
+            int f_coord = -1;
+            int x_coord = 0;
+            int y_coord = 0;
 
-        while (!c.isAfterLast()) {
-            Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
-            result.add(tmp);
-            c.moveToNext();
+            while (!c.isAfterLast()) {
+                Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
+                result.add(tmp);
+                c.moveToNext();
+            }
+            c.close();
         }
 
-        Log.d(TAG, "GOT ADJESCENT COORDS: " + result.size());
-        c.close();
+        Log.d(TAG, "GOT OUTER ADJESCENT COORDS: " + result.size());
         db.close();
 
 

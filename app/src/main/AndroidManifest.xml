@@ -9,8 +9,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
-    <uses-feature android:name="android.hardware.bluetooth"/>
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
     <uses-feature android:name=" android.hardware.sensor.magnetometer"/>
     <uses-feature android:name=" android.hardware.sensor.accelerometer"/>
 
@@ -38,17 +37,6 @@
                 android:parentActivityName=".controller.MainActivity">
             <intent-filter>
                 <action android:name="com.example.indoorbeacon.app.SearchActivity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".controller.ExportImportDB"
-            android:label="Import"
-            android:parentActivityName=".controller.MainActivity">
-            <intent-filter>
-                <action android:name="com.example.indoorbeacon.app.controller.ExportImportDB"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
