@@ -82,6 +82,14 @@ public class Util {
         return res;
     }
 
+    public static String coordsListToString(ArrayList<Coordinate> input){
+        String res = "";
+        for(Coordinate c : input){
+            res+= c.getX() + "," + c.getY() + "|";
+        }
+        return res;
+    }
+
     public static long timeDiff_MillisToNow(long millisAgo){
         return System.currentTimeMillis()-millisAgo;
     }
