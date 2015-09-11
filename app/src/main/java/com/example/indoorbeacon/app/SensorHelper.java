@@ -8,6 +8,10 @@ import android.hardware.SensorManager;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 
+import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 import com.example.indoorbeacon.app.model.Definitions;
 
 import java.util.ArrayList;
@@ -129,8 +133,6 @@ public class SensorHelper {
         if (event.sensor == mAccelerometer
                 && enoughTimeForStep) {
 
-//            Log.d(TAG, "eventX: " + event.values[0] + ", eventY: " + event.values[1] + ", eventZ: " + event.values[2]);
-
             final float alpha = 0.8f; // constant for our filter below
 
             float[] gravity = {0, 0, 0};
@@ -162,8 +164,6 @@ public class SensorHelper {
                 mLastY = y;
                 mLastZ = z;
 
-//                Log.d(TAG, "DeltaX: " + deltaX + ", DeltaY: " + deltaY + ", DeltaZ: " + deltaZ);
-
                 if (deltaZ > relativeZThreshold && deltaY > relativeYThreshold) {
                     enoughTimeForStep = false;
                     stepCount = stepCount + 1;
@@ -173,13 +173,32 @@ public class SensorHelper {
                         broadcastChange();
                     }
                 }
-//                else {
-//                    isWalking = false;
-//                    multipleStepRegister.clear();
-//                    broadcastChange();
-//                }
             }
         }
+    }
+
+
+    public void onAccuracyChangedOperation(Sensor sensor, int accuracy) {
+        if (sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD
+                && accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) {
+            Log.d(TAG, "Magnetic Field status: unreliable");
+        }
+    }
+
+    public void updateImage(ImageView arrowImage) {
+        RotateAnimation ra = new RotateAnimation(
+                mCurrentDegree,
+                -orientation,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f);
+
+        ra.setDuration(250);
+
+        ra.setFillAfter(true);
+
+        arrowImage.startAnimation(ra);
+        mCurrentDegree = -orientation;
     }
 
     private void broadcastChange() {

@@ -110,7 +110,6 @@ public class Person {
             setCurrentPos(currentPos);
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
                 && walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM * 2) {
-            //TODO
             //Die Matrix mit den nächsten Nachbarn zu estimatedPos
             // x x x
             // x o x
@@ -123,7 +122,6 @@ public class Person {
 
             Log.d(TAG, "SIZE of neighbors nächster: " + neighbours.size());
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM * 2) {
-            //TODO
             //Die Matrix mit den ÜBERnächsten Nachbarn zu estimatedPos bekommen
             //Auf jeder Seite werden 4 ersten Punkte genommen, der letzte wird ausgelassen
             //Dieser ist dann wiederum der Anfangspunkt für die nächste Seite, somit 4x4 Matrix

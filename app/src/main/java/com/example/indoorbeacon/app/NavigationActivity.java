@@ -67,8 +67,8 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         Log.d(TAG, "Ziel: " + ziel);
 
         person = new Person(this);
-        sensorHelper = SensorHelper.getSensorHelper(this);
         navigationHelper = new NavigationHelper(this, person, ziel);
+        sensorHelper = SensorHelper.getSensorHelper(this);
 
         initGUI();
         initHandler();
@@ -81,7 +81,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         instructionTextView = (TextView) findViewById(R.id.instructionTextView);
         estimatedCoordTextView = (TextView) findViewById(R.id.estimatedCoords);
         estimatedAlgorithm = (TextView) findViewById(R.id.estimatedAlgorithm);
- }
+    }
 
     private void initHandler() {
         triggerMeasuring = new Handler() {
@@ -110,9 +110,10 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                navigationHelper.updateImage(arrowImage, sensorHelper.getOrientation());
+//                navigationHelper.updateImage(arrowImage, sensorHelper.getOrientation());
+                sensorHelper.updateImage(arrowImage);
                 //TODO  2. TextView von Tom statt das null da reinsetzen
-                navigationHelper.updateTextViews(instructionTextView, null);
+//                navigationHelper.updateTextViews(instructionTextView, null);
                 new Handler().postDelayed(this, 250);
             }
         }, 250);
@@ -128,7 +129,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
                             @Override
                             public void run() {
                                 estimatedCoordTextView.setText("x: " + person.getCurrentPos().getX() + " | y: " + person.getCurrentPos().getY());
-                                estimatedAlgorithm.setText("x: "+person.getCurrentPosAlgorithm() + " | y: " + person.getCurrentPosAlgorithm());
+                                estimatedAlgorithm.setText("x: " + person.getCurrentPosAlgorithm() + " | y: " + person.getCurrentPosAlgorithm());
                                 triggerMeasuring.sendEmptyMessage(0);
                             }
                         }, 1500);
@@ -220,7 +221,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+        sensorHelper.onAccuracyChangedOperation(sensor, accuracy);
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
