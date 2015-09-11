@@ -77,7 +77,6 @@ public class BluetoothScan {
         act.registerReceiver(mReceiver, filter);
     }
 
-
     public static BluetoothScan getBtScan(Activity act){
         synchronized (BluetoothScan.class){
             if(singleton == null)

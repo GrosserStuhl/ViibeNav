@@ -15,6 +15,7 @@ import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 
@@ -300,15 +301,15 @@ public class DBHandler extends SQLiteOpenHelper {
             floor = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
             c.moveToNext();
         }
-
+        c.close();
         db.close();
         Coordinate coord = new Coordinate(floor, x, y);
         return coord;
     }
 
 
-    public LinkedList<AnchorPointModel> getAllAnchors() {
-        LinkedList<AnchorPointModel> res = new LinkedList<>();
+    public HashMap<Coordinate,InfoModel> getCoordinateToInfoModelMap() {
+        HashMap<Coordinate,InfoModel> res = new HashMap<>();
         SQLiteDatabase db = getWritableDatabase();
         //SELECT _id,x,y,floor,personname,roomname,environment,category  FROM anchorpoints JOIN
 //        info on anchorpoints.infoid = info.id
@@ -322,7 +323,6 @@ public class DBHandler extends SQLiteOpenHelper {
         // Move to the first row in your results
         c.moveToFirst();
 
-        int _id = 0;
         int x = 0;
         int y = 0;
         int floor = 0;
@@ -334,7 +334,6 @@ public class DBHandler extends SQLiteOpenHelper {
         String category = "";
 
         while (!c.isAfterLast()) {
-            _id = c.getInt(c.getColumnIndex(ANCHORS_COLUMN_ID));
             x = c.getInt(c.getColumnIndex(COLUMN_X));
             y = c.getInt(c.getColumnIndex(COLUMN_Y));
             floor = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
@@ -345,11 +344,38 @@ public class DBHandler extends SQLiteOpenHelper {
             environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
             category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
 
-            res.add(new AnchorPointModel(_id, new Coordinate(floor, x, y), new InfoModel(info_id,personname,roomname,environment,category)));
+            res.put(new Coordinate(floor, x, y), new InfoModel(info_id,personname,roomname,environment,category));
             c.moveToNext();
         }
 
-        Log.d(TAG, "DONE FETCHING ANCHORLIST " + res.size());
+        Log.d(TAG, "DONE FETCHING COORDINATE TO INFOMODEL HASHMAP " + res.size());
+        c.close();
+        db.close();
+        return res;
+    }
+
+    public LinkedList<Coordinate> getAllAnchors(){
+        LinkedList<Coordinate> res = new LinkedList<>();
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT " + COLUMN_X + ", " + COLUMN_Y + ", " + COLUMN_FLOOR + " FROM '" + TABLE_ANCHORS + "';";
+
+        // Cursor point to a location in your results
+        Cursor c = db.rawQuery(query, null);
+        // Move to the first row in your results
+        c.moveToFirst();
+
+        int x = -1;
+        int y = -1;
+        int floor = -1;
+
+        while (!c.isAfterLast()) {
+            x = c.getInt(c.getColumnIndex(COLUMN_X));
+            y = c.getInt(c.getColumnIndex(COLUMN_Y));
+            floor = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
+            res.add(new Coordinate(floor, x, y));
+            c.moveToNext();
+        }
+        Log.d(TAG, "DONE FETCHING ALL ANCHORPOINTS "+res.size());
         c.close();
         db.close();
         return res;

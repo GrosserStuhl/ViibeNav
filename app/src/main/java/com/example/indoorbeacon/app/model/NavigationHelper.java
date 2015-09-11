@@ -6,11 +6,8 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.indoorbeacon.app.model.Coordinate;
-import com.example.indoorbeacon.app.model.Person;
-import com.example.indoorbeacon.app.model.TTS;
-import com.example.indoorbeacon.app.model.dbmodels.AnchorPointModel;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,8 +21,8 @@ public class NavigationHelper {
     private Coordinate goal;
     private Coordinate nextSubGoal;
     private Coordinate previousPos;
-    private LinkedList<AnchorPointModel> path;
-    private HashMap<Coordinate, String> infoTextsForAnchors;
+    private LinkedList<Coordinate> path;
+    private HashMap<Coordinate, InfoModel> infoTextsForAnchors;
     private TTS tts;
     private Person person;
     private String instructionText;
@@ -54,8 +51,9 @@ public class NavigationHelper {
         // dann in anchortabelle nach dem anchor suchen der die infoID hat
         goal = new Coordinate(-1, -1, -1);
 //        path = new LinkedList<>(); //Hier DB-Abfrage um alle Anchorpoints in Reihenfolgezu bekommen
+//        infoTextsForAnchors = new HashMap<>(); //Alle Koordinaten reinspeichern, die einen Info text haben
         path = DBHandler.getDB().getAllAnchors();
-        infoTextsForAnchors = new HashMap<>(); //Alle Koordinaten reinspeichern, die einen Info text haben
+        infoTextsForAnchors = DBHandler.getDB().getCoordinateToInfoModelMap();
         calculateNewSubGoal();
     }
 

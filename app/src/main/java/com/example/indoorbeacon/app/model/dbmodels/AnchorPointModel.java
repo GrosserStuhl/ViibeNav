@@ -10,12 +10,12 @@ public class AnchorPointModel {
 
     private int _id;
     private Coordinate coord;
-    private InfoModel info;
+    private int info_id;
 
-    public AnchorPointModel(int _id, Coordinate coord, InfoModel info) {
+    public AnchorPointModel(int _id, Coordinate coord, int info_id) {
         this._id = _id;
         this.coord = coord;
-        this.info = info;
+        this.info_id = info_id;
     }
 
     public Coordinate getCoord() {
@@ -26,7 +26,6 @@ public class AnchorPointModel {
         return _id;
     }
 
-    public InfoModel getInfo() {
-        return info;
-    }
+
+
 }
