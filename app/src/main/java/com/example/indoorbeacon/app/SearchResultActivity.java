@@ -62,7 +62,7 @@ public class SearchResultActivity extends Activity {
 
                 @Override
                 public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                    String value = String.valueOf(parent.getChildAt(childPosition));
+                    String value = String.valueOf(parent.getExpandableListAdapter().getChild(groupPosition, childPosition));
                     Intent intent = new Intent(SearchResultActivity.this, NavigationActivity.class);
                     intent.putExtra("Ziel", value);
                     startActivity(intent);

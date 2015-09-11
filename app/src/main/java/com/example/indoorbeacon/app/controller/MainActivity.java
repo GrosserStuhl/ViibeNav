@@ -7,10 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 
-import com.example.indoorbeacon.app.R;
-import com.example.indoorbeacon.app.RoomlistActivity;
-import com.example.indoorbeacon.app.SearchActivity;
-import com.example.indoorbeacon.app.SettingsActivity;
+import com.example.indoorbeacon.app.*;
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
 import com.example.indoorbeacon.app.model.Measurement;
@@ -46,7 +43,8 @@ public class MainActivity extends Activity {
 
 //        .speak("Ich bin hier drin. Das ist so einfach, dass ich schreien möchte. Soo einfach.");
 
-        BluetoothScan btscan = BluetoothScan.getBtScan(this);
+        BluetoothScan.getBtScan(this);
+        SensorHelper.getSensorHelper(this);
         
         TTS.createTTS(this);
 

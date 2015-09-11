@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.WindowManager;
@@ -62,10 +63,11 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         Intent intent = getIntent();
         String ziel = intent.getStringExtra("Ziel");
+        Log.d(TAG, "Ziel: " + ziel);
 
         person = new Person(this);
         sensorHelper = SensorHelper.getSensorHelper(this);
-        navigationHelper = new NavigationHelper(this);
+        navigationHelper = new NavigationHelper(this, person, ziel);
 
         initGUI();
         initHandler();
@@ -77,8 +79,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         arrowImage = (ImageView) findViewById(R.id.arrowImageView);
         instructionTextView = (TextView) findViewById(R.id.instructionTextView);
         estimatedCoordTextView = (TextView) findViewById(R.id.estimatedCoords);
-
-        navigationHelper.setupImage(arrowImage, sensorHelper.getOrientation());
     }
 
     private void initHandler() {
@@ -121,7 +121,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             public void onReceive(Context context, Intent intent) {
                 boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
                 if (!startedMeasuring) {
-                    if(!initialized) {
+                    if (!initialized) {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {

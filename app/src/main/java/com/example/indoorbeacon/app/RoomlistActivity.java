@@ -51,7 +51,7 @@ public class RoomlistActivity extends Activity {
             stub.setLayoutResource(R.layout.roomlist_exp_list);
             stub.inflate();
 
-            ExpandableListView list = (ExpandableListView) findViewById(R.id.roomExpListView);
+            final ExpandableListView list = (ExpandableListView) findViewById(R.id.roomExpListView);
             CustomResultExpListAdapter adapter = new CustomResultExpListAdapter(this, allEntries, categories);
             list.setAdapter(adapter);
 
@@ -59,8 +59,10 @@ public class RoomlistActivity extends Activity {
 
                 @Override
                 public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                    String value = String.valueOf(parent.getChildAt(childPosition));
-
+                    String value = String.valueOf(parent.getExpandableListAdapter().getChild(groupPosition, childPosition));
+                    value = value.substring("<font color='#000000'>".length());
+                    value = value.split("<")[0];
+//
                     Intent intent = new Intent(RoomlistActivity.this, NavigationActivity.class);
                     intent.putExtra("Ziel", value);
                     intent.putExtra("ParentClassName", RoomlistActivity.this.getClass().getSimpleName());
