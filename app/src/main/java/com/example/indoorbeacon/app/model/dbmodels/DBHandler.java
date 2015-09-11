@@ -15,6 +15,7 @@ import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 
 /**
@@ -306,10 +307,15 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
 
-    public void getAllAnchors() {
-        ArrayList<AnchorPointDBModel> res = new ArrayList<>();
+    public LinkedList<AnchorPointModel> getAllAnchors() {
+        LinkedList<AnchorPointModel> res = new LinkedList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '" + TABLE_ANCHORS + "';";
+        //SELECT _id,x,y,floor,personname,roomname,environment,category  FROM anchorpoints JOIN
+//        info on anchorpoints.infoid = info.id
+        String query = "SELECT "+ ANCHORS_COLUMN_ID +","+ COLUMN_X +","+ COLUMN_Y +","+ COLUMN_FLOOR + ","+
+                INFO_COLUMN_ID + ","+ COLUMN_PERSON_NAME + ","+ COLUMN_ROOM_NAME + ","+ COLUMN_ENVIRONMENT + ","+ COLUMN_CATEGORY +
+                " FROM '" + TABLE_ANCHORS + "' JOIN '"+TABLE_INFO +"' ON "+TABLE_ANCHORS+"."+COLUMN_INFO_ID +
+                " = " + TABLE_INFO + "." + INFO_COLUMN_ID + ";";
 
         // Cursor point to a location in your results
         Cursor c = db.rawQuery(query, null);
@@ -320,117 +326,34 @@ public class DBHandler extends SQLiteOpenHelper {
         int x = 0;
         int y = 0;
         int floor = 0;
-        int addInfoID = 0;
+
+        int info_id = 0;
+        String personname = "";
+        String roomname = "";
+        String environment = "";
+        String category = "";
 
         while (!c.isAfterLast()) {
             _id = c.getInt(c.getColumnIndex(ANCHORS_COLUMN_ID));
             x = c.getInt(c.getColumnIndex(COLUMN_X));
             y = c.getInt(c.getColumnIndex(COLUMN_Y));
             floor = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
-            ArrayList<Integer> beaconIds = new ArrayList<>();
-            beaconIds.add(c.getInt(c.getColumnIndex(COLUMN_BEACON_1)));
-            beaconIds.add(c.getInt(c.getColumnIndex(COLUMN_BEACON_2)));
-            beaconIds.add(c.getInt(c.getColumnIndex(COLUMN_BEACON_3)));
-            beaconIds.add(c.getInt(c.getColumnIndex(COLUMN_BEACON_4)));
-            beaconIds.add(c.getInt(c.getColumnIndex(COLUMN_BEACON_5)));
-            beaconIds.add(c.getInt(c.getColumnIndex(COLUMN_BEACON_6)));
-            addInfoID = c.getInt(c.getColumnIndex(COLUMN_INFO_ID));
 
-            res.add(new AnchorPointDBModel(_id, new Coordinate(floor, x, y), beaconIds, addInfoID));
+            info_id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
+            personname = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
+            roomname = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
+            environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
+            category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
+
+            res.add(new AnchorPointModel(_id, new Coordinate(floor, x, y), new InfoModel(info_id,personname,roomname,environment,category)));
             c.moveToNext();
         }
 
         Log.d(TAG, "DONE FETCHING ANCHORLIST " + res.size());
+        c.close();
         db.close();
-        AnchorPointDBModel.setAllAnchors(res);
+        return res;
     }
-
-    //
-    public void getAllBeacons() {
-        ArrayList<OnyxBeaconDBModel> res = new ArrayList<>();
-        SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '" + TABLE_BEACONS + "';";
-
-        // Cursor point to a location in your results
-        Cursor c = db.rawQuery(query, null);
-        c.moveToFirst();
-
-        int _id = 0;
-        int major = 0;
-        int minor = 0;
-        String macAddress = "";
-
-        while (!c.isAfterLast()) {
-            _id = c.getInt(c.getColumnIndex(BEACONS_COLUMN_ID));
-            major = c.getInt(c.getColumnIndex(COLUMN_MAJOR));
-            minor = c.getInt(c.getColumnIndex(COLUMN_MINOR));
-            macAddress = c.getString(c.getColumnIndex(COLUMN_MACADDRESS));
-            res.add(new OnyxBeaconDBModel(_id, major, minor, macAddress));
-            c.moveToNext();
-        }
-
-        Log.d(TAG, "DONE FETCHING BEACONSLIST " + res.size());
-        db.close();
-        OnyxBeaconDBModel.setAllBeacons(res);
-    }
-
-    public void getAllMedians() {
-        ArrayList<MedianDBModel> res = new ArrayList<>();
-        SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '" + TABLE_MEDIANS + "';";
-
-        // Cursor point to a location in your results
-        Cursor c = db.rawQuery(query, null);
-        c.moveToFirst();
-
-        int _id = 0;
-        double median = 0;
-        String macAddress = "";
-
-        while (!c.isAfterLast()) {
-            _id = c.getInt(c.getColumnIndex(MEDIANS_COLUMN_ID));
-            median = c.getDouble(c.getColumnIndex(COLUMN_MEDIAN_VALUE));
-            macAddress = c.getString(c.getColumnIndex(COLUMN_MACADDRESS));
-            res.add(new MedianDBModel(_id, median, macAddress));
-            c.moveToNext();
-        }
-
-        Log.d(TAG, "DONE FETCHING MEDIANSLIST " + res.size());
-        db.close();
-        MedianDBModel.setAllMedians(res);
-    }
-
-    public void getAllInfo() {
-        ArrayList<InfoDBModel> res = new ArrayList<>();
-        SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM '" + TABLE_INFO + "';";
-
-        // Cursor point to a location in your results
-        Cursor c = db.rawQuery(query, null);
-        // Move to the first row in your results
-        c.moveToFirst();
-
-        int id = 0;
-        String person_name = "";
-        String room_name = "";
-        String environment = "";
-        String category;
-
-        while (!c.isAfterLast()) {
-            id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
-            person_name = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
-            room_name = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
-            environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
-            category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
-            res.add(new InfoDBModel(id, person_name, room_name, environment, category));
-            c.moveToNext();
-        }
-
-        Log.d(TAG, "DONE FETCHING INFOLIST " + res.size());
-        db.close();
-        InfoDBModel.setAllInfo(res);
-    }
-
 
     public ArrayList<String> getSearchSpecificPersonEntries(String key) {
         ArrayList<String> res = new ArrayList<>();
@@ -515,8 +438,8 @@ public class DBHandler extends SQLiteOpenHelper {
         return res;
     }
 
-    public ArrayList<InfoDBModel> getAllEntriesForSpecificCategory(String key) {
-        ArrayList<InfoDBModel> res = new ArrayList<>();
+    public ArrayList<InfoModel> getAllEntriesForSpecificCategory(String key) {
+        ArrayList<InfoModel> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM '" + TABLE_INFO + "' WHERE CATEGORY ='" + key + "';";
 
@@ -535,7 +458,7 @@ public class DBHandler extends SQLiteOpenHelper {
             room_name = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
             environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
             category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
-            res.add(new InfoDBModel(id, person_name, room_name, environment, category));
+            res.add(new InfoModel(id, person_name, room_name, environment, category));
             c.moveToNext();
         }
 

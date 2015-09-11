@@ -1,11 +1,9 @@
 package com.example.indoorbeacon.app.model.dbmodels;
 
-import java.util.ArrayList;
-
 /**
  * Created by TomTheBomb on 27.08.2015.
  */
-public class InfoDBModel {
+public class InfoModel {
 
     private int id;
     private String person_name;
@@ -13,9 +11,7 @@ public class InfoDBModel {
     private String environment;
     private String category;
 
-    private static ArrayList<InfoDBModel> allInfo;
-
-    public InfoDBModel(int id, String person_name, String room_name, String environment, String category) {
+    public InfoModel(int id, String person_name, String room_name, String environment, String category) {
         this.id = id;
         this.person_name = person_name;
         this.room_name = room_name;
@@ -43,11 +39,4 @@ public class InfoDBModel {
         return category;
     }
 
-    public static ArrayList<InfoDBModel> getAllInfo() {
-        return allInfo;
-    }
-
-    public static void setAllInfo(ArrayList<InfoDBModel> allInfo) {
-        InfoDBModel.allInfo = allInfo;
-    }
 }

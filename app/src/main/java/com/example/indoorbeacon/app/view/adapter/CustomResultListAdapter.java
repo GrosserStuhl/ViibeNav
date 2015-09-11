@@ -8,14 +8,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import com.example.indoorbeacon.app.R;
-import com.example.indoorbeacon.app.model.dbmodels.InfoDBModel;
+import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 
 /**
  * Created by Dima on 27/07/2015.
  */
-public class CustomResultListAdapter extends ArrayAdapter<InfoDBModel> {
+public class CustomResultListAdapter extends ArrayAdapter<InfoModel> {
 
-    public CustomResultListAdapter(Context context, InfoDBModel[] items) {
+    public CustomResultListAdapter(Context context, InfoModel[] items) {
         super(context, R.layout.custom_listitem, items);
     }
 
@@ -45,7 +45,7 @@ public class CustomResultListAdapter extends ArrayAdapter<InfoDBModel> {
 
         } else mViewHolder = (ViewHolder) convertView.getTag();
 
-        InfoDBModel item = getItem(position);
+        InfoModel item = getItem(position);
 //        mViewHolder.listButton.setText(Html.fromHtml(item));
         mViewHolder.listButton.setText(item.getPerson_name()+System.lineSeparator()+item.getRoom_name());
 //        mViewHolder.listButton.setFocusable(false);

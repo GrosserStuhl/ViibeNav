@@ -54,12 +54,10 @@ public class BluetoothScan {
                         case BluetoothAdapter.STATE_OFF:
                             turnOnBluetooth();
                             Log.d(TAG, "Bt OFF.");
-//                            setButtonText("Bluetooth off");
                             break;
                         case BluetoothAdapter.STATE_TURNING_OFF:
                             turnOnBluetooth();
                             Log.d(TAG, "Bt turning OFF.");
-//                            setButtonText("Turning Bluetooth off...");
                             break;
                         case BluetoothAdapter.STATE_ON:
                             Log.d(TAG, "Bt ON.");
@@ -67,7 +65,6 @@ public class BluetoothScan {
                             break;
                         case BluetoothAdapter.STATE_TURNING_ON:
                             Log.d(TAG, "Bt turning ON.");
-//                            setButtonText("Turning Bluetooth on...");
                             break;
                     }
                 }
@@ -103,7 +100,6 @@ public class BluetoothScan {
         mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
         settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
         Log.d(TAG, "Bluetooth enabled: " + mBluetoothAdapter.isEnabled() + " Try to start scanning...");
-//        mBluetoothLeScanner.startScan(null, settings, mScanCallback);
         scanLeDevice();
     }
 
@@ -186,29 +182,5 @@ public class BluetoothScan {
                 new Handler().postDelayed(this, 400);
             }
         }, 0);
-    }
-
-
-
-
-//    public void stopScan() {
-//        mBluetoothLeScanner.stopScan(mScanCallback);
-//    }
-//
-//    /*
-//     * We have a Handler to process scan results on the main thread,
-//     * add them to our list adapter, and update the view
-//     */
-//    public Handler standardHandler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-////            OnyxBeacon msgStr = (OnyxBeacon) msg.obj;
-////            applicationUI.updateLayer2();
-//
-//        }
-//    };
-
-    public BluetoothAdapter getmBluetoothAdapter() {
-        return mBluetoothAdapter;
     }
 }

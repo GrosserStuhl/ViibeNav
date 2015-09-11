@@ -4,13 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.ExpandableListView;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
-import com.example.indoorbeacon.app.model.dbmodels.InfoDBModel;
+import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 import com.example.indoorbeacon.app.view.adapter.CustomResultExpListAdapter;
 
 import java.util.ArrayList;
@@ -33,10 +32,10 @@ public class RoomlistActivity extends Activity {
         ArrayList<String> categories = DBHandler.getDB().getAllDistinctCategories();
         if (categories.size() > 0) {
             for (String category : categories) {
-                ArrayList<InfoDBModel> infoList = DBHandler.getDB().getAllEntriesForSpecificCategory(category);
+                ArrayList<InfoModel> infoList = DBHandler.getDB().getAllEntriesForSpecificCategory(category);
                 if (infoList.size() > 0) {
                     ArrayList<String> entryList = new ArrayList<>();
-                    for (InfoDBModel infoEntry : infoList) {
+                    for (InfoModel infoEntry : infoList) {
                         entryList.add("<font color='#000000'>" + infoEntry.getPerson_name() +
                                 "</font><br/><font color='#006400'>" + infoEntry.getRoom_name() + "</font>");
                     }

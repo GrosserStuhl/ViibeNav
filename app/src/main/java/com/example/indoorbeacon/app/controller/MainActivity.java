@@ -7,18 +7,20 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 
-import com.example.indoorbeacon.app.*;
+import com.example.indoorbeacon.app.R;
+import com.example.indoorbeacon.app.RoomlistActivity;
+import com.example.indoorbeacon.app.SearchActivity;
+import com.example.indoorbeacon.app.SensorHelper;
+import com.example.indoorbeacon.app.SettingsActivity;
 import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
 import com.example.indoorbeacon.app.model.Measurement;
-import com.example.indoorbeacon.app.model.RadioMap;
 import com.example.indoorbeacon.app.model.TTS;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
 
 public class MainActivity extends Activity {
 
-    RadioMap radioMap;
     BluetoothScan bluetoothScan;
     DBHandler dbHandler;
     Measurement measurement;
@@ -32,7 +34,6 @@ public class MainActivity extends Activity {
 //        getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_main);
 
-        radioMap = RadioMap.createRadioMap();
         dbHandler = DBHandler.createDB(this, null, null, 1);
 
         connect = Connector.createConnector((WifiManager) getSystemService(WIFI_SERVICE));
