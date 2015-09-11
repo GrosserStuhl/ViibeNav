@@ -38,15 +38,9 @@ public class MainActivity extends Activity {
 
         connect = Connector.createConnector((WifiManager) getSystemService(WIFI_SERVICE));
 
-//        TTS.createTTS(this);
-//        TTS.getTTS().speak("Test, Test Test. Das wird ein Test!");
-//        TTS.getTTS().speak("TomTheBomb ist am Start!");
-
-//        .speak("Ich bin hier drin. Das ist so einfach, dass ich schreien möchte. Soo einfach.");
-
         BluetoothScan.getBtScan(this);
         SensorHelper.getSensorHelper(this);
-        
+
         TTS.createTTS(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
