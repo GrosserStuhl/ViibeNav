@@ -600,7 +600,7 @@ public class DBHandler extends SQLiteOpenHelper {
             int y_coord = 0;
 
             while (!c.isAfterLast()) {
-                f_coord = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
+//                f_coord = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
                 x_coord = c.getInt(c.getColumnIndex(COLUMN_X));
                 y_coord = c.getInt(c.getColumnIndex(COLUMN_Y));
                 Coordinate tmp = new Coordinate(f_coord, x_coord, y_coord);
@@ -675,7 +675,7 @@ public class DBHandler extends SQLiteOpenHelper {
             int y_coord = 0;
 
             while (!c.isAfterLast()) {
-                f_coord = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
+//                f_coord = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
                 x_coord = c.getInt(c.getColumnIndex(COLUMN_X));
                 y_coord = c.getInt(c.getColumnIndex(COLUMN_Y));
                 Coordinate tmp = new Coordinate(f_coord, x_coord, y_coord);

@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 import java.util.List;
@@ -31,12 +30,12 @@ public class BluetoothScan {
     private static BluetoothScan singleton;
     private Advertisement advert;
     private BroadcastReceiver mReceiver;
-    private Activity act;
-    private Handler mHandler;
+    private boolean scanStarted;
+    private ScanSettings settings;
 
     private BluetoothScan(Activity act) {
-        this.act = act;
         advert = new Advertisement(act.getApplicationContext());
+        scanStarted = false;
 
         BluetoothManager manager = (BluetoothManager) act.getSystemService(act.BLUETOOTH_SERVICE);
         this.mBluetoothAdapter = manager.getAdapter();
@@ -102,10 +101,10 @@ public class BluetoothScan {
 //        filters.add(filter2);
 
         mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-        ScanSettings settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-        Log.d(TAG,"Bluetooth enabled: "+mBluetoothAdapter.isEnabled() + " Try to start scanning...");
-        mBluetoothLeScanner.startScan(null, settings, mScanCallback);
-
+        settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+        Log.d(TAG, "Bluetooth enabled: " + mBluetoothAdapter.isEnabled() + " Try to start scanning...");
+//        mBluetoothLeScanner.startScan(null, settings, mScanCallback);
+        scanLeDevice();
     }
 
     private ScanCallback mScanCallback = new ScanCallback() {
@@ -173,53 +172,41 @@ public class BluetoothScan {
         return false;
     }
 
-//    private void scanLeDevice(final boolean enable) {
-//        if (enable) {
-//            mHandler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    // < 21
-//                    if (Build.VERSION.SDK_INT < 21) {
-//                        mBluetoothAdapter.stopLeScan(mLeScanCallback);
-//                    } else {
-//                        mLEScanner.stopScan(mScanCallback);
-//
-//                    }
-//                }
-//            }, 250);
-//            if (Build.VERSION.SDK_INT < 21) {
-//                mBluetoothAdapter.startLeScan(mLeScanCallback);
-//            } else {
-//                mLEScanner.startScan(filters, settings, mScanCallback);
-//            }
-//        } else {
-//            if (Build.VERSION.SDK_INT < 21) {
-//                mBluetoothAdapter.stopLeScan(mLeScanCallback);
-//            } else {
-//                mLEScanner.stopScan(mScanCallback);
-//            }
-//        }
-//    }
-
-
-
-
-    public void stopScan() {
-        mBluetoothLeScanner.stopScan(mScanCallback);
+    private void scanLeDevice() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (scanStarted) {
+                    mBluetoothLeScanner.startScan(null, settings, mScanCallback);
+                    scanStarted = false;
+                } else {
+                    mBluetoothLeScanner.stopScan(mScanCallback);
+                    scanStarted = true;
+                }
+                new Handler().postDelayed(this, 1100);
+            }
+        }, 0);
     }
 
-    /*
-     * We have a Handler to process scan results on the main thread,
-     * add them to our list adapter, and update the view
-     */
-    public Handler standardHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-//            OnyxBeacon msgStr = (OnyxBeacon) msg.obj;
-//            applicationUI.updateLayer2();
 
-        }
-    };
+
+
+//    public void stopScan() {
+//        mBluetoothLeScanner.stopScan(mScanCallback);
+//    }
+//
+//    /*
+//     * We have a Handler to process scan results on the main thread,
+//     * add them to our list adapter, and update the view
+//     */
+//    public Handler standardHandler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+////            OnyxBeacon msgStr = (OnyxBeacon) msg.obj;
+////            applicationUI.updateLayer2();
+//
+//        }
+//    };
 
     public BluetoothAdapter getmBluetoothAdapter() {
         return mBluetoothAdapter;
