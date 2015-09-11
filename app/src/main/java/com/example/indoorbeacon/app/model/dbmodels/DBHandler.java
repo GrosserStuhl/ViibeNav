@@ -190,7 +190,7 @@ public class DBHandler extends SQLiteOpenHelper {
 //            Log.d(TAG, "MEDIAN IN LOOP "+median);
 
             String queryOrientation = "";
-            if(map[i].getOrientation().equals(Orientation.back))
+            if (map[i].getOrientation().equals(Orientation.back))
                 queryOrientation = "( " + TABLE_ANCHORS + "." + COLUMN_BACK + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID + " ) ";
             else if (map[i].getOrientation().equals(Orientation.front))
                 queryOrientation = "( " + TABLE_ANCHORS + "." + COLUMN_FRONT + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID + " ) ";
@@ -548,7 +548,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
     public ArrayList<Coordinate> getDirectNeighborAnchors(Coordinate centerPos) {
         ArrayList<Coordinate> neighbors = new ArrayList<>();
-        neighbors.add(centerPos);
+//        neighbors.add(centerPos);
         double x = centerPos.getX();
         double y = centerPos.getY();
         double floor = -1;
@@ -589,9 +589,9 @@ public class DBHandler extends SQLiteOpenHelper {
         ArrayList<Coordinate> result = new ArrayList<>();
         String subquery = "";
 
-        for(int i=0;i<neighbors.size();i++) {
+        for (int i = 0; i < neighbors.size(); i++) {
             String subQuery = COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
-            String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE "+ subQuery +";";
+            String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE " + subQuery + ";";
             Cursor c = db.rawQuery(query, null);
             c.moveToFirst();
 
@@ -603,7 +603,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 f_coord = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
                 x_coord = c.getInt(c.getColumnIndex(COLUMN_X));
                 y_coord = c.getInt(c.getColumnIndex(COLUMN_Y));
-                Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
+                Coordinate tmp = new Coordinate(f_coord, x_coord, y_coord);
                 result.add(tmp);
                 c.moveToNext();
             }
@@ -612,14 +612,14 @@ public class DBHandler extends SQLiteOpenHelper {
 //        Log.d(TAG, "GOT ADJESCENT COORDS: " + result.size());
         db.close();
 
-        Log.d(TAG, "DIRECT NEIGHBOR:\n"+ Util.coordsListToString(result));
+        Log.d(TAG, "DIRECT NEIGHBOR:\n" + Util.coordsListToString(result));
 
         return result;
     }
 
     public ArrayList<Coordinate> getOuterNeighborAnchors(Coordinate centerPos) {
         ArrayList<Coordinate> neighbors = new ArrayList<>();
-        neighbors.add(centerPos);
+//        neighbors.add(centerPos);
         double x = centerPos.getX();
         double y = centerPos.getY();
         double floor = -1;
@@ -664,9 +664,9 @@ public class DBHandler extends SQLiteOpenHelper {
         ArrayList<Coordinate> result = new ArrayList<>();
         String subquery = "";
 
-        for(int i=0;i<neighbors.size();i++) {
+        for (int i = 0; i < neighbors.size(); i++) {
             String subQuery = COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
-            String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE "+ subQuery +";";
+            String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE " + subQuery + ";";
             Cursor c = db.rawQuery(query, null);
             c.moveToFirst();
 
@@ -678,7 +678,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 f_coord = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
                 x_coord = c.getInt(c.getColumnIndex(COLUMN_X));
                 y_coord = c.getInt(c.getColumnIndex(COLUMN_Y));
-                Coordinate tmp = new Coordinate(f_coord,x_coord,y_coord);
+                Coordinate tmp = new Coordinate(f_coord, x_coord, y_coord);
                 result.add(tmp);
                 c.moveToNext();
             }
@@ -686,7 +686,7 @@ public class DBHandler extends SQLiteOpenHelper {
         }
 
 //        Log.d(TAG, "GOT OUTER ADJESCENT COORDS: " + result.size());
-        Log.d(TAG, "OUTER NEIGHBOR:\n"+ Util.coordsListToString(result));
+        Log.d(TAG, "OUTER NEIGHBOR:\n" + Util.coordsListToString(result));
         db.close();
 
 
