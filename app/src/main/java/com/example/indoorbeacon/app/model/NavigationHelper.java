@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -23,6 +24,7 @@ public class NavigationHelper {
     private Coordinate previousPos;
     private LinkedList<Coordinate> path;
     private HashMap<Coordinate, InfoModel> infoTextsForAnchors;
+    private LinkedList<ArrayList<Coordinate>> ranges;
     private TTS tts;
     private Person person;
     private String instructionText;
@@ -58,6 +60,11 @@ public class NavigationHelper {
     }
 
     private void calculateNewSubGoal() {
+        int counter = 0;
+        int start = 0;
+        for (Coordinate coord : path) {
+
+        }
 
     }
 
