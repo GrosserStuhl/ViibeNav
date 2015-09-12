@@ -37,7 +37,7 @@ public class Definitions {
      * (The measured one and the one in the look-up table). Other Deviations bigger than this threshold
      * are not taken in account for positioning.
      */
-    public static final float POSITIONING_THRESHOLD = 5.5f;
+    public static final float POSITIONING_THRESHOLD = 30f;
 
     /**
      * This is the amount of maximum comparisons between measured RSSI values and the ones in the look-up table.
