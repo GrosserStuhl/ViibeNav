@@ -7,6 +7,7 @@ import com.example.indoorbeacon.app.model.Util;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 
@@ -42,16 +43,20 @@ public class Ewknn implements PositionAlgorithm {
         // Step 1/3 done -> I RPs filtering
         ArrayList<DeviationToCoord> data = DBHandler.getDB().getAllDistancesFromMedians(map);
 
-        if(data == null || data.isEmpty())
-                return new Coordinate(-1,-1,-1);
+        if(data == null || data.isEmpty()) {
+            Log.d(TAG, "INVALID COORDINATE FILTER 1");
+            return new Coordinate(-1, -1, -1);
+        }
         // Step 2/3 done -> II RPs filtering
         // Remove minDeviation from list and calculate next threshold with it
         // after that the filtered list with minDeviation added is returned
         DeviationToCoord minDeviation = getMinDevToCoord(data);
         data = filterRPsII(minDeviation, data);
 
-        if(data == null || data.isEmpty())
-            return new Coordinate(-1,-1,-1);
+        if(data == null || data.isEmpty()) {
+            Log.d(TAG, "INVALID COORDINATE FILTER 2");
+            return new Coordinate(-1, -1, -1);
+        }
         // Step 3/3 done -> Position estimate
         return estimatePosFromData(data);
     }
@@ -101,17 +106,8 @@ public class Ewknn implements PositionAlgorithm {
     }
 
     private DeviationToCoord getMinDevToCoord(ArrayList<DeviationToCoord> data){
-        DeviationToCoord res = null;
-        double minDeviation = 100;
-
-        for(DeviationToCoord tmp : data)
-            if(tmp.getdeviation() < minDeviation)
-                res = tmp;
-
-//        if(res== null)
-//            throw new NullPointerException("No deviation is less minDeviation! ");
-
-        return res;
+        Collections.sort(data, new DevToCoordComparator());
+        return data.get(0);
     }
 
     private ArrayList<DeviationToCoord> filterRPsII(DeviationToCoord min, ArrayList<DeviationToCoord> data){

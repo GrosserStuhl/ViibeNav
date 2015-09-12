@@ -82,6 +82,17 @@ public class Util {
         return res;
     }
 
+    public static String doubleListToString(ArrayList<Double> data){
+        String res = "{ ";
+        for(int i=0;i<data.size();i++)
+            if(i<data.size()-1)
+                res += data.get(i) + ",";
+            else
+                res += data.get(i);
+        res += " }";
+        return res;
+    }
+
     public static String coordsListToString(ArrayList<Coordinate> input){
         String res = "";
         for(Coordinate c : input){
