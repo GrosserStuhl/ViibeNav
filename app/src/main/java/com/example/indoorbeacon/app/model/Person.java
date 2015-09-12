@@ -81,7 +81,9 @@ public class Person {
 
         ArrayList<Coordinate> neighbours;
 
-        if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
+        if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM)
+            setCurrentPos(currentPos);
+        else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
                 && walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM * 2) {
             //Die Matrix mit den nächsten Nachbarn zu estimatedPos
             // x x x
@@ -89,10 +91,8 @@ public class Person {
             // x x x  (3x3 Matrix)
 
             neighbours = DBHandler.getDB().getDirectNeighborAnchors(currentPos);
-            for (Coordinate neighbour : neighbours) {
-                Log.d(TAG, "nighbours: " + neighbour.toString());
-            }
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
+            Log.d(TAG, "newCurPos: " + newEstimatedPos);
             setCurrentPos(newEstimatedPos);
             walkedDistance = 0;
 
@@ -109,10 +109,8 @@ public class Person {
             // * * * * *
 
             neighbours = DBHandler.getDB().getOuterNeighborAnchors(currentPos);
-            for (Coordinate neighbour : neighbours) {
-                Log.d(TAG, "OuterNighbours: " + neighbour.toString());
-            }
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
+            Log.d(TAG, "newCurPos: " + newEstimatedPos);
             setCurrentPos(newEstimatedPos);
             walkedDistance = 0;
 
@@ -122,13 +120,13 @@ public class Person {
     }
 
     private Coordinate findNextBestPos(ArrayList<Coordinate> neighbours, Coordinate estimatedPos) {
-        Coordinate newEstimatedPos = estimatedPos;
-        double smallestDistance = 0;
+        Coordinate newEstimatedPos = new Coordinate(-1, -1, -1);
+        double smallestDistance = 10;
 
         for (Coordinate tempPos : neighbours) {
-            if (tempPos.equals(estimatedPos))
+            if (tempPos.equals(estimatedPos)) {
                 break;
-            else {
+            } else {
                 double t_X = tempPos.getX();
                 double t_Y = tempPos.getY();
                 double e_X = estimatedPos.getX();
@@ -141,6 +139,8 @@ public class Person {
                 }
             }
         }
+        if (newEstimatedPos.equals(new Coordinate(-1, -1, -1)))
+            Log.e(TAG, "no nearest neighbour found!");
         return newEstimatedPos;
     }
 
