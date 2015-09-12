@@ -32,6 +32,19 @@ public class Definitions {
      */
     public static final int SIGNAL_TOO_BAD_THRESHOLD = -90;
 
+    /**
+     * The value which is the least possible deviation, for two corresponding RSSI values
+     * (The measured one and the one in the look-up table). Other Deviations bigger than this threshold
+     * are not taken in account for positioning.
+     */
+    public static final float POSITIONING_THRESHOLD = 5.5f;
+
+    /**
+     * This is the amount of maximum comparisons between measured RSSI values and the ones in the look-up table.
+     * Only the POSITIONING_LIMIT (e.g. 10) least deviations to one measured RSSI value are
+     * taken in account for positioning.
+     */
+    public static final int POSITIONING_LIMIT = 10;
 
     /**
      * The time it takes a user to make a step.
@@ -59,4 +72,5 @@ public class Definitions {
     public static final float WALKED_WALKED_CENTIMETERS_PER_SECOND = 70f;
 
     public static final int ANCHORPOINT_DISTANCE_IN_CM = 100;
+
 }

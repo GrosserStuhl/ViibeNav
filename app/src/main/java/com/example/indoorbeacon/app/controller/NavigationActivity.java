@@ -23,10 +23,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.indoorbeacon.app.R;
-import com.example.indoorbeacon.app.model.NavigationHelper;
-import com.example.indoorbeacon.app.model.SensorHelper;
 import com.example.indoorbeacon.app.model.Connector;
+import com.example.indoorbeacon.app.model.Coordinate;
+import com.example.indoorbeacon.app.model.NavigationHelper;
 import com.example.indoorbeacon.app.model.Person;
+import com.example.indoorbeacon.app.model.SensorHelper;
+import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
 /**
  * Created by #Dima on 28/07/2015.
@@ -68,6 +70,8 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         Intent intent = getIntent();
         String ziel = intent.getStringExtra("Ziel");
         Log.d(TAG, "Ziel: " + ziel);
+        Coordinate target = DBHandler.getDB().getTarget(ziel);
+
 
         person = new Person(this);
         navigationHelper = new NavigationHelper(this, person, ziel);
