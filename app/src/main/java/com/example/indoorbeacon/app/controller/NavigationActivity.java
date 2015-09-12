@@ -135,8 +135,8 @@ public class NavigationActivity extends Activity implements SensorEventListener 
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                estimatedCoordTextView.setText("x: " + person.getCurrentPos().getX() + " | y: " + person.getCurrentPos().getY());
-                                estimatedAlgorithm.setText("x: " + person.getCurrentPosAlgorithm() + " | y: " + person.getCurrentPosAlgorithm());
+                                estimatedCoordTextView.setText(person.getCurrentPos().toString());
+                                estimatedAlgorithm.setText(person.getCurrentPosAlgorithm().toString());
                                 triggerMeasuring.sendEmptyMessage(0);
                             }
                         }, 1500);
