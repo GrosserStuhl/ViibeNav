@@ -89,6 +89,9 @@ public class Person {
             // x x x  (3x3 Matrix)
 
             neighbours = DBHandler.getDB().getDirectNeighborAnchors(currentPos);
+            for (Coordinate neighbour : neighbours) {
+                Log.d(TAG, "nighbours: " + neighbour.toString());
+            }
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             setCurrentPos(newEstimatedPos);
             walkedDistance = 0;
@@ -106,6 +109,9 @@ public class Person {
             // * * * * *
 
             neighbours = DBHandler.getDB().getOuterNeighborAnchors(currentPos);
+            for (Coordinate neighbour : neighbours) {
+                Log.d(TAG, "OuterNighbours: " + neighbour.toString());
+            }
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             setCurrentPos(newEstimatedPos);
             walkedDistance = 0;
