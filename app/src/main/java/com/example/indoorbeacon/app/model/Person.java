@@ -100,7 +100,11 @@ public class Person {
     public void estimatePos(MacToMedian[] data) {
         trackingActivated = false;
 
+        // need to round the values for adjescent points
         Coordinate estimatedPos = getAlgorithm().estimatePos(data);
+        estimatedPos.setX((int)Math.round(estimatedPos.getX()));
+        estimatedPos.setY((int)Math.round(estimatedPos.getY()));
+
         setCurrentPosAlgorithm(estimatedPos);
 //        setCoord(estimatedPos);
 

@@ -249,7 +249,6 @@ public class DBHandler extends SQLiteOpenHelper {
 
                 float deviation = c.getInt(c.getColumnIndex(LOCAL_COLUMN_DEVIATION));
                 devsToCoords.add(new DeviationToCoord(deviation, coordinate));
-
 //                Log.d(TAG, "Deviation-Median" + c.getInt(c.getColumnIndex(MEDIANS_COLUMN_ID)) +
 //                        " deviation: " + deviation +
 //                        " -> Coord: " + coordinate + " macAddress " + macAddress);
@@ -595,7 +594,7 @@ public class DBHandler extends SQLiteOpenHelper {
             }
             c.close();
         }
-//        Log.d(TAG, "GOT ADJESCENT COORDS: " + result.size());
+        Log.d(TAG, "GOT ADJESCENT COORDS: " + result.size());
         db.close();
 
         Log.d(TAG, "DIRECT NEIGHBOR:\n" + Util.coordsListToString(result));
