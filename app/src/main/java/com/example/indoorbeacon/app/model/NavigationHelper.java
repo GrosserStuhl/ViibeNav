@@ -50,9 +50,7 @@ public class NavigationHelper {
         previousDirection = 0;
         directionUnit = " °";
 
-        //Hier Datenbankabfrage, in info-table nach dem ziel suchen und ID der info bekommen
-        // dann in anchortabelle nach dem anchor suchen der die infoID hat
-        target = new Coordinate(-1, -1, -1);
+        target = DBHandler.getDB().getTarget(ziel);
 //        path = DBHandler.getDB().getAllAnchors();
         path = new LinkedList<>();
         for (int i = 0; i < 4; i++) {
