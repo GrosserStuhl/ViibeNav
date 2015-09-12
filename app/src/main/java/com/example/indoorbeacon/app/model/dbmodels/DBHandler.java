@@ -377,10 +377,15 @@ public class DBHandler extends SQLiteOpenHelper {
                 roomname = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
             if(!c.isNull(c.getColumnIndex(COLUMN_ENVIRONMENT)))
                 environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
+            else {
+                c.moveToNext();
+                continue;
+            }
+
             if(!c.isNull(c.getColumnIndex(COLUMN_CATEGORY)))
                 category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
 
-            res.put(new Coordinate(floor, x, y), new InfoModel(info_id,personname,roomname,environment,category));
+            res.put(new Coordinate(floor, x, y), new InfoModel(info_id, personname, roomname, environment, category));
             c.moveToNext();
         }
 
