@@ -117,8 +117,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-//                navigationHelper.updateImage(arrowImage, sensorHelper.getOrientation());
-                sensorHelper.updateImage(arrowImage);
+                navigationHelper.updateImage(arrowImage, sensorHelper.getOrientation());
                 //TODO  2. TextView von Tom statt das null da reinsetzen
 //                navigationHelper.updateTextViews(instructionTextView, null);
                 new Handler().postDelayed(this, 250);

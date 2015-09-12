@@ -57,15 +57,12 @@ public class NavigationHelper {
         path = new LinkedList<>();
         for (int i = 0; i < 4; i++) {
             path.add(new Coordinate(-1, 0, i));
-            Log.d(TAG, "created coord: " + new Coordinate(-1, 0, i).toString());
         }
         for (int i = 1; i < 4; i++) {
             path.add(new Coordinate(-1, i, 3));
-            Log.d(TAG, "created coord: " + new Coordinate(-1, i, 3).toString());
         }
         for (int i = 2; i > -1; i--) {
             path.add(new Coordinate(-1, 3, i));
-            Log.d(TAG, "created coord: " + new Coordinate(-1, 3, i).toString());
         }
         infoTextsForAnchors = DBHandler.getDB().getCoordinateToInfoModelMap();
         ranges = new LinkedList<>();

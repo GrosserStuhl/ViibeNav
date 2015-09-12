@@ -186,22 +186,6 @@ public class SensorHelper {
         }
     }
 
-    public void updateImage(ImageView arrowImage) {
-        RotateAnimation ra = new RotateAnimation(
-                mCurrentDegree,
-                -orientation,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f);
-
-        ra.setDuration(250);
-
-        ra.setFillAfter(true);
-
-        arrowImage.startAnimation(ra);
-        mCurrentDegree = -orientation;
-    }
-
     private void broadcastChange() {
         Intent intent = new Intent("walking boolean changed");
         intent.putExtra("isWalking", isWalking);
