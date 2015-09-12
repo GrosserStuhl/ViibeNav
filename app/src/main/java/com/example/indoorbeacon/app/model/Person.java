@@ -74,8 +74,8 @@ public class Person {
 
         // need to round the values for adjescent points
         Coordinate estimatedPos = getAlgorithm().estimatePos(data);
-//        estimatedPos.setX((int) Math.round(estimatedPos.getX()));
-//        estimatedPos.setY((int) Math.round(estimatedPos.getY()));
+        estimatedPos.setX((int) Math.round(estimatedPos.getX()));
+        estimatedPos.setY((int) Math.round(estimatedPos.getY()));
 
         setCurrentPosAlgorithm(estimatedPos);
 

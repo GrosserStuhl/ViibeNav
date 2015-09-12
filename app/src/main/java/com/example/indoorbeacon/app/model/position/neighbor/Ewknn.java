@@ -108,6 +108,13 @@ public class Ewknn implements PositionAlgorithm {
     private DeviationToCoord getMinDevToCoord(ArrayList<DeviationToCoord> data){
         Collections.sort(data, new DevToCoordComparator());
         return data.get(0);
+//        DeviationToCoord res = null;
+//        double minDeviation = 100;
+//
+//        for(DeviationToCoord tmp : data)
+//            if(tmp.getdeviation() < minDeviation)
+//                res = tmp;
+//        return res;
     }
 
     private ArrayList<DeviationToCoord> filterRPsII(DeviationToCoord min, ArrayList<DeviationToCoord> data){
