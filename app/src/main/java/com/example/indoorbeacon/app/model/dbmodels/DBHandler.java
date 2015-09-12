@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.indoorbeacon.app.model.Coordinate;
+import com.example.indoorbeacon.app.model.Definitions;
 import com.example.indoorbeacon.app.model.Orientation;
 import com.example.indoorbeacon.app.model.Util;
 import com.example.indoorbeacon.app.model.position.neighbor.DeviationToCoord;
@@ -179,8 +180,35 @@ public class DBHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public Coordinate getTarget(String targetString){
+        SQLiteDatabase db = getWritableDatabase();
+        final String query = "SELECT " + COLUMN_X + "," + COLUMN_Y + " FROM '" + TABLE_ANCHORS + "'"+
+                " JOIN '" + TABLE_INFO + "' ON " + TABLE_ANCHORS + "."+COLUMN_INFO_ID +"="+ TABLE_INFO+"."+INFO_COLUMN_ID+" WHERE ("+
+                COLUMN_PERSON_NAME + " LIKE '%"+targetString+"%' OR " +
+                COLUMN_ROOM_NAME + " LIKE '%"+targetString+"%');";
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
 
-    public ArrayList<DeviationToCoord> getAllDistancesFromMedians(MacToMedian[] map, int maxResults, float threshold) {
+        int x = -1;
+        int y = -1;
+        int floor = -1;
+
+        Coordinate coord = new Coordinate(floor,x,y);
+
+        while (!c.isAfterLast()) {
+            if(!c.isNull(c.getColumnIndex(COLUMN_X)))
+                coord.setX(c.getInt(c.getColumnIndex(COLUMN_X)));
+            if (!c.isNull(c.getColumnIndex(COLUMN_Y)))
+                coord.setY(c.getInt(c.getColumnIndex(COLUMN_Y)));
+            c.moveToNext();
+        }
+        c.close();
+        db.close();
+        return coord;
+    }
+
+
+    public ArrayList<DeviationToCoord> getAllDistancesFromMedians(MacToMedian[] map) {
         SQLiteDatabase db = getWritableDatabase();
 
         ArrayList<DeviationToCoord> devsToCoords = new ArrayList<>();
@@ -206,7 +234,7 @@ public class DBHandler extends SQLiteOpenHelper {
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_5 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_6 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "  ) AND " + queryOrientation +
-                    " GROUP BY " + COLUMN_MEDIAN_VALUE + " HAVING deviation <=" + threshold + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + maxResults + ";";
+                    " GROUP BY " + COLUMN_MEDIAN_VALUE + " HAVING deviation <=" + Definitions.POSITIONING_THRESHOLD + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + Definitions.POSITIONING_LIMIT + ";";
 
             // IMPORTANT - NOTE:
             // IT MAKES SENSE TO SET UP THE LIMIT TO 5 WHEN MULTIPLE ANCHORS ARE SET IN THE RADIO MAP
@@ -227,6 +255,7 @@ public class DBHandler extends SQLiteOpenHelper {
 //                        " -> Coord: " + coordinate + " macAddress " + macAddress);
                 c.moveToNext();
             }
+            c.close();
         }
         db.close();
 //        return devsToCoords.toArray(new DeviationToCoord[devsToCoords.size()]);
@@ -323,9 +352,9 @@ public class DBHandler extends SQLiteOpenHelper {
         // Move to the first row in your results
         c.moveToFirst();
 
-        int x = 0;
-        int y = 0;
-        int floor = 0;
+        int x = -1;
+        int y = -1;
+        int floor = -1;
 
         int info_id = 0;
         String personname = "";
@@ -334,15 +363,23 @@ public class DBHandler extends SQLiteOpenHelper {
         String category = "";
 
         while (!c.isAfterLast()) {
-            x = c.getInt(c.getColumnIndex(COLUMN_X));
-            y = c.getInt(c.getColumnIndex(COLUMN_Y));
-            floor = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
+            if(!c.isNull(c.getColumnIndex(COLUMN_X)))
+                x = c.getInt(c.getColumnIndex(COLUMN_X));
+            if(!c.isNull(c.getColumnIndex(COLUMN_Y)))
+                y = c.getInt(c.getColumnIndex(COLUMN_Y));
+            if(!c.isNull(c.getColumnIndex(COLUMN_FLOOR)))
+                floor = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
 
-            info_id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
-            personname = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
-            roomname = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
-            environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
-            category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
+            if(!c.isNull(c.getColumnIndex(INFO_COLUMN_ID)))
+                info_id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
+            if(!c.isNull(c.getColumnIndex(COLUMN_PERSON_NAME)))
+                personname = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
+            if(!c.isNull(c.getColumnIndex(COLUMN_ROOM_NAME)))
+                roomname = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
+            if(!c.isNull(c.getColumnIndex(COLUMN_ENVIRONMENT)))
+                environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
+            if(!c.isNull(c.getColumnIndex(COLUMN_CATEGORY)))
+                category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
 
             res.put(new Coordinate(floor, x, y), new InfoModel(info_id,personname,roomname,environment,category));
             c.moveToNext();

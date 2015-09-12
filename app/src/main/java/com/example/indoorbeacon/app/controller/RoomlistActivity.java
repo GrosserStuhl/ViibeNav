@@ -63,7 +63,7 @@ public class RoomlistActivity extends Activity {
                     String value = String.valueOf(parent.getExpandableListAdapter().getChild(groupPosition, childPosition));
                     value = value.substring("<font color='#000000'>".length());
                     value = value.split("<")[0];
-//
+
                     Intent intent = new Intent(RoomlistActivity.this, NavigationActivity.class);
                     intent.putExtra("Ziel", value);
                     intent.putExtra("ParentClassName", RoomlistActivity.this.getClass().getSimpleName());

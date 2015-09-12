@@ -79,6 +79,6 @@ public class Coordinate {
 
     @Override
     public String toString() {
-        return "x: " + getX() + " | " + "y: " + getY() + " | " + "floor: " + getFloor();
+        return "x: " + getX() + " | " + "y: " + getY() /* + " | " + "floor: " + getFloor() */;
     }
 }

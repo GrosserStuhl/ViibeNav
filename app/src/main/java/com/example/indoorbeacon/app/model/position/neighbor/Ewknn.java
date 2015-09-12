@@ -24,8 +24,7 @@ import java.util.Iterator;
  */
 public class Ewknn implements PositionAlgorithm {
 
-    private static float threshold = 2.5f;
-    private static int limit = 10;
+
 
     @Override
     public Coordinate estimatePos(MacToMedian[] map){
@@ -41,7 +40,7 @@ public class Ewknn implements PositionAlgorithm {
         // see slide 10 on ppxt mentioned above
         // ||||||||||||||||||||||||||||||||||||
         // Step 1/3 done -> I RPs filtering
-        ArrayList<DeviationToCoord> data = DBHandler.getDB().getAllDistancesFromMedians(map,limit,threshold);
+        ArrayList<DeviationToCoord> data = DBHandler.getDB().getAllDistancesFromMedians(map);
 
         if(data == null || data.isEmpty())
                 return new Coordinate(-1,-1,-1);
