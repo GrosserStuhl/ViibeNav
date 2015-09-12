@@ -70,8 +70,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         Intent intent = getIntent();
         String ziel = intent.getStringExtra("Ziel");
         Log.d(TAG, "Ziel: " + ziel);
-        Coordinate target = DBHandler.getDB().getTarget(ziel);
-
 
         person = new Person(this);
         navigationHelper = new NavigationHelper(this, person, ziel);

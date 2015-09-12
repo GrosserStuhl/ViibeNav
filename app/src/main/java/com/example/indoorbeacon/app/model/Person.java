@@ -30,7 +30,6 @@ public class Person {
 
     private SensorHelper sensorHelper;
     private int walkedDistance;
-    private boolean trackingActivated = false;
 
     private ArrayList<Coordinate> tmpCoordinates;
 
@@ -38,7 +37,7 @@ public class Person {
         this.activity = activity;
         tmpCoordinates = new ArrayList<>();
         currentPos = new Coordinate(-1, -1, -1);
-        currentPosAlgorithm = new Coordinate(-1,-1,-1);
+        currentPosAlgorithm = new Coordinate(-1, -1, -1);
         measurement = new Measurement(activity);
 
         algorithm = new Ewknn();
@@ -48,39 +47,13 @@ public class Person {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (trackingActivated) {
-                    if (sensorHelper.isWalking()) {
-                        walkedDistance += Definitions.WALKED_WALKED_CENTIMETERS_PER_SECOND / 2;
-                        Log.d(TAG, "walkedDistance " + walkedDistance);
-                    }
+                if (sensorHelper.isWalking()) {
+                    walkedDistance += Definitions.WALKED_WALKED_CENTIMETERS_PER_SECOND / 2;
+                    Log.d(TAG, "walkedDistance " + walkedDistance);
                 }
                 new Handler().postDelayed(this, 500);
             }
         }, 0);
-
-//        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-//            @Override
-//            public void onReceive(Context context, Intent intent) {
-//
-//                boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
-//
-//                if (startedMeasuring) {
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if (measurement.isMeasuring()) {
-//                                if (sensorHelper.isWalking())
-//                                    walkedDistance += Definitions.WALKED_WALKED_CENTIMETERS_PER_SECOND / 2;
-//                                new Handler().postDelayed(this, 500);
-//                            }
-//                        }
-//                    }, 0);
-//                }
-//            }
-//        };
-//
-//        LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver,
-//                new IntentFilter("measuring boolean changed"));
     }
 
     public void getMostLikelyPosition() {
@@ -98,30 +71,27 @@ public class Person {
     }
 
     public void estimatePos(MacToMedian[] data) {
-        trackingActivated = false;
 
         // need to round the values for adjescent points
         Coordinate estimatedPos = getAlgorithm().estimatePos(data);
-        estimatedPos.setX((int)Math.round(estimatedPos.getX()));
-        estimatedPos.setY((int)Math.round(estimatedPos.getY()));
+        estimatedPos.setX((int) Math.round(estimatedPos.getX()));
+        estimatedPos.setY((int) Math.round(estimatedPos.getY()));
 
         setCurrentPosAlgorithm(estimatedPos);
-//        setCoord(estimatedPos);
 
         ArrayList<Coordinate> neighbours;
-        if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM) {
-            setCurrentPos(currentPos);
-        } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
+
+        if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
                 && walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM * 2) {
             //Die Matrix mit den nächsten Nachbarn zu estimatedPos
             // x x x
             // x o x
             // x x x  (3x3 Matrix)
 
-
             neighbours = DBHandler.getDB().getDirectNeighborAnchors(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             setCurrentPos(newEstimatedPos);
+            walkedDistance = 0;
 
             Log.d(TAG, "SIZE of neighbors nächster: " + neighbours.size());
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM * 2) {
@@ -138,13 +108,11 @@ public class Person {
             neighbours = DBHandler.getDB().getOuterNeighborAnchors(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             setCurrentPos(newEstimatedPos);
+            walkedDistance = 0;
 
             Log.d(TAG, "SIZE of neighbors übernächster: " + neighbours.size());
         }
         measurement.setState(Measurement.State.notMeasuring);
-
-        walkedDistance = 0;
-        trackingActivated = true;
     }
 
     private Coordinate findNextBestPos(ArrayList<Coordinate> neighbours, Coordinate estimatedPos) {
