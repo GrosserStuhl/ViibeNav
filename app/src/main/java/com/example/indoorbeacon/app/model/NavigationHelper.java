@@ -1,6 +1,7 @@
 package com.example.indoorbeacon.app.model;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -19,8 +20,8 @@ import java.util.LinkedList;
 public class NavigationHelper {
     private static final String TAG = "NavigationHelper";
 
-    private Coordinate goal;
-    private Coordinate nextSubGoal;
+    private Coordinate target;
+    private Coordinate nextSubTarget;
     private Coordinate previousPos;
     private LinkedList<Coordinate> path;
     private HashMap<Coordinate, InfoModel> infoTextsForAnchors;
@@ -51,21 +52,95 @@ public class NavigationHelper {
 
         //Hier Datenbankabfrage, in info-table nach dem ziel suchen und ID der info bekommen
         // dann in anchortabelle nach dem anchor suchen der die infoID hat
-        goal = new Coordinate(-1, -1, -1);
-//        path = new LinkedList<>(); //Hier DB-Abfrage um alle Anchorpoints in Reihenfolgezu bekommen
-//        infoTextsForAnchors = new HashMap<>(); //Alle Koordinaten reinspeichern, die einen Info text haben
-        path = DBHandler.getDB().getAllAnchors();
+        target = new Coordinate(-1, -1, -1);
+//        path = DBHandler.getDB().getAllAnchors();
+        path = new LinkedList<>();
+        for (int i = 0; i < 4; i++) {
+            path.add(new Coordinate(-1, 0, i));
+            Log.d(TAG, "created coord: " + new Coordinate(-1, 0, i).toString());
+        }
+        for (int i = 1; i < 4; i++) {
+            path.add(new Coordinate(-1, i, 3));
+            Log.d(TAG, "created coord: " + new Coordinate(-1, i, 3).toString());
+        }
+        for (int i = 2; i > -1; i--) {
+            path.add(new Coordinate(-1, 3, i));
+            Log.d(TAG, "created coord: " + new Coordinate(-1, 3, i).toString());
+        }
         infoTextsForAnchors = DBHandler.getDB().getCoordinateToInfoModelMap();
-        calculateNewSubGoal();
+        ranges = new LinkedList<>();
+        dividePathIntoRanges();
     }
 
-    private void calculateNewSubGoal() {
+    private void dividePathIntoRanges() {
         int counter = 0;
-        int start = 0;
-        for (Coordinate coord : path) {
-
+        int newRangeStart = 0;
+        double lastX = 0;
+        double lastY = 0;
+        boolean nextNavIsAlong_X_Axis = false;
+        boolean nextNavIsAlong_Y_Axis = false;
+        Coordinate startPos = path.getFirst();
+        Coordinate secondPos = path.get(1);
+        if (secondPos.getX() > startPos.getX()) {
+            nextNavIsAlong_X_Axis = true;
+            lastX = secondPos.getX();
+            counter++;
+        } else if (secondPos.getY() > startPos.getY()) {
+            nextNavIsAlong_Y_Axis = true;
+            lastY = secondPos.getY();
+            counter++;
         }
 
+        for (int i = 2; i < path.size(); i++) {
+            if (nextNavIsAlong_X_Axis) {
+                if (path.get(i).getX() > lastX || path.get(i).getX() < lastX) {
+                    lastX = path.get(i).getX();
+                    Log.d(TAG, "x-if");
+                } else {
+                    Log.d(TAG, "x-else");
+                    ArrayList<Coordinate> range = new ArrayList<>();
+                    for (int j = newRangeStart; j <= counter; j++) {
+                        range.add(path.get(j));
+                    }
+                    ranges.add(range);
+                    //Counter + 1, da counter erst am ende der Schleife hochgezählt wird
+                    newRangeStart = counter + 1;
+                    nextNavIsAlong_X_Axis = false;
+                    nextNavIsAlong_Y_Axis = true;
+                }
+            } else if (nextNavIsAlong_Y_Axis) {
+                if (path.get(i).getY() > lastY || path.get(i).getY() < lastY) {
+                    lastY = path.get(i).getY();
+                    Log.d(TAG, "y-if");
+                } else {
+                    Log.d(TAG, "y-else");
+                    ArrayList<Coordinate> range = new ArrayList<>();
+                    for (int j = newRangeStart; j <= counter; j++) {
+                        range.add(path.get(j));
+                    }
+                    //Counter + 1, da counter erst am ende der Schleife hochgezählt wird
+                    newRangeStart = counter + 1;
+                    ranges.add(range);
+                    nextNavIsAlong_Y_Axis = false;
+                    nextNavIsAlong_X_Axis = true;
+                }
+            }
+            counter++;
+            if (i == path.size() - 1) {
+                ArrayList<Coordinate> range = new ArrayList<>();
+                for (int j = newRangeStart; j <= counter; j++) {
+                    range.add(path.get(j));
+                }
+                ranges.add(range);
+            }
+        }
+
+        for (int i = 0; i < ranges.size(); i++) {
+            Log.d(TAG, "Range #" + i + ":");
+            for (Coordinate c : ranges.get(i)) {
+                Log.d(TAG, c.toString());
+            }
+        }
     }
 
     public void updateTextViews(TextView distanceTextView, TextView directionTextView) {
