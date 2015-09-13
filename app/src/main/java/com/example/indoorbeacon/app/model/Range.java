@@ -9,12 +9,12 @@ public class Range {
     public static final int NONE = 0;
     public static final int LEFT = 1;
     public static final int RIGHT = 2;
+    public static final int LAST = 3;
 
     private ArrayList<Coordinate> coordinates;
     private int relationToNextRange;
     private boolean hasEnvironmentalInfos = false;
     private ArrayList<String> environmentalInfos;
-    private boolean isLastRange = false;
 
     public Range(ArrayList<Coordinate> coordinates, int relationToNextRange) {
         this.coordinates = coordinates;
@@ -53,12 +53,18 @@ public class Range {
         environmentalInfos.add(info);
     }
 
-    public boolean isLastRange() {
-        return isLastRange;
+    public boolean isLastRange(){
+        return getRelationToNextRange() == Range.LAST;
     }
 
-    public void markAsLastRange() {
-        isLastRange = true;
+    public String getRelationToNextRangeAsString(){
+        if (relationToNextRange == Range.LAST)
+            return " und dann haben Sie ihr Ziel erreicht.";
+        else if(relationToNextRange == Range.LEFT)
+            return " und dann links abbiegen.";
+        else if (relationToNextRange == Range.RIGHT)
+            return " und dann rechts abbiegen.";
+        return " Achtung! Es konnte keine anschließende Richtung bestimmt werden.";
     }
 
     @Override
@@ -70,7 +76,6 @@ public class Range {
 
         if (relationToNextRange != range.relationToNextRange) return false;
         if (hasEnvironmentalInfos != range.hasEnvironmentalInfos) return false;
-        if (isLastRange != range.isLastRange) return false;
         if (coordinates != null ? !coordinates.equals(range.coordinates) : range.coordinates != null) return false;
         return !(environmentalInfos != null ? !environmentalInfos.equals(range.environmentalInfos) : range.environmentalInfos != null);
     }
@@ -81,7 +86,6 @@ public class Range {
         result = 31 * result + relationToNextRange;
         result = 31 * result + (hasEnvironmentalInfos ? 1 : 0);
         result = 31 * result + (environmentalInfos != null ? environmentalInfos.hashCode() : 0);
-        result = 31 * result + (isLastRange ? 1 : 0);
         return result;
     }
 

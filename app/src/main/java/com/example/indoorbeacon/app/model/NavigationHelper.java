@@ -17,7 +17,6 @@ import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Objects;
 
 /**
  * Created by Dima on 05/09/2015.
@@ -32,10 +31,11 @@ public class NavigationHelper {
     private HashMap<Coordinate, InfoModel> infoTextsForAnchors;
     private LinkedList<Range> ranges;
     private Range currentRange;
+    private boolean firstInstruction = true;
 
     private TTS tts;
     private Person person;
-    private String instructionText;
+    private ArrayList<String> instructionTexts;
     private float previousOrientation;
     private float firstDirection;
     private float previousDirection;
@@ -54,17 +54,17 @@ public class NavigationHelper {
         directionUnit = " °";
 
         target = DBHandler.getDB().getTarget(ziel);
-//        path = DBHandler.getDB().getAllAnchors();
-        path = new LinkedList<>();
-        for (int i = 0; i < 4; i++) {
-            path.add(new Coordinate(-1, 0, i));
-        }
-        for (int i = 1; i < 4; i++) {
-            path.add(new Coordinate(-1, i, 3));
-        }
-        for (int i = 2; i > -1; i--) {
-            path.add(new Coordinate(-1, 3, i));
-        }
+        path = DBHandler.getDB().getAllAnchors();
+//        path = new LinkedList<>();
+//        for (int i = 0; i < 4; i++) {
+//            path.add(new Coordinate(-1, 0, i));
+//        }
+//        for (int i = 1; i < 4; i++) {
+//            path.add(new Coordinate(-1, i, 3));
+//        }
+//        for (int i = 2; i > -1; i--) {
+//            path.add(new Coordinate(-1, 3, i));
+//        }
         infoTextsForAnchors = DBHandler.getDB().getCoordinateToInfoModelMap();
         ranges = new LinkedList<>();
         dividePathIntoRanges();
@@ -133,10 +133,10 @@ public class NavigationHelper {
             }
         }
 
-        ranges.get(0).setRelationToNextRange(Range.LEFT);
-        ranges.get(1).setRelationToNextRange(Range.RIGHT);
+//        ranges.get(0).setRelationToNextRange(Range.LEFT);
+//        ranges.get(1).setRelationToNextRange(Range.RIGHT);
         currentRange = ranges.getFirst();
-        ranges.getLast().markAsLastRange();
+        ranges.getLast().setRelationToNextRange(Range.LAST);
 
         if (currentRange.getRelationToNextRange() == Range.LEFT)
             firstDirection = 270;
@@ -145,7 +145,7 @@ public class NavigationHelper {
 
         for (Range range : ranges) {
             for (Coordinate coord : range.getCoordList()) {
-                if (infoTextsForAnchors.containsKey(coord) && !infoTextsForAnchors.get(coord).getEnvironment().equals("")) {
+                if (infoTextsForAnchors.containsKey(coord) && !infoTextsForAnchors.get(coord).getEnvironment().trim().isEmpty()) {
                     range.addEnvironmentalInfos(infoTextsForAnchors.get(coord).getEnvironment());
                 }
             }
@@ -179,28 +179,36 @@ public class NavigationHelper {
     }
 
     private void onPositionChangedAction() {
-        Coordinate curPos = person.getCurrentPos();
-        Range newRange;
-        for (Range range : ranges) {
-            if (!range.equals(currentRange) && range.getCoordList().contains(curPos)) {
-                newRange = range;
-                currentRange = newRange;
-                onNewRangeEntered();
-                Log.d(TAG, "new range set");
-                break;
+        if (firstInstruction) {
+            firstInstruction = false;
+            onNewRangeEntered();
+        } else {
+            Coordinate curPos = person.getCurrentPos();
+            Range newRange;
+            for (Range range : ranges) {
+                if (!range.equals(currentRange) && range.getCoordList().contains(curPos)) {
+                    newRange = range;
+                    currentRange = newRange;
+                    onNewRangeEntered();
+                    Log.d(TAG, "new range set");
+                    break;
+                }
             }
         }
     }
 
     private void onNewRangeEntered() {
-
-    }
-
-    private void newRangeEntered(){
         ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add("Glastür");strings.add("Teppich");strings.add("Ming-Vase");
-        tts.speakList(strings,0);
+        instructionTexts = new ArrayList<>();
+        instructionTexts.add("Geradeaus");
+
+        String vorbeiAn = "Vorbei an ";
+        for (String e : environmentalInfo)
+            instructionTexts.add(vorbeiAn + e);
+
+//        strings.add("Vorbei an Glastür");strings.add("Vorbei an Teppich");strings.add("Vorbei an Ming-Vase");
+        instructionTexts.add(currentRange.getRelationToNextRangeAsString());
+        tts.speakList(instructionTexts, 0);
     }
 
     public void updateTextViews(TextView distanceTextView, TextView directionTextView) {
@@ -257,6 +265,17 @@ public class NavigationHelper {
 
     public void nextInstruction() {
         tts.speak("Nächste Anweisung");
+//        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
+//        ArrayList<String> strings = new ArrayList<>();
+//        strings.add("Geradeaus");
+//
+//        String vorbeiAn = "Vorbei an ";
+//        for (String e : environmentalInfo)
+//            strings.add(vorbeiAn+e);
+//
+////        strings.add("Vorbei an Glastür");strings.add("Vorbei an Teppich");strings.add("Vorbei an Ming-Vase");
+//        strings.add(currentRange.getRelationToNextRangeAsString());
+//        tts.speakList(strings, 0);
     }
 
     public void previousInstruction() {
@@ -264,6 +283,6 @@ public class NavigationHelper {
     }
 
     public void repeatInstruction() {
-        tts.speak("Wiederhole Anweisung");
+        tts.speakList(instructionTexts,0);
     }
 }
