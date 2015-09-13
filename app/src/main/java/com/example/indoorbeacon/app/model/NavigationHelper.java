@@ -359,7 +359,7 @@ public class NavigationHelper {
             for (String e : environmentalInfo)
                 instructionTexts.add(vorbeiAn + e);
 
-            instructionTexts.add(currentRange.getRelationToNextRangeAsString());
+            instructionTexts.add(nextRange.getRelationToNextRangeAsString());
             tts.speakList(instructionTexts, 0);
         } else {
             ArrayList<String> alternative = new ArrayList<>();
@@ -394,7 +394,7 @@ public class NavigationHelper {
             for (String e : environmentalInfo)
                 instructionTexts.add(vorbeiAn + e);
 
-            instructionTexts.add(currentRange.getRelationToNextRangeAsString());
+            instructionTexts.add(previousRange.getRelationToNextRangeAsString());
             tts.speakList(instructionTexts, 0);
         } else {
             ArrayList<String> alternative = new ArrayList<>();
