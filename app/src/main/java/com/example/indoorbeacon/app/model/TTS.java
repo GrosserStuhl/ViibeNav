@@ -118,12 +118,12 @@ public class TTS extends UtteranceProgressListener {
     @Override
     public void onDone(String utteranceId) {
         Log.d(TAG, "speaking done." + tts.isSpeaking());
-        if(!hadErrors && instructionCounter < instructionList.size()){
-            Message msg = Message.obtain();
-            msg.obj = instructionList.get(instructionCounter++);
-            h.sendMessage(msg);
-        }
-        hadErrors = false;
+            if (!hadErrors && instructionCounter < instructionList.size()) {
+                Message msg = Message.obtain();
+                msg.obj = instructionList.get(instructionCounter++);
+                h.sendMessage(msg);
+            }
+            hadErrors = false;
     }
 
     @Override
