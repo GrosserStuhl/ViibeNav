@@ -217,7 +217,6 @@ public class DBHandler extends SQLiteOpenHelper {
         for (int i = 0; i < map.length; i++) {
             final String macAddress = map[i].getMacAddressStr();
             final double median = map[i].getMedian();
-//            Log.d(TAG, "MEDIAN IN LOOP "+median);
 
             String queryOrientation = "";
             if (map[i].getOrientation().equals(Orientation.back))
@@ -235,11 +234,6 @@ public class DBHandler extends SQLiteOpenHelper {
                     "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_6 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
                     "  ) AND " + queryOrientation +
                     " GROUP BY " + COLUMN_MEDIAN_VALUE + " HAVING deviation <=" + Definitions.POSITIONING_THRESHOLD + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + Definitions.POSITIONING_LIMIT + ";";
-
-            // IMPORTANT - NOTE:
-            // IT MAKES SENSE TO SET UP THE LIMIT TO 5 WHEN MULTIPLE ANCHORS ARE SET IN THE RADIO MAP
-            // BUT NOW FOR TESTING PURPOSES IT DOES NOT MAKE SENSE -> TESTCASE: I ONLY HAVE 2 ANCHORS IN MY MAP IF I SET LIMIT TO >1
-            // I WILL GET BOTH ANCHORS AS POSSIBLE, BUT I ONLY WANT THE ONE MOST LIKELIEST ANCHORPOINT !
 
             Cursor c = db.rawQuery(query, null);
             c.moveToFirst();
@@ -602,7 +596,7 @@ public class DBHandler extends SQLiteOpenHelper {
         Log.d(TAG, "GOT ADJESCENT COORDS: " + result.size());
         db.close();
 
-        Log.d(TAG, "DIRECT NEIGHBOR:\n" + Util.coordsListToString(result));
+        Log.d(TAG, "DIRECT NEIGHBOR:\n" + Util.primitivelistToString(result));
 
         return result;
     }
@@ -676,7 +670,7 @@ public class DBHandler extends SQLiteOpenHelper {
         }
 
 //        Log.d(TAG, "GOT OUTER ADJESCENT COORDS: " + result.size());
-        Log.d(TAG, "OUTER NEIGHBOR:\n" + Util.coordsListToString(result));
+        Log.d(TAG, "OUTER NEIGHBOR:\n" + Util.primitivelistToString(result));
         db.close();
 
 

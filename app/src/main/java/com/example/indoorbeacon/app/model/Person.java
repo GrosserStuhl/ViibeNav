@@ -83,9 +83,11 @@ public class Person {
 
         ArrayList<Coordinate> neighbours;
 
-        if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM)
+        if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM || !estimatedPos.isValid()) {
             setCurrentPos(currentPos);
-        else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
+            if(!estimatedPos.isValid())
+                Log.e(TAG, "Position is invalid!");
+        } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
                 && walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM * 2) {
             //Die Matrix mit den nächsten Nachbarn zu estimatedPos
             // x x x
