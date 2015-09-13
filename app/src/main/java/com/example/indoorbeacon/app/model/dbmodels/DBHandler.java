@@ -594,7 +594,7 @@ public class DBHandler extends SQLiteOpenHelper {
         Log.d(TAG, "GOT ADJESCENT COORDS: " + result.size());
         db.close();
 
-        Log.d(TAG, "DIRECT NEIGHBOR:\n" + Util.primitivelistToString(result));
+        Log.d(TAG, "DIRECT NEIGHBOR:\n" + Util.primitiveListToString(result));
 
         return result;
     }
@@ -668,7 +668,7 @@ public class DBHandler extends SQLiteOpenHelper {
         }
 
 //        Log.d(TAG, "GOT OUTER ADJESCENT COORDS: " + result.size());
-        Log.d(TAG, "OUTER NEIGHBOR:\n" + Util.primitivelistToString(result));
+        Log.d(TAG, "OUTER NEIGHBOR:\n" + Util.primitiveListToString(result));
         db.close();
 
 

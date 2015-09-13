@@ -71,7 +71,7 @@ public class Util {
         return sdf.format(c.getTime());
     }
 
-    public static String primitivelistToString(ArrayList<? extends Object> data){
+    public static String primitiveListToString(ArrayList<? extends Object> data){
         String res = "{ ";
         for(int i=0;i<data.size();i++)
             if(i<data.size()-1)
