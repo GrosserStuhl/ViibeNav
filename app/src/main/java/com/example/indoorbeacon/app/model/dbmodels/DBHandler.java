@@ -364,7 +364,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 info_id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
                 personname = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
                 roomname = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
-                environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
+                environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT)) == null ? "" : c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
                 category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
 
             res.put(new Coordinate(floor, x, y), new InfoModel(info_id, personname, roomname, environment, category));
