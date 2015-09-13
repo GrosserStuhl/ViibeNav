@@ -17,6 +17,7 @@ import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  * Created by Dima on 05/09/2015.
@@ -144,8 +145,9 @@ public class NavigationHelper {
 
         for (Range range : ranges) {
             for (Coordinate coord : range.getCoordList()) {
-                if (infoTextsForAnchors.containsKey(coord))
+                if (infoTextsForAnchors.containsKey(coord) && !infoTextsForAnchors.get(coord).getEnvironment().equals("")) {
                     range.addEnvironmentalInfos(infoTextsForAnchors.get(coord).getEnvironment());
+                }
             }
         }
 
