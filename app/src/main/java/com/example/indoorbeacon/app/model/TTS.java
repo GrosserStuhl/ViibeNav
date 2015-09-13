@@ -20,11 +20,11 @@ public class TTS extends UtteranceProgressListener {
 
     private static TTS singleton;
     private static TextToSpeech tts;
-
-    private ArrayList<String> stringList;
-    private int stringListCounter = 0;
-
     private Context c;
+
+    private ArrayList<String> instructionList;
+    private int instructionCounter;
+    private boolean hadErrors;
 
     public static TTS getTTS(Context c){
         synchronized(TTS.class){
@@ -49,22 +49,6 @@ public class TTS extends UtteranceProgressListener {
         });
     }
 
-    @Override
-    public void onStart(String utteranceId) {
-        Log.d(TAG, "startSpeaking");
-    }
-
-    @Override
-    public void onDone(String utteranceId) {
-        stop();
-        Log.d(TAG, "speaking done."+tts.isSpeaking());
-    }
-
-    @Override
-    public void onError(String utteranceId) {
-        Log.e(TAG, "Speaking error.");
-    }
-
     public void speak(final String toSpeak){
 
         if(tts != null)
@@ -79,7 +63,7 @@ public class TTS extends UtteranceProgressListener {
                     Bundle params = new Bundle();
                     params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "Unique");
                     tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, params, "UniqueID");
-                    tts.setOnUtteranceProgressListener(singleton);
+//                    tts.setOnUtteranceProgressListener(singleton);
                 }
             }
         });
@@ -87,9 +71,12 @@ public class TTS extends UtteranceProgressListener {
 
     public void speak(final String toSpeak, final UtteranceProgressListener utt){
 
-        if(tts != null)
-            if(tts.isSpeaking())
-                stop();
+//        if(tts != null)
+//            if(tts.isSpeaking()) {
+//                stop();
+//                Log.d(TAG, "speaking: RETURN!");
+//                return;
+//            }
 
         tts = new TextToSpeech(c, new TextToSpeech.OnInitListener() {
             @Override
@@ -105,73 +92,68 @@ public class TTS extends UtteranceProgressListener {
         });
     }
 
-    public void speakList(final ArrayList<String> strings,final int counter){
-            stringList = strings;
-            stringListCounter = counter;
-//            for (String s : strings)
-        if(tts.isSpeaking()) {
-            Log.d(TAG, "speakList "+ "try to start new List");
-            tts.stop();
-            h.removeCallbacks(runnable);
-//            speakList(strings, counter);
-//            runnable = new MyRunnable();
-        } else {
-            runnable = new MyRunnable();
-            h.sendEmptyMessage(0);
-        }
-    }
-
     private Handler h = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            postDelayed(runnable, 500);
+            String message = (String) msg.obj;
+            if(tts.isSpeaking()) {
+                onError("Unique");
+                tts.stop();
+//                h.removeCallbacksAndMessages(msg);
+//                Message send = Message.obtain();
+//                send.obj = message;
+//                h.sendMessage(send);
+                speakList(instructionList,instructionCounter);
+            } else {
+                speak(message, TTS.this);
+            }
         }
     };
 
-    private MyRunnable runnable = new MyRunnable();
-
-    private class MyRunnable extends UtteranceProgressListener implements Runnable {
-        private boolean started;
-
-        public MyRunnable(){
-            started = false;
-        }
-
-        @Override
-        public void run() {
-            started = true;
-            if(stringListCounter < stringList.size()-1 && started)
-                speak(stringList.get(stringListCounter++),this);
-        }
-
-        @Override
-        public void onDone(String utteranceId) {
-            if(!tts.isSpeaking())
-                h.sendEmptyMessage(0);
-        }
-
-        @Override
-        public void onStart(String utteranceId) {}
-
-        @Override
-        public void onError(String utteranceId) {}
+    @Override
+    public void onStart(String utteranceId) {
+        Log.d(TAG, "startSpeaking");
     }
-//    private Handler betweenHandler = new Handler(){
-//        @Override
-//        public void handleMessage(Message msg) {
-//            speakListCounter++;
-//            h.postDelayed(runnable,500);
-//        }
-//    };
 
+    @Override
+    public void onDone(String utteranceId) {
+        Log.d(TAG, "speaking done." + tts.isSpeaking());
+        if(!hadErrors && instructionCounter < instructionList.size()){
+            Message msg = Message.obtain();
+            msg.obj = instructionList.get(instructionCounter++);
+            h.sendMessage(msg);
+        }
+        hadErrors = false;
+    }
+
+    @Override
+    public void onError(String utteranceId) {
+        Log.e(TAG, "Speaking error.");
+        hadErrors = true;
+    }
+
+
+
+    public void speakList(final ArrayList<String> strings,final int counter){
+        instructionList = strings;
+        instructionCounter = counter;
+        hadErrors = false;
+        speakListItem(instructionList.get(instructionCounter));
+
+    }
+
+    private void speakListItem(String item){
+        Message msg = Message.obtain();
+        msg.obj = item;
+        h.sendMessage(msg);
+    }
 
     public void stop(){
-        tts.stop();
-//        tts.shutdown();
+        if(tts.stop() == -1);
+            stop();
     }
 
     public TextToSpeech getTextToSpeech(){
         return tts;
     }
-
 }
