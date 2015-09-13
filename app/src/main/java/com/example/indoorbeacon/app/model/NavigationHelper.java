@@ -16,8 +16,8 @@ import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Objects;
 
 /**
  * Created by Dima on 05/09/2015.
@@ -32,6 +32,7 @@ public class NavigationHelper {
     private HashMap<Coordinate, InfoModel> infoTextsForAnchors;
     private LinkedList<Range> ranges;
     private Range currentRange;
+    private ArrayList<Coordinate> lastUserPositions;
 
     private TTS tts;
     private Person person;
@@ -54,19 +55,20 @@ public class NavigationHelper {
         directionUnit = " °";
 
         target = DBHandler.getDB().getTarget(ziel);
-//        path = DBHandler.getDB().getAllAnchors();
-        path = new LinkedList<>();
-        for (int i = 0; i < 4; i++) {
-            path.add(new Coordinate(-1, 0, i));
-        }
-        for (int i = 1; i < 4; i++) {
-            path.add(new Coordinate(-1, i, 3));
-        }
-        for (int i = 2; i > -1; i--) {
-            path.add(new Coordinate(-1, 3, i));
-        }
+        path = DBHandler.getDB().getAllAnchors();
+//        path = new LinkedList<>();
+//        for (int i = 0; i < 4; i++) {
+//            path.add(new Coordinate(-1, 0, i));
+//        }
+//        for (int i = 1; i < 4; i++) {
+//            path.add(new Coordinate(-1, i, 3));
+//        }
+//        for (int i = 2; i > -1; i--) {
+//            path.add(new Coordinate(-1, 3, i));
+//        }
         infoTextsForAnchors = DBHandler.getDB().getCoordinateToInfoModelMap();
         ranges = new LinkedList<>();
+        lastUserPositions = new ArrayList<>();
         dividePathIntoRanges();
     }
 
@@ -134,7 +136,7 @@ public class NavigationHelper {
         }
 
         ranges.get(0).setRelationToNextRange(Range.LEFT);
-        ranges.get(1).setRelationToNextRange(Range.RIGHT);
+//        ranges.get(1).setRelationToNextRange(Range.RIGHT);
         currentRange = ranges.getFirst();
         ranges.getLast().markAsLastRange();
 
@@ -164,6 +166,10 @@ public class NavigationHelper {
                 Log.d(TAG, "Das ist die letzte Range");
             Log.d(TAG, ranges.get(i).toString());
         }
+
+//        lastUserPositions.add(ranges.get(0).getCoordList().get(0));
+//        lastUserPositions.add(ranges.get(1).getCoordList().get(0));
+//        lastUserPositions.add(ranges.get(1).getCoordList().get(1));
     }
 
     private void setUpBrReceiver(Context context) {
@@ -180,20 +186,73 @@ public class NavigationHelper {
 
     private void onPositionChangedAction() {
         Coordinate curPos = person.getCurrentPos();
-        Range newRange;
-        for (Range range : ranges) {
-            if (!range.equals(currentRange) && range.getCoordList().contains(curPos)) {
-                newRange = range;
-                currentRange = newRange;
-                onNewRangeEntered();
-                Log.d(TAG, "new range set");
-                break;
+        if (lastUserPositions.size() < Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
+            lastUserPositions.add(curPos);
+            Log.d(TAG, "not enough positions, adding latest one to the list");
+        }
+        if (lastUserPositions.size() == Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
+            boolean allInSameRange = true;
+            Range tempRange = getRangeByCoord(lastUserPositions.get(lastUserPositions.size() - 1));
+            Log.d(TAG, "index of range of last pos: " + ranges.indexOf(tempRange));
+            int counterForSameRange = 1;
+            for (int i = lastUserPositions.size() - 2; i >= 0; i--) {
+                if (tempRange.equals(getRangeByCoord(lastUserPositions.get(i)))) {
+                    counterForSameRange++;
+                    Log.d(TAG, "pos at " + i + " is in same range too");
+                } else {
+                    allInSameRange = false;
+                    Log.d(TAG, "pos at " + i + " is NOT in same range");
+                    break;
+                }
+            }
+
+            if (allInSameRange) {
+                if (!tempRange.equals(currentRange)) {
+                    for (Range range : ranges) {
+                        if (range.equals(tempRange)) {
+                            currentRange = range;
+                            onNewRangeEntered();
+                            Log.d(TAG, "new range set");
+                            break;
+                        }
+                    }
+                } else Log.d(TAG, "stil in same range");
+//                lastUserPositions.clear();
+            } else {
+                //size - (counterForSameRange + 1), da man für letztes Element eh schon size - 1 machen würde
+                //Und hier soll ja mit dem vorletzen Element angefangen werden
+                int counter = 0;
+                int deletionIndex = lastUserPositions.size() - (counterForSameRange + 1);
+                Iterator<Coordinate> it = lastUserPositions.iterator();
+                Log.d(TAG, "userPosi: " + lastUserPositions);
+                Log.d(TAG, "have to delete all pos up to index: " + deletionIndex);
+                while (it.hasNext()) {
+                    Coordinate c = it.next();
+                    if (counter <= deletionIndex) {
+                        it.remove();
+                        Log.d(TAG, "removing userPos: " + c);
+                    }
+                    counter++;
+                }
+                Log.d(TAG, "size of userPosList after removal: " + lastUserPositions.size());
+
             }
         }
     }
 
     private void onNewRangeEntered() {
+        resetImage();
+    }
 
+    private Range getRangeByCoord(Coordinate coord) {
+        Range resultRange = null;
+        for (Range range : ranges) {
+            if (range.getCoordList().contains(coord)) {
+                resultRange = range;
+                break;
+            }
+        }
+        return resultRange;
     }
 
     public void updateTextViews(TextView distanceTextView, TextView directionTextView) {
@@ -232,7 +291,7 @@ public class NavigationHelper {
         }
     }
 
-    public void setupImage(ImageView arrowImage, float initialOrientation) {
+    private void setupImage(ImageView arrowImage, float initialOrientation) {
         RotateAnimation ra = new RotateAnimation(
                 0,
                 firstDirection,
@@ -246,6 +305,10 @@ public class NavigationHelper {
 
         previousDirection = firstDirection;
         previousOrientation = initialOrientation;
+    }
+
+    private void resetImage() {
+        previousOrientation = -1;
     }
 
     public void nextInstruction() {

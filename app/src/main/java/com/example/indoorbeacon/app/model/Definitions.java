@@ -77,4 +77,6 @@ public class Definitions {
 
     public static final int ANCHORPOINT_DISTANCE_IN_CM = 100;
 
+    public static final int NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE = 3;
+
 }
