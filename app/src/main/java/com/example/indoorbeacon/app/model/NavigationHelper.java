@@ -68,6 +68,8 @@ public class NavigationHelper {
         ranges = new LinkedList<>();
         lastUserPositions = new ArrayList<>();
         dividePathIntoRanges();
+
+//        onPositionChangedAction();
     }
 
     private void dividePathIntoRanges() {
@@ -342,7 +344,7 @@ public class NavigationHelper {
     }
 
     public void nextInstruction() {
-        tts.speak("Nächste Anweisung");
+//        tts.speak("Nächste Anweisung");
 
         int index = ranges.indexOf(currentRange);
 
@@ -357,11 +359,11 @@ public class NavigationHelper {
             for (String e : environmentalInfo)
                 instructionTexts.add(vorbeiAn + e);
 
-            instructionTexts.add(currentRange.getRelationToNextRangeAsString());
+            instructionTexts.add(nextRange.getRelationToNextRangeAsString());
             tts.speakList(instructionTexts, 0);
         } else {
             ArrayList<String> alternative = new ArrayList<>();
-            alternative.add("Danach haben Sie ihr Ziel erreicht, es gibt keine nächste Anweisung.");
+            alternative.add("Danach haben Sie ihr Ziel erreicht. Es gibt keine nächste Anweisung.");
             tts.speakList(alternative, 0);
         }
 //        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
@@ -392,11 +394,11 @@ public class NavigationHelper {
             for (String e : environmentalInfo)
                 instructionTexts.add(vorbeiAn + e);
 
-            instructionTexts.add(currentRange.getRelationToNextRangeAsString());
+            instructionTexts.add(previousRange.getRelationToNextRangeAsString());
             tts.speakList(instructionTexts, 0);
         } else {
             ArrayList<String> alternative = new ArrayList<>();
-            alternative.add("Die Navigation hat hier begonnen, es gibt noch keine vorherige Anweisung.");
+            alternative.add("Die Navigation hat hier begonnen. Es gibt noch keine vorherige Anweisung.");
             tts.speakList(alternative, 0);
         }
     }
