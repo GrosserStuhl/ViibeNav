@@ -11,23 +11,20 @@ public class Range {
     public static final int RIGHT = 2;
 
     private ArrayList<Coordinate> coordinates;
-    private int relationFromLastRange;
     private int relationToNextRange;
-    private boolean hasEnvironmentalInfos;
+    private boolean hasEnvironmentalInfos = false;
     private ArrayList<String> environmentalInfos;
+    private boolean isLastRange = false;
 
-    public Range(ArrayList<Coordinate> coordinates, int relationFromLastRange, int relationToNextRange) {
+    public Range(ArrayList<Coordinate> coordinates, int relationToNextRange) {
         this.coordinates = coordinates;
-        this.relationFromLastRange = relationFromLastRange;
         this.relationToNextRange = relationToNextRange;
         environmentalInfos = new ArrayList<>();
-        hasEnvironmentalInfos = false;
     }
 
-    public Range(ArrayList<Coordinate> coordinates, int relationFromLastRange, int relationToNextRange,
+    public Range(ArrayList<Coordinate> coordinates, int relationToNextRange,
                  ArrayList<String> environmentalInfos) {
         this.coordinates = coordinates;
-        this.relationFromLastRange = relationFromLastRange;
         this.relationToNextRange = relationToNextRange;
         this.environmentalInfos = environmentalInfos;
         hasEnvironmentalInfos = true;
@@ -37,12 +34,12 @@ public class Range {
         return coordinates;
     }
 
-    public int getRelationFromLastRange() {
-        return relationFromLastRange;
-    }
-
     public int getRelationToNextRange() {
         return relationToNextRange;
+    }
+
+    public void setRelationToNextRange(int relationToNextRange) {
+        this.relationToNextRange = relationToNextRange;
     }
 
     public ArrayList<String> getEnvironmentalInfos() {
@@ -52,5 +49,18 @@ public class Range {
     public void setEnvironmentalInfos(ArrayList<String> environmentalInfos) {
         this.environmentalInfos = environmentalInfos;
         hasEnvironmentalInfos = true;
+    }
+
+    public boolean isLastRange() {
+        return isLastRange;
+    }
+
+    public void markAsLastRange() {
+        isLastRange = true;
+    }
+
+    @Override
+    public String toString() {
+        return Util.primitivelistToString(coordinates);
     }
 }

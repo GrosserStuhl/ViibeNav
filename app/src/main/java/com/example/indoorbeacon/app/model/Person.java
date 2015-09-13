@@ -85,7 +85,6 @@ public class Person {
         ArrayList<Coordinate> neighbours;
 
         if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM || !estimatedPos.isValid()) {
-            setCurrentPos(currentPos);
             if(!estimatedPos.isValid())
                 Toast.makeText(activity.getApplicationContext(),"INVALID COORDINATE!",Toast.LENGTH_SHORT);
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
