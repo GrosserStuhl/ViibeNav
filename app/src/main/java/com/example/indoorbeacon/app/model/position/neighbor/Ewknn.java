@@ -3,6 +3,7 @@ package com.example.indoorbeacon.app.model.position.neighbor;
 import android.util.Log;
 
 import com.example.indoorbeacon.app.model.Coordinate;
+import com.example.indoorbeacon.app.model.Definitions;
 import com.example.indoorbeacon.app.model.Util;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
@@ -26,7 +27,6 @@ import java.util.Iterator;
 public class Ewknn implements PositionAlgorithm {
 
 
-
     @Override
     public Coordinate estimatePos(MacToMedian[] map){
         Coordinate estimatedPos = compareRSSIs(map);
@@ -44,9 +44,10 @@ public class Ewknn implements PositionAlgorithm {
         ArrayList<DeviationToCoord> data = DBHandler.getDB().getAllDistancesFromMedians(map);
 
         if(data == null || data.isEmpty()) {
-            Log.d(TAG, "INVALID COORDINATE FILTER 1");
+            Log.e(TAG, "INVALID COORDINATE FILTER 1");
             return new Coordinate(-1, -1, -1);
         }
+
         // Step 2/3 done -> II RPs filtering
         // Remove minDeviation from list and calculate next threshold with it
         // after that the filtered list with minDeviation added is returned
@@ -54,7 +55,7 @@ public class Ewknn implements PositionAlgorithm {
         data = filterRPsII(minDeviation, data);
 
         if(data == null || data.isEmpty()) {
-            Log.d(TAG, "INVALID COORDINATE FILTER 2");
+            Log.e(TAG, "INVALID COORDINATE FILTER 2");
             return new Coordinate(-1, -1, -1);
         }
         // Step 3/3 done -> Position estimate
@@ -96,7 +97,7 @@ public class Ewknn implements PositionAlgorithm {
             denominator_Y += (1/deviation);
         }
 
-        Log.d(TAG, "CHECK BUG: -NaN and -Infinity: "+numerator_FLOOR+" + "+denominator_FLOOR);
+//        Log.d(TAG, "CHECK BUG: -NaN and -Infinity: "+numerator_Y+" + "+denominator_Y);
 
         final double estimate_FLOOR = numerator_FLOOR/denominator_FLOOR;
         final double estimate_X = numerator_X/denominator_X;
@@ -107,23 +108,20 @@ public class Ewknn implements PositionAlgorithm {
 
     private DeviationToCoord getMinDevToCoord(ArrayList<DeviationToCoord> data){
         Collections.sort(data, new DevToCoordComparator());
-        ArrayList<Float> deviations = new ArrayList<>();
-        for (DeviationToCoord tmp : data) {
-            deviations.add(tmp.getdeviation());
-        }
-        Log.d(TAG, "DEVIATION LIST: "+deviations);
+//        ArrayList<Float> deviations = new ArrayList<>();
+//        for (DeviationToCoord tmp : data) {
+//            deviations.add(tmp.getdeviation());
+//        }
+//        Log.d(TAG, "DEVIATION LIST: "+deviations);
+
+        // remove from list!
+        data.remove(0);
         return data.get(0);
-//        DeviationToCoord res = null;
-//        double minDeviation = 100;
-//
-//        for(DeviationToCoord tmp : data)
-//            if(tmp.getdeviation() < minDeviation)
-//                res = tmp;
-//        return res;
     }
 
     private ArrayList<DeviationToCoord> filterRPsII(DeviationToCoord min, ArrayList<DeviationToCoord> data){
-        double E_s = 0;
+
+        float E_s = 0;
 
         for(DeviationToCoord tmp : data)
             E_s += Math.abs(min.getdeviation() - tmp.getdeviation());
@@ -139,6 +137,13 @@ public class Ewknn implements PositionAlgorithm {
             if(tmp.getdeviation()>E_s)
                 it.remove();
         }
+
+        // Additional Filter for max K of 5
+        if(Definitions.POSITIONING_K_FILTER_ENABLED)
+        for (int i = data.size() - 1; i >= 0; i--)
+             if(data.size()> Definitions.POSITIONING_MAX_K-1)
+                 data.remove(i);
+
 
         // IMPORTANT put min back in the list it's the best GUESS!!!
         data.add(min);

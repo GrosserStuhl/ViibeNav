@@ -46,6 +46,10 @@ public class Definitions {
      */
     public static final int POSITIONING_LIMIT = 10;
 
+    public static final int POSITIONING_MAX_K = 5;
+
+    public static final boolean POSITIONING_K_FILTER_ENABLED = true;
+
     /**
      * The time it takes a user to make a step.
      * Used to limit stepCount to a realistic rate.
