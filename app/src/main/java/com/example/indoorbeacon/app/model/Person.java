@@ -1,7 +1,9 @@
 package com.example.indoorbeacon.app.model;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.indoorbeacon.app.controller.NavigationActivity;
@@ -150,6 +152,10 @@ public class Person {
 
     public void setCurrentPos(Coordinate currentPos) {
         this.currentPos = currentPos;
+
+        // Notify all listeners that persons position has changed
+        Intent intent = new Intent("person position changed");
+        LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
     }
 
     public Coordinate getCurrentPos() {
