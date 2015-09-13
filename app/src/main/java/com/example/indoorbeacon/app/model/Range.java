@@ -22,14 +22,6 @@ public class Range {
         environmentalInfos = new ArrayList<>();
     }
 
-    public Range(ArrayList<Coordinate> coordinates, int relationToNextRange,
-                 ArrayList<String> environmentalInfos) {
-        this.coordinates = coordinates;
-        this.relationToNextRange = relationToNextRange;
-        this.environmentalInfos = environmentalInfos;
-        hasEnvironmentalInfos = true;
-    }
-
     public ArrayList<Coordinate> getCoordList() {
         return coordinates;
     }
@@ -46,9 +38,19 @@ public class Range {
         return environmentalInfos;
     }
 
+    public boolean isHasEnvironmentalInfos() {
+        return hasEnvironmentalInfos;
+    }
+
     public void setEnvironmentalInfos(ArrayList<String> environmentalInfos) {
         this.environmentalInfos = environmentalInfos;
         hasEnvironmentalInfos = true;
+    }
+
+    public void addEnvironmentalInfos(String info) {
+        if (environmentalInfos.isEmpty())
+            hasEnvironmentalInfos = true;
+        environmentalInfos.add(info);
     }
 
     public boolean isLastRange() {
@@ -57,6 +59,30 @@ public class Range {
 
     public void markAsLastRange() {
         isLastRange = true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Range range = (Range) o;
+
+        if (relationToNextRange != range.relationToNextRange) return false;
+        if (hasEnvironmentalInfos != range.hasEnvironmentalInfos) return false;
+        if (isLastRange != range.isLastRange) return false;
+        if (coordinates != null ? !coordinates.equals(range.coordinates) : range.coordinates != null) return false;
+        return !(environmentalInfos != null ? !environmentalInfos.equals(range.environmentalInfos) : range.environmentalInfos != null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = coordinates != null ? coordinates.hashCode() : 0;
+        result = 31 * result + relationToNextRange;
+        result = 31 * result + (hasEnvironmentalInfos ? 1 : 0);
+        result = 31 * result + (environmentalInfos != null ? environmentalInfos.hashCode() : 0);
+        result = 31 * result + (isLastRange ? 1 : 0);
+        return result;
     }
 
     @Override

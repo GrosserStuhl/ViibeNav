@@ -17,6 +17,7 @@ import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  * Created by Dima on 05/09/2015.
@@ -35,11 +36,9 @@ public class NavigationHelper {
     private TTS tts;
     private Person person;
     private String instructionText;
-    private int distance;
     private float previousOrientation;
     private float firstDirection;
     private float previousDirection;
-    private String distanceUnit;
     private String directionUnit;
 
     public NavigationHelper(Context context, Person person, String ziel) {
@@ -50,10 +49,7 @@ public class NavigationHelper {
     }
 
     private void initNavigation(String ziel) {
-        distance = 0;
-        distanceUnit = " m";
         previousOrientation = -1;
-        firstDirection = 90;
         previousDirection = 0;
         directionUnit = " °";
 
@@ -142,6 +138,19 @@ public class NavigationHelper {
         currentRange = ranges.getFirst();
         ranges.getLast().markAsLastRange();
 
+        if (currentRange.getRelationToNextRange() == Range.LEFT)
+            firstDirection = 270;
+        else if (currentRange.getRelationToNextRange() == Range.RIGHT)
+            firstDirection = 90;
+
+        for (Range range : ranges) {
+            for (Coordinate coord : range.getCoordList()) {
+                if (infoTextsForAnchors.containsKey(coord) && !infoTextsForAnchors.get(coord).getEnvironment().equals("")) {
+                    range.addEnvironmentalInfos(infoTextsForAnchors.get(coord).getEnvironment());
+                }
+            }
+        }
+
         for (int i = 0; i < ranges.size(); i++) {
             Log.d(TAG, "Range #" + i + ":");
             String dir = "NONE";
@@ -171,7 +180,20 @@ public class NavigationHelper {
 
     private void onPositionChangedAction() {
         Coordinate curPos = person.getCurrentPos();
-        
+        Range newRange;
+        for (Range range : ranges) {
+            if (!range.equals(currentRange) && range.getCoordList().contains(curPos)) {
+                newRange = range;
+                currentRange = newRange;
+                onNewRangeEntered();
+                Log.d(TAG, "new range set");
+                break;
+            }
+        }
+    }
+
+    private void onNewRangeEntered() {
+
     }
 
     private void newRangeEntered(){
@@ -182,7 +204,6 @@ public class NavigationHelper {
     }
 
     public void updateTextViews(TextView distanceTextView, TextView directionTextView) {
-        distanceTextView.setText(distance + distanceUnit);
 //        directionTextView.setText(orientationDifference + directionUnit);
     }
 
