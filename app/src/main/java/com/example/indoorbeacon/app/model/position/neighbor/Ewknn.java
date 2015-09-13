@@ -51,8 +51,12 @@ public class Ewknn implements PositionAlgorithm {
         // Step 2/3 done -> II RPs filtering
         // Remove minDeviation from list and calculate next threshold with it
         // after that the filtered list with minDeviation added is returned
-        DeviationToCoord minDeviation = getMinDevToCoord(data);
-        data = filterRPsII(minDeviation, data);
+        if(data.size() == 1)
+            return new Coordinate(-1,-1,-1);
+        else {
+            DeviationToCoord minDeviation = getMinDevToCoord(data);
+            data = filterRPsII(minDeviation, data);
+        }
 
         if(data == null || data.isEmpty()) {
             Log.e(TAG, "INVALID COORDINATE FILTER 2");
