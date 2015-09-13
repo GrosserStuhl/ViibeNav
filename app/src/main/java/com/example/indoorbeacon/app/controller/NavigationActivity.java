@@ -24,11 +24,9 @@ import android.widget.Toast;
 
 import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.Connector;
-import com.example.indoorbeacon.app.model.Coordinate;
 import com.example.indoorbeacon.app.model.NavigationHelper;
 import com.example.indoorbeacon.app.model.Person;
 import com.example.indoorbeacon.app.model.SensorHelper;
-import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
 /**
  * Created by #Dima on 28/07/2015.

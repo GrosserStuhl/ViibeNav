@@ -44,7 +44,7 @@ public class NavigationHelper {
 
     public NavigationHelper(Context context, Person person, String ziel) {
         this.person = person;
-        tts = TTS.createTTS(context);
+        tts = TTS.getTTS(context);
         initNavigation(ziel);
         setUpBrReceiver(context);
     }
@@ -253,6 +253,13 @@ public class NavigationHelper {
             }
         }
         return resultRange;
+    }
+
+    private void newRangeEntered(){
+        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add("Glastür");strings.add("Teppich");strings.add("Ming-Vase");
+        tts.speakList(strings,0);
     }
 
     public void updateTextViews(TextView distanceTextView, TextView directionTextView) {
