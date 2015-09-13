@@ -121,7 +121,7 @@ public class Person {
 
     private Coordinate findNextBestPos(ArrayList<Coordinate> neighbours, Coordinate estimatedPos) {
         Coordinate newEstimatedPos = new Coordinate(-1, -1, -1);
-        double smallestDistance = 10;
+        double smallestDistance = 15;
 
         for (Coordinate tempPos : neighbours) {
             if (tempPos.equals(estimatedPos)) {
