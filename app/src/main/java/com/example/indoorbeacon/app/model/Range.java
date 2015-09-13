@@ -87,6 +87,6 @@ public class Range {
 
     @Override
     public String toString() {
-        return Util.primitivelistToString(coordinates);
+        return Util.primitiveListToString(coordinates);
     }
 }
