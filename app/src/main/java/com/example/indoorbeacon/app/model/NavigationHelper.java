@@ -1,12 +1,17 @@
 package com.example.indoorbeacon.app.model;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 
@@ -40,6 +45,7 @@ public class NavigationHelper {
         this.person = person;
         tts = TTS.createTTS(context);
         initNavigation(ziel);
+        setUpBrReceiver(context);
     }
 
     private void initNavigation(String ziel) {
@@ -136,6 +142,22 @@ public class NavigationHelper {
                 Log.d(TAG, c.toString());
             }
         }
+    }
+
+    private void setUpBrReceiver(Context context) {
+        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                onPositionChangedAction();
+            }
+        };
+
+        LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver,
+                new IntentFilter("person position changed"));
+    }
+
+    private void onPositionChangedAction() {
+        Coordinate curPos = person.getCurrentPos();
     }
 
     public void updateTextViews(TextView distanceTextView, TextView directionTextView) {
