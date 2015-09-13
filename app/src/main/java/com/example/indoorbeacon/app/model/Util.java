@@ -75,7 +75,7 @@ public class Util {
         String res = "{ ";
         for(int i=0;i<data.size();i++)
             if(i<data.size()-1)
-                res += data.get(i) + ",";
+                res += data.get(i) + " | ";
             else
                 res += data.get(i);
         res += " }";

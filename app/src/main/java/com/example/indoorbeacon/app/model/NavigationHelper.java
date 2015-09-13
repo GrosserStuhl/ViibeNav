@@ -30,6 +30,8 @@ public class NavigationHelper {
     private LinkedList<Coordinate> path;
     private HashMap<Coordinate, InfoModel> infoTextsForAnchors;
     private LinkedList<Range> ranges;
+    private Range currentRange;
+
     private TTS tts;
     private Person person;
     private String instructionText;
@@ -102,7 +104,7 @@ public class NavigationHelper {
                     for (int j = newRangeStart; j <= counter; j++) {
                         rangeCoords.add(path.get(j));
                     }
-                    ranges.add(new Range(rangeCoords, Range.NONE, Range.NONE));
+                    ranges.add(new Range(rangeCoords, Range.NONE));
                     //Counter + 1, da counter erst am ende der Schleife hochgezählt wird
                     newRangeStart = counter + 1;
                     nextNavIsAlong_X_Axis = false;
@@ -118,7 +120,7 @@ public class NavigationHelper {
                     for (int j = newRangeStart; j <= counter; j++) {
                         rangeCoords.add(path.get(j));
                     }
-                    ranges.add(new Range(rangeCoords, Range.NONE, Range.NONE));
+                    ranges.add(new Range(rangeCoords, Range.NONE));
                     //Counter + 1, da counter erst am ende der Schleife hochgezählt wird
                     newRangeStart = counter + 1;
                     nextNavIsAlong_Y_Axis = false;
@@ -131,15 +133,27 @@ public class NavigationHelper {
                 for (int j = newRangeStart; j <= counter; j++) {
                     rangeCoords.add(path.get(j));
                 }
-                ranges.add(new Range(rangeCoords, Range.NONE, Range.NONE));
+                ranges.add(new Range(rangeCoords, Range.NONE));
             }
         }
 
+        ranges.get(0).setRelationToNextRange(Range.LEFT);
+        ranges.get(1).setRelationToNextRange(Range.RIGHT);
+        currentRange = ranges.getFirst();
+        ranges.getLast().markAsLastRange();
+
         for (int i = 0; i < ranges.size(); i++) {
             Log.d(TAG, "Range #" + i + ":");
-            for (Coordinate c : ranges.get(i)) {
-                Log.d(TAG, c.toString());
-            }
+            String dir = "NONE";
+            if (ranges.get(i).getRelationToNextRange() == Range.LEFT)
+                dir = "links";
+            else if (ranges.get(i).getRelationToNextRange() == Range.RIGHT)
+                dir = "rechts";
+            if (!ranges.get(i).isLastRange())
+                Log.d(TAG, "Nächste Range in Richtung: " + dir);
+            else
+                Log.d(TAG, "Das ist die letzte Range");
+            Log.d(TAG, ranges.get(i).toString());
         }
     }
 
@@ -157,8 +171,7 @@ public class NavigationHelper {
 
     private void onPositionChangedAction() {
         Coordinate curPos = person.getCurrentPos();
-        // TODO: 13.09.2015 Position TO Range
-        // getRange from Position
+        
     }
 
     public void updateTextViews(TextView distanceTextView, TextView directionTextView) {

@@ -84,7 +84,6 @@ public class Person {
         ArrayList<Coordinate> neighbours;
 
         if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM || !estimatedPos.isValid()) {
-            setCurrentPos(currentPos);
             if(!estimatedPos.isValid())
                 Log.e(TAG, "Position is invalid!");
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
