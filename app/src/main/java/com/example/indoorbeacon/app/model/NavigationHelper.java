@@ -16,6 +16,7 @@ import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -31,15 +32,17 @@ public class NavigationHelper {
     private HashMap<Coordinate, InfoModel> infoTextsForAnchors;
     private LinkedList<Range> ranges;
     private Range currentRange;
+    private ArrayList<Coordinate> lastUserPositions;
     private boolean firstInstruction = true;
 
     private TTS tts;
     private Person person;
     private ArrayList<String> instructionTexts;
-    private float previousOrientation;
-    private float firstDirection;
-    private float previousDirection;
-    private String directionUnit;
+    private float previousOrientation = -1;
+    private float firstDirection = 0;
+    private float previousDirection = 0;
+    private String directionUnit = " °";
+    private int directionDifference = 0;
 
     public NavigationHelper(Context context, Person person, String ziel) {
         this.person = person;
@@ -49,10 +52,6 @@ public class NavigationHelper {
     }
 
     private void initNavigation(String ziel) {
-        previousOrientation = -1;
-        previousDirection = 0;
-        directionUnit = " °";
-
         target = DBHandler.getDB().getTarget(ziel);
         path = DBHandler.getDB().getAllAnchors();
 //        path = new LinkedList<>();
@@ -67,6 +66,7 @@ public class NavigationHelper {
 //        }
         infoTextsForAnchors = DBHandler.getDB().getCoordinateToInfoModelMap();
         ranges = new LinkedList<>();
+        lastUserPositions = new ArrayList<>();
         dividePathIntoRanges();
     }
 
@@ -138,10 +138,7 @@ public class NavigationHelper {
         currentRange = ranges.getFirst();
         ranges.getLast().setRelationToNextRange(Range.LAST);
 
-        if (currentRange.getRelationToNextRange() == Range.LEFT)
-            firstDirection = 270;
-        else if (currentRange.getRelationToNextRange() == Range.RIGHT)
-            firstDirection = 90;
+        adjustImageToNewRange();
 
         for (Range range : ranges) {
             for (Coordinate coord : range.getCoordList()) {
@@ -158,12 +155,16 @@ public class NavigationHelper {
                 dir = "links";
             else if (ranges.get(i).getRelationToNextRange() == Range.RIGHT)
                 dir = "rechts";
-            if (!ranges.get(i).isLastRange())
+            if (!(ranges.get(i).getRelationToNextRange() == Range.LAST))
                 Log.d(TAG, "Nächste Range in Richtung: " + dir);
             else
                 Log.d(TAG, "Das ist die letzte Range");
             Log.d(TAG, ranges.get(i).toString());
         }
+
+//        lastUserPositions.add(ranges.get(0).getCoordList().get(0));
+//        lastUserPositions.add(ranges.get(1).getCoordList().get(0));
+//        lastUserPositions.add(ranges.get(1).getCoordList().get(1));
     }
 
     private void setUpBrReceiver(Context context) {
@@ -184,20 +185,65 @@ public class NavigationHelper {
             onNewRangeEntered();
         } else {
             Coordinate curPos = person.getCurrentPos();
-            Range newRange;
-            for (Range range : ranges) {
-                if (!range.equals(currentRange) && range.getCoordList().contains(curPos)) {
-                    newRange = range;
-                    currentRange = newRange;
-                    onNewRangeEntered();
-                    Log.d(TAG, "new range set");
-                    break;
+            if (lastUserPositions.size() < Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
+                if (curPos.isValid()) {
+                    lastUserPositions.add(curPos);
+                    Log.d(TAG, "not enough positions, adding latest one to the list");
+                } else Log.d(TAG, "not enough positions, BUT didn't add because this one was invalid");
+            }
+            if (lastUserPositions.size() == Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
+                boolean allInSameRange = true;
+                Range tempRange = getRangeByCoord(lastUserPositions.get(lastUserPositions.size() - 1));
+                Log.d(TAG, "index of range of last pos: " + ranges.indexOf(tempRange));
+                int counterForSameRange = 1;
+                for (int i = lastUserPositions.size() - 2; i >= 0; i--) {
+                    if (tempRange.equals(getRangeByCoord(lastUserPositions.get(i)))) {
+                        counterForSameRange++;
+                        Log.d(TAG, "pos at " + i + " is in same range too");
+                    } else {
+                        allInSameRange = false;
+                        Log.d(TAG, "pos at " + i + " is NOT in same range");
+                        break;
+                    }
+                }
+
+                if (allInSameRange) {
+                    if (!tempRange.equals(currentRange)) {
+                        for (Range range : ranges) {
+                            if (range.equals(tempRange)) {
+                                currentRange = range;
+                                onNewRangeEntered();
+                                Log.d(TAG, "new range set");
+                                break;
+                            }
+                        }
+                    } else Log.d(TAG, "stil in same range");
+//                lastUserPositions.clear();
+                } else {
+                    //size - (counterForSameRange + 1), da man für letztes Element eh schon size - 1 machen würde
+                    //Und hier soll ja mit dem vorletzen Element angefangen werden
+                    int counter = 0;
+                    int deletionIndex = lastUserPositions.size() - (counterForSameRange + 1);
+                    Iterator<Coordinate> it = lastUserPositions.iterator();
+                    Log.d(TAG, "userPosi: " + lastUserPositions);
+                    Log.d(TAG, "have to delete all pos up to index: " + deletionIndex);
+                    while (it.hasNext()) {
+                        Coordinate c = it.next();
+                        if (counter <= deletionIndex) {
+                            it.remove();
+                            Log.d(TAG, "removing userPos: " + c);
+                        }
+                        counter++;
+                    }
+                    Log.d(TAG, "size of userPosList after removal: " + lastUserPositions.size());
+
                 }
             }
         }
     }
 
     private void onNewRangeEntered() {
+        adjustImageToNewRange();
         ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
         instructionTexts = new ArrayList<>();
         instructionTexts.add("Geradeaus");
@@ -211,16 +257,31 @@ public class NavigationHelper {
         tts.speakList(instructionTexts, 0);
     }
 
-    public void updateTextViews(TextView distanceTextView, TextView directionTextView) {
-//        directionTextView.setText(orientationDifference + directionUnit);
+    private Range getRangeByCoord(Coordinate coord) {
+        Range resultRange = null;
+        for (Range range : ranges) {
+            Log.d(TAG, "checking range " + range);
+            Log.d(TAG, "for pos: " + coord);
+            if (range.getCoordList().contains(coord)) {
+                Log.d(TAG, "this was the wanted range");
+                resultRange = range;
+                break;
+            } else Log.d(TAG, "this was not the wanted range");
+        }
+        if (resultRange == null) {
+            Log.d(TAG, "resultRange still null");
+        }
+        return resultRange;
+    }
+
+    public void updateTextViews(TextView directionTextView) {
+        directionTextView.setText(directionDifference + directionUnit);
     }
 
     public void updateImage(ImageView arrowImage, float newOrientation) {
         if (previousOrientation == -1) {
             setupImage(arrowImage, newOrientation);
-//            Log.d(TAG, "setupImage: newOr: " + newOrientation);
         } else {
-//            Log.d(TAG, "prevOr: " + previousOrientation + ", newOr: " + newOrientation);
             float orientationDifference = newOrientation - previousOrientation;
             float direction = previousDirection - orientationDifference;
             if (direction < 0) {
@@ -229,7 +290,13 @@ public class NavigationHelper {
                 direction = direction - 360;
             }
 
-//            Log.d(TAG, "prevDir: " + previousDirection + ", newDir: " + direction);
+            directionDifference = (int) (direction - firstDirection);
+            if (directionDifference <= 10) {
+                if (previousDirection < 360 && previousDirection > 355 && direction > 0 && direction < 5)
+                    direction = 360;
+                else if (previousDirection > 0 && previousDirection < 5 && direction < 360 && direction > 355)
+                    direction = 0;
+            }
 
             RotateAnimation ra = new RotateAnimation(
                     previousDirection,
@@ -247,7 +314,7 @@ public class NavigationHelper {
         }
     }
 
-    public void setupImage(ImageView arrowImage, float initialOrientation) {
+    private void setupImage(ImageView arrowImage, float initialOrientation) {
         RotateAnimation ra = new RotateAnimation(
                 0,
                 firstDirection,
@@ -261,6 +328,17 @@ public class NavigationHelper {
 
         previousDirection = firstDirection;
         previousOrientation = initialOrientation;
+    }
+
+    private void adjustImageToNewRange() {
+        previousOrientation = -1;
+
+        if (currentRange.getRelationToNextRange() == Range.LEFT)
+            firstDirection = 270;
+        else if (currentRange.getRelationToNextRange() == Range.RIGHT)
+            firstDirection = 90;
+        else if (currentRange.getRelationToNextRange() == Range.NONE)
+            firstDirection = 0;
     }
 
     public void nextInstruction() {
@@ -283,6 +361,6 @@ public class NavigationHelper {
     }
 
     public void repeatInstruction() {
-        tts.speakList(instructionTexts,0);
+        tts.speakList(instructionTexts, 0);
     }
 }

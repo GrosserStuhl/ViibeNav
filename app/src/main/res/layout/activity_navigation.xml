@@ -11,7 +11,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="41dp"
-            android:contentDescription="@string/directionArrowText"/>
+            android:contentDescription="@string/directionArrowImgText"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -33,9 +33,10 @@
             android:id="@+id/walkIndicatorImgView"
             android:src="@drawable/red_dot"
             android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"/>
+            android:layout_alignParentEnd="true"
+            android:contentDescription="@string/walkingIndicatorImgText"/>
 
-        <TextView
+    <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
@@ -45,17 +46,17 @@
             android:textStyle="bold"
             android:layout_below="@+id/instructionTextView"
             android:layout_alignStart="@+id/arrowImageView"
-            android:layout_alignParentStart="false" />
+            android:layout_alignParentStart="false"/>
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/estimatedAlgorithm"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:layout_below="@+id/estimatedCoords"
-        android:layout_alignEnd="@+id/estimatedCoords" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Large Text"
+            android:id="@+id/estimatedAlgorithm"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_below="@+id/estimatedCoords"
+            android:layout_alignEnd="@+id/estimatedCoords"/>
 
 </RelativeLayout>

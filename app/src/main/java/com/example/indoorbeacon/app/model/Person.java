@@ -39,7 +39,7 @@ public class Person {
     public Person(NavigationActivity activity) {
         this.activity = activity;
         tmpCoordinates = new ArrayList<>();
-        currentPos = new Coordinate(-1, -1, -1);
+        currentPos = new Coordinate(-1, 0, 0);
         currentPosAlgorithm = new Coordinate(-1, -1, -1);
         measurement = new Measurement(activity);
 

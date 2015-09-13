@@ -53,10 +53,6 @@ public class Range {
         environmentalInfos.add(info);
     }
 
-    public boolean isLastRange(){
-        return getRelationToNextRange() == Range.LAST;
-    }
-
     public String getRelationToNextRangeAsString(){
         if (relationToNextRange == Range.LAST)
             return " und dann haben Sie ihr Ziel erreicht.";
