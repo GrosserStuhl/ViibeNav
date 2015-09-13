@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
         BluetoothScan.getBtScan(this);
         SensorHelper.getSensorHelper(this);
 
-        TTS.createTTS(this);
+        TTS.getTTS(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     }
