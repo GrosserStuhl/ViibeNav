@@ -357,22 +357,14 @@ public class DBHandler extends SQLiteOpenHelper {
         String category = "";
 
         while (!c.isAfterLast()) {
-            if(!c.isNull(c.getColumnIndex(COLUMN_X)))
                 x = c.getInt(c.getColumnIndex(COLUMN_X));
-            if(!c.isNull(c.getColumnIndex(COLUMN_Y)))
                 y = c.getInt(c.getColumnIndex(COLUMN_Y));
-            if(!c.isNull(c.getColumnIndex(COLUMN_FLOOR)))
                 floor = c.getInt(c.getColumnIndex(COLUMN_FLOOR));
 
-            if(!c.isNull(c.getColumnIndex(INFO_COLUMN_ID)))
                 info_id = c.getInt(c.getColumnIndex(INFO_COLUMN_ID));
-            if(!c.isNull(c.getColumnIndex(COLUMN_PERSON_NAME)))
                 personname = c.getString(c.getColumnIndex(COLUMN_PERSON_NAME));
-            if(!c.isNull(c.getColumnIndex(COLUMN_ROOM_NAME)))
                 roomname = c.getString(c.getColumnIndex(COLUMN_ROOM_NAME));
-            if(!c.isNull(c.getColumnIndex(COLUMN_ENVIRONMENT)))
                 environment = c.getString(c.getColumnIndex(COLUMN_ENVIRONMENT));
-            if(!c.isNull(c.getColumnIndex(COLUMN_CATEGORY)))
                 category = c.getString(c.getColumnIndex(COLUMN_CATEGORY));
 
             res.put(new Coordinate(floor, x, y), new InfoModel(info_id, personname, roomname, environment, category));
