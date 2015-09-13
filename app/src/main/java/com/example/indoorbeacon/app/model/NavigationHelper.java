@@ -161,7 +161,7 @@ public class NavigationHelper {
                 dir = "links";
             else if (ranges.get(i).getRelationToNextRange() == Range.RIGHT)
                 dir = "rechts";
-            if (!ranges.get(i).isLastRange())
+            if (!(ranges.get(i).getRelationToNextRange() == Range.LAST))
                 Log.d(TAG, "Nächste Range in Richtung: " + dir);
             else
                 Log.d(TAG, "Das ist die letzte Range");
@@ -192,8 +192,10 @@ public class NavigationHelper {
         } else {
             Coordinate curPos = person.getCurrentPos();
             if (lastUserPositions.size() < Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
-                lastUserPositions.add(curPos);
-                Log.d(TAG, "not enough positions, adding latest one to the list");
+                if(curPos.isValid()) {
+                    lastUserPositions.add(curPos);
+                    Log.d(TAG, "not enough positions, adding latest one to the list");
+                } else Log.d(TAG, "not enough positions, but didn't add because this one was invalid");
             }
             if (lastUserPositions.size() == Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
                 boolean allInSameRange = true;
@@ -264,10 +266,16 @@ public class NavigationHelper {
     private Range getRangeByCoord(Coordinate coord) {
         Range resultRange = null;
         for (Range range : ranges) {
+            Log.d(TAG, "checking range " + range);
+            Log.d(TAG, "for pos: " + coord);
             if (range.getCoordList().contains(coord)) {
+                Log.d(TAG, "this was the wanted range");
                 resultRange = range;
                 break;
-            }
+            } else Log.d(TAG, "this was not the wanted range");
+        }
+        if (resultRange == null) {
+            Log.d(TAG, "resultRange still null");
         }
         return resultRange;
     }
@@ -348,6 +356,6 @@ public class NavigationHelper {
     }
 
     public void repeatInstruction() {
-        tts.speakList(instructionTexts,0);
+        tts.speakList(instructionTexts, 0);
     }
 }

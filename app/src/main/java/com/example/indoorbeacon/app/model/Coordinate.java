@@ -62,19 +62,28 @@ public class Coordinate {
         return x >= 0 && y >= 0;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Coordinate that = (Coordinate) o;
-        return Objects.equals(floor, that.floor) &&
-                Objects.equals(x, that.x) &&
-                Objects.equals(y, that.y);
+
+        if (Double.compare(that.x, x) != 0) return false;
+        return Double.compare(that.y, y) == 0;
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(floor, x, y);
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(x);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 
     @Override
