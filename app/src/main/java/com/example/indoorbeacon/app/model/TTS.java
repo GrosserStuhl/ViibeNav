@@ -103,8 +103,11 @@ public class TTS extends UtteranceProgressListener {
 //                Message send = Message.obtain();
 //                send.obj = message;
 //                h.sendMessage(send);
+                instructionCounter = 0;
                 speakList(instructionList,instructionCounter);
             } else {
+                if(instructionCounter == 0)
+                    instructionCounter++;
                 speak(message, TTS.this);
             }
         }
@@ -120,6 +123,7 @@ public class TTS extends UtteranceProgressListener {
         Log.d(TAG, "speaking done." + tts.isSpeaking());
             if (!hadErrors && instructionCounter < instructionList.size()) {
                 Message msg = Message.obtain();
+                Log.d(TAG, "onDone : countr"+instructionCounter);
                 msg.obj = instructionList.get(instructionCounter++);
                 h.sendMessage(msg);
             }
