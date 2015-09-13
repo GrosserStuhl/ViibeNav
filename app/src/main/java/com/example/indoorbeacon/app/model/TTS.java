@@ -157,7 +157,7 @@ public class TTS extends UtteranceProgressListener {
     }
 
     public void stop(){
-//        if(tts.stop() == -1);
+        if(tts.stop() == -1);
             stop();
     }
 

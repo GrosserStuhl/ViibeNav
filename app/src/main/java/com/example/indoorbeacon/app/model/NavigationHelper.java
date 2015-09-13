@@ -363,7 +363,7 @@ public class NavigationHelper {
             tts.speakList(instructionTexts, 0);
         } else {
             ArrayList<String> alternative = new ArrayList<>();
-            alternative.add("Danach haben Sie ihr Ziel erreicht, es gibt keine nächste Anweisung.");
+            alternative.add("Danach haben Sie ihr Ziel erreicht. Es gibt keine nächste Anweisung.");
             tts.speakList(alternative, 0);
         }
 //        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
@@ -398,7 +398,7 @@ public class NavigationHelper {
             tts.speakList(instructionTexts, 0);
         } else {
             ArrayList<String> alternative = new ArrayList<>();
-            alternative.add("Die Navigation hat hier begonnen, es gibt noch keine vorherige Anweisung.");
+            alternative.add("Die Navigation hat hier begonnen. Es gibt noch keine vorherige Anweisung.");
             tts.speakList(alternative, 0);
         }
     }
