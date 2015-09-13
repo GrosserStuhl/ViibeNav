@@ -11,7 +11,6 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 
@@ -158,6 +157,8 @@ public class NavigationHelper {
 
     private void onPositionChangedAction() {
         Coordinate curPos = person.getCurrentPos();
+        // TODO: 13.09.2015 Position TO Range
+        // getRange from Position
     }
 
     public void updateTextViews(TextView distanceTextView, TextView directionTextView) {

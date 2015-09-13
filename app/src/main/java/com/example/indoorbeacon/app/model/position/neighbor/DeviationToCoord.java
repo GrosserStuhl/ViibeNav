@@ -7,19 +7,19 @@ import com.example.indoorbeacon.app.model.Coordinate;
  */
 public class DeviationToCoord {
 
-    private double deviation;
+    private float deviation;
     private Coordinate coordinate;
 
-    public DeviationToCoord(double deviation, Coordinate coordinate) {
+    public DeviationToCoord(float deviation, Coordinate coordinate) {
         this.deviation = deviation;
         this.coordinate = coordinate;
     }
 
-    public double getdeviation() {
+    public float getdeviation() {
         return deviation;
     }
 
-    public void setdeviation(double deviation) {
+    public void setdeviation(float deviation) {
         this.deviation = deviation;
     }
 

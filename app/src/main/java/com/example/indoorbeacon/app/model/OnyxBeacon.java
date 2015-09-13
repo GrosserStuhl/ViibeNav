@@ -108,7 +108,7 @@ public class OnyxBeacon {
             listPointer=0;
 
         if(getMajor() == 7)
-            Log.d(TAG,Util.intListToString(measurementRSSIs));
+            Log.d(TAG,Util.primitivelistToString(measurementRSSIs));
     }
 
     public boolean allRSSIsForMeasurement(){
