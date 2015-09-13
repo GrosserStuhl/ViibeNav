@@ -404,6 +404,16 @@ public class NavigationHelper {
     }
 
     public void repeatInstruction() {
+        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
+        instructionTexts = new ArrayList<>();
+        instructionTexts.add("Geradeaus");
+
+        String vorbeiAn = "Vorbei an ";
+        for (String e : environmentalInfo)
+            instructionTexts.add(vorbeiAn + e);
+
+//        strings.add("Vorbei an Glastür");strings.add("Vorbei an Teppich");strings.add("Vorbei an Ming-Vase");
+        instructionTexts.add(currentRange.getRelationToNextRangeAsString());
         tts.speakList(instructionTexts, 0);
     }
 }
