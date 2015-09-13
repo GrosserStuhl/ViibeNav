@@ -251,6 +251,7 @@ public class DBHandler extends SQLiteOpenHelper {
             c.close();
         }
         db.close();
+//        Log.d(TAG,"DEV TO COORDS SIZE: "+devsToCoords.size()+ " FROM "+map.length+ " Macs");
 //        return devsToCoords.toArray(new DeviationToCoord[devsToCoords.size()]);
         return devsToCoords;
     }

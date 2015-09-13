@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.indoorbeacon.app.controller.NavigationActivity;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
@@ -86,7 +87,7 @@ public class Person {
         if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM || !estimatedPos.isValid()) {
             setCurrentPos(currentPos);
             if(!estimatedPos.isValid())
-                Log.e(TAG, "Position is invalid!");
+                Toast.makeText(activity.getApplicationContext(),"INVALID COORDINATE!",Toast.LENGTH_SHORT);
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
                 && walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM * 2) {
             //Die Matrix mit den nächsten Nachbarn zu estimatedPos
