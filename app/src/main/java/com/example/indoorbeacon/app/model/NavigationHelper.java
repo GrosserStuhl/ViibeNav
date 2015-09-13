@@ -343,6 +343,27 @@ public class NavigationHelper {
 
     public void nextInstruction() {
         tts.speak("Nächste Anweisung");
+
+        int index = ranges.indexOf(currentRange);
+
+        Range nextRange;
+        if(index != ranges.size()-1) {
+            nextRange = ranges.get(index + 1);
+            ArrayList<String> environmentalInfo = nextRange.getEnvironmentalInfos();
+            instructionTexts = new ArrayList<>();
+            instructionTexts.add("Geradeaus");
+
+            String vorbeiAn = "Vorbei an ";
+            for (String e : environmentalInfo)
+                instructionTexts.add(vorbeiAn + e);
+
+            instructionTexts.add(currentRange.getRelationToNextRangeAsString());
+            tts.speakList(instructionTexts, 0);
+        } else {
+            ArrayList<String> alternative = new ArrayList<>();
+            alternative.add("Es gibt keine nächste Anweisung, danach haben Sie ihr Ziel erreicht.");
+            tts.speakList(alternative,0);
+        }
 //        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
 //        ArrayList<String> strings = new ArrayList<>();
 //        strings.add("Geradeaus");
@@ -357,7 +378,27 @@ public class NavigationHelper {
     }
 
     public void previousInstruction() {
-        tts.speak("Vorherige Anweisung");
+//        tts.speak("Vorherige Anweisung");
+        int index = ranges.indexOf(currentRange);
+
+        Range previousRange;
+        if(index != 0) {
+            previousRange = ranges.get(index - 1);
+            ArrayList<String> environmentalInfo = previousRange.getEnvironmentalInfos();
+            instructionTexts = new ArrayList<>();
+            instructionTexts.add("Geradeaus");
+
+            String vorbeiAn = "Vorbei an ";
+            for (String e : environmentalInfo)
+                instructionTexts.add(vorbeiAn + e);
+
+            instructionTexts.add(currentRange.getRelationToNextRangeAsString());
+            tts.speakList(instructionTexts, 0);
+        } else {
+            ArrayList<String> alternative = new ArrayList<>();
+            alternative.add("Die Navigation hat hier begonnen, es gibt noch keine vorherige Anweisung.");
+            tts.speakList(alternative,0);
+        }
     }
 
     public void repeatInstruction() {
