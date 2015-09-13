@@ -49,6 +49,7 @@ public class TTS extends UtteranceProgressListener {
         });
     }
 
+    @Deprecated
     public void speak(final String toSpeak){
 
         if(tts != null)
@@ -71,12 +72,12 @@ public class TTS extends UtteranceProgressListener {
 
     public void speak(final String toSpeak, final UtteranceProgressListener utt){
 
-//        if(tts != null)
-//            if(tts.isSpeaking()) {
-//                stop();
-//                Log.d(TAG, "speaking: RETURN!");
-//                return;
-//            }
+        if(tts != null)
+            if(tts.isSpeaking()) {
+                stop();
+                Log.d(TAG, "speaking: RETURN!");
+                return;
+            }
 
         tts = new TextToSpeech(c, new TextToSpeech.OnInitListener() {
             @Override
@@ -99,12 +100,15 @@ public class TTS extends UtteranceProgressListener {
             if(tts.isSpeaking()) {
                 onError("Unique");
                 tts.stop();
+
+                instructionCounter = 0;
 //                h.removeCallbacksAndMessages(msg);
 //                Message send = Message.obtain();
 //                send.obj = message;
 //                h.sendMessage(send);
-                instructionCounter = 0;
-                speakList(instructionList,instructionCounter);
+//                 VERSION 2
+//                speakList(instructionList,instructionCounter);
+                speakListItem(instructionList.get(instructionCounter));
             } else {
                 if(instructionCounter == 0)
                     instructionCounter++;
@@ -153,7 +157,7 @@ public class TTS extends UtteranceProgressListener {
     }
 
     public void stop(){
-        if(tts.stop() == -1);
+//        if(tts.stop() == -1);
             stop();
     }
 

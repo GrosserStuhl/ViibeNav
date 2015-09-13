@@ -68,6 +68,8 @@ public class NavigationHelper {
         ranges = new LinkedList<>();
         lastUserPositions = new ArrayList<>();
         dividePathIntoRanges();
+
+//        onPositionChangedAction();
     }
 
     private void dividePathIntoRanges() {
@@ -342,7 +344,7 @@ public class NavigationHelper {
     }
 
     public void nextInstruction() {
-        tts.speak("Nächste Anweisung");
+//        tts.speak("Nächste Anweisung");
 
         int index = ranges.indexOf(currentRange);
 
