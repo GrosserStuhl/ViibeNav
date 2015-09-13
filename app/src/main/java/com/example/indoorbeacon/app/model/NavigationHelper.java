@@ -30,7 +30,7 @@ public class NavigationHelper {
     private Coordinate previousPos;
     private LinkedList<Coordinate> path;
     private HashMap<Coordinate, InfoModel> infoTextsForAnchors;
-    private LinkedList<ArrayList<Coordinate>> ranges;
+    private LinkedList<Range> ranges;
     private TTS tts;
     private Person person;
     private String instructionText;
@@ -99,11 +99,11 @@ public class NavigationHelper {
                     Log.d(TAG, "x-if");
                 } else {
                     Log.d(TAG, "x-else");
-                    ArrayList<Coordinate> range = new ArrayList<>();
+                    ArrayList<Coordinate> rangeCoords = new ArrayList<>();
                     for (int j = newRangeStart; j <= counter; j++) {
-                        range.add(path.get(j));
+                        rangeCoords.add(path.get(j));
                     }
-                    ranges.add(range);
+                    ranges.add(new Range(rangeCoords, Range.NONE, Range.NONE));
                     //Counter + 1, da counter erst am ende der Schleife hochgezählt wird
                     newRangeStart = counter + 1;
                     nextNavIsAlong_X_Axis = false;
@@ -115,24 +115,24 @@ public class NavigationHelper {
                     Log.d(TAG, "y-if");
                 } else {
                     Log.d(TAG, "y-else");
-                    ArrayList<Coordinate> range = new ArrayList<>();
+                    ArrayList<Coordinate> rangeCoords = new ArrayList<>();
                     for (int j = newRangeStart; j <= counter; j++) {
-                        range.add(path.get(j));
+                        rangeCoords.add(path.get(j));
                     }
+                    ranges.add(new Range(rangeCoords, Range.NONE, Range.NONE));
                     //Counter + 1, da counter erst am ende der Schleife hochgezählt wird
                     newRangeStart = counter + 1;
-                    ranges.add(range);
                     nextNavIsAlong_Y_Axis = false;
                     nextNavIsAlong_X_Axis = true;
                 }
             }
             counter++;
             if (i == path.size() - 1) {
-                ArrayList<Coordinate> range = new ArrayList<>();
+                ArrayList<Coordinate> rangeCoords = new ArrayList<>();
                 for (int j = newRangeStart; j <= counter; j++) {
-                    range.add(path.get(j));
+                    rangeCoords.add(path.get(j));
                 }
-                ranges.add(range);
+                ranges.add(new Range(rangeCoords, Range.NONE, Range.NONE));
             }
         }
 
