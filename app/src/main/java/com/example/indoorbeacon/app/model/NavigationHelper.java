@@ -38,10 +38,11 @@ public class NavigationHelper {
     private TTS tts;
     private Person person;
     private ArrayList<String> instructionTexts;
-    private float previousOrientation;
-    private float firstDirection;
-    private float previousDirection;
-    private String directionUnit;
+    private float previousOrientation = -1;
+    private float firstDirection = 0;
+    private float previousDirection = 0;
+    private String directionUnit = " °";
+    private int directionDifference = 0;
 
     public NavigationHelper(Context context, Person person, String ziel) {
         this.person = person;
@@ -51,10 +52,6 @@ public class NavigationHelper {
     }
 
     private void initNavigation(String ziel) {
-        previousOrientation = -1;
-        previousDirection = 0;
-        directionUnit = " °";
-
         target = DBHandler.getDB().getTarget(ziel);
         path = DBHandler.getDB().getAllAnchors();
 //        path = new LinkedList<>();
@@ -141,10 +138,7 @@ public class NavigationHelper {
         currentRange = ranges.getFirst();
         ranges.getLast().setRelationToNextRange(Range.LAST);
 
-        if (currentRange.getRelationToNextRange() == Range.LEFT)
-            firstDirection = 270;
-        else if (currentRange.getRelationToNextRange() == Range.RIGHT)
-            firstDirection = 90;
+        adjustImageToNewRange();
 
         for (Range range : ranges) {
             for (Coordinate coord : range.getCoordList()) {
@@ -192,10 +186,10 @@ public class NavigationHelper {
         } else {
             Coordinate curPos = person.getCurrentPos();
             if (lastUserPositions.size() < Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
-                if(curPos.isValid()) {
+                if (curPos.isValid()) {
                     lastUserPositions.add(curPos);
                     Log.d(TAG, "not enough positions, adding latest one to the list");
-                } else Log.d(TAG, "not enough positions, but didn't add because this one was invalid");
+                } else Log.d(TAG, "not enough positions, BUT didn't add because this one was invalid");
             }
             if (lastUserPositions.size() == Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
                 boolean allInSameRange = true;
@@ -213,43 +207,43 @@ public class NavigationHelper {
                     }
                 }
 
-            if (allInSameRange) {
-                if (!tempRange.equals(currentRange)) {
-                    for (Range range : ranges) {
-                        if (range.equals(tempRange)) {
-                            currentRange = range;
-                            onNewRangeEntered();
-                            Log.d(TAG, "new range set");
-                            break;
+                if (allInSameRange) {
+                    if (!tempRange.equals(currentRange)) {
+                        for (Range range : ranges) {
+                            if (range.equals(tempRange)) {
+                                currentRange = range;
+                                onNewRangeEntered();
+                                Log.d(TAG, "new range set");
+                                break;
+                            }
                         }
-                    }
-                } else Log.d(TAG, "stil in same range");
+                    } else Log.d(TAG, "stil in same range");
 //                lastUserPositions.clear();
-            } else {
-                //size - (counterForSameRange + 1), da man für letztes Element eh schon size - 1 machen würde
-                //Und hier soll ja mit dem vorletzen Element angefangen werden
-                int counter = 0;
-                int deletionIndex = lastUserPositions.size() - (counterForSameRange + 1);
-                Iterator<Coordinate> it = lastUserPositions.iterator();
-                Log.d(TAG, "userPosi: " + lastUserPositions);
-                Log.d(TAG, "have to delete all pos up to index: " + deletionIndex);
-                while (it.hasNext()) {
-                    Coordinate c = it.next();
-                    if (counter <= deletionIndex) {
-                        it.remove();
-                        Log.d(TAG, "removing userPos: " + c);
+                } else {
+                    //size - (counterForSameRange + 1), da man für letztes Element eh schon size - 1 machen würde
+                    //Und hier soll ja mit dem vorletzen Element angefangen werden
+                    int counter = 0;
+                    int deletionIndex = lastUserPositions.size() - (counterForSameRange + 1);
+                    Iterator<Coordinate> it = lastUserPositions.iterator();
+                    Log.d(TAG, "userPosi: " + lastUserPositions);
+                    Log.d(TAG, "have to delete all pos up to index: " + deletionIndex);
+                    while (it.hasNext()) {
+                        Coordinate c = it.next();
+                        if (counter <= deletionIndex) {
+                            it.remove();
+                            Log.d(TAG, "removing userPos: " + c);
+                        }
+                        counter++;
                     }
-                    counter++;
-                }
-                Log.d(TAG, "size of userPosList after removal: " + lastUserPositions.size());
+                    Log.d(TAG, "size of userPosList after removal: " + lastUserPositions.size());
 
-            }
+                }
             }
         }
     }
 
     private void onNewRangeEntered() {
-        resetImage();
+        adjustImageToNewRange();
         ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
         instructionTexts = new ArrayList<>();
         instructionTexts.add("Geradeaus");
@@ -280,16 +274,14 @@ public class NavigationHelper {
         return resultRange;
     }
 
-    public void updateTextViews(TextView distanceTextView, TextView directionTextView) {
-//        directionTextView.setText(orientationDifference + directionUnit);
+    public void updateTextViews(TextView directionTextView) {
+        directionTextView.setText(directionDifference + directionUnit);
     }
 
     public void updateImage(ImageView arrowImage, float newOrientation) {
         if (previousOrientation == -1) {
             setupImage(arrowImage, newOrientation);
-//            Log.d(TAG, "setupImage: newOr: " + newOrientation);
         } else {
-//            Log.d(TAG, "prevOr: " + previousOrientation + ", newOr: " + newOrientation);
             float orientationDifference = newOrientation - previousOrientation;
             float direction = previousDirection - orientationDifference;
             if (direction < 0) {
@@ -298,7 +290,13 @@ public class NavigationHelper {
                 direction = direction - 360;
             }
 
-//            Log.d(TAG, "prevDir: " + previousDirection + ", newDir: " + direction);
+            directionDifference = (int) (direction - firstDirection);
+            if (directionDifference <= 10) {
+                if (previousDirection < 360 && previousDirection > 355 && direction > 0 && direction < 5)
+                    direction = 360;
+                else if (previousDirection > 0 && previousDirection < 5 && direction < 360 && direction > 355)
+                    direction = 0;
+            }
 
             RotateAnimation ra = new RotateAnimation(
                     previousDirection,
@@ -332,8 +330,15 @@ public class NavigationHelper {
         previousOrientation = initialOrientation;
     }
 
-    private void resetImage() {
+    private void adjustImageToNewRange() {
         previousOrientation = -1;
+
+        if (currentRange.getRelationToNextRange() == Range.LEFT)
+            firstDirection = 270;
+        else if (currentRange.getRelationToNextRange() == Range.RIGHT)
+            firstDirection = 90;
+        else if (currentRange.getRelationToNextRange() == Range.NONE)
+            firstDirection = 0;
     }
 
     public void nextInstruction() {

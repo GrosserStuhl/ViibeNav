@@ -13,7 +13,8 @@
     <string name="roomlistInfoText">Raum auswählen:</string>
     <string name="searchResultText">Suche nach X ergab # Treffer:</string>
     <string name="infoTextSuche">Geben Sie den Namen einer Person oder eines Raumes ein</string>
-    <string name="directionArrowText">Richtungspfeil</string>
+    <string name="directionArrowImgText">Richtungspfeil</string>
+    <string name="walkingIndicatorImgText">Bewegungsindikator</string>
     <string name="searchResultsNothingFoundText">Sie können entweder eine neue Suche mit einem anderen Suchbegriff starten,
         oder einen Raum aus der Liste wählen:</string>
     <string name="roomlistNothingFoundText">Es konnten keine Einträge gefunden werden, vielleicht wurde für dieses

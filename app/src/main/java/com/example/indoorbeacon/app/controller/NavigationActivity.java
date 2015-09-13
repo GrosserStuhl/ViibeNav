@@ -45,7 +45,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
     private ImageView dotImgView;
     private ImageView arrowImage;
-    private TextView instructionTextView;
+    private TextView directionTextView;
     private TextView estimatedCoordTextView;
     private TextView estimatedAlgorithm;
 
@@ -81,7 +81,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     private void initGUI() {
         dotImgView = (ImageView) findViewById(R.id.walkIndicatorImgView);
         arrowImage = (ImageView) findViewById(R.id.arrowImageView);
-        instructionTextView = (TextView) findViewById(R.id.instructionTextView);
+        directionTextView = (TextView) findViewById(R.id.instructionTextView);
         estimatedCoordTextView = (TextView) findViewById(R.id.estimatedCoords);
         estimatedAlgorithm = (TextView) findViewById(R.id.estimatedAlgorithm);
     }
@@ -114,8 +114,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             @Override
             public void run() {
                 navigationHelper.updateImage(arrowImage, sensorHelper.getOrientation());
-                //TODO  2. TextView von Tom statt das null da reinsetzen
-//                navigationHelper.updateTextViews(instructionTextView, null);
+                navigationHelper.updateTextViews(directionTextView);
                 new Handler().postDelayed(this, 250);
             }
         }, 250);
