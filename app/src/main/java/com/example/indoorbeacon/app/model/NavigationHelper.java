@@ -135,7 +135,7 @@ public class NavigationHelper {
             }
         }
 
-//        ranges.get(0).setRelationToNextRange(Range.LEFT);
+        ranges.get(0).setRelationToNextRange(Range.LEFT);
 //        ranges.get(1).setRelationToNextRange(Range.RIGHT);
         currentRange = ranges.getFirst();
         ranges.getLast().setRelationToNextRange(Range.LAST);
@@ -220,7 +220,7 @@ public class NavigationHelper {
                             }
                         }
                     } else Log.d(TAG, "stil in same range");
-//                lastUserPositions.clear();
+                    lastUserPositions.clear();
                 } else {
                     //size - (counterForSameRange + 1), da man für letztes Element eh schon size - 1 machen würde
                     //Und hier soll ja mit dem vorletzen Element angefangen werden

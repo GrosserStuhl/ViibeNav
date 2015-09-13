@@ -85,8 +85,8 @@ public class Person {
         ArrayList<Coordinate> neighbours;
 
         if (walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM || !estimatedPos.isValid()) {
-            if(!estimatedPos.isValid())
-                Toast.makeText(activity.getApplicationContext(),"INVALID COORDINATE!",Toast.LENGTH_SHORT);
+            if (!estimatedPos.isValid())
+                Toast.makeText(activity.getApplicationContext(), "INVALID COORDINATE!", Toast.LENGTH_SHORT).show();
         } else if (walkedDistance >= Definitions.ANCHORPOINT_DISTANCE_IN_CM
                 && walkedDistance < Definitions.ANCHORPOINT_DISTANCE_IN_CM * 2) {
             //Die Matrix mit den nächsten Nachbarn zu estimatedPos
@@ -96,8 +96,10 @@ public class Person {
 
             neighbours = DBHandler.getDB().getDirectNeighborAnchors(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
-            Log.d(TAG, "newCurPos: " + newEstimatedPos);
-            setCurrentPos(newEstimatedPos);
+            if (newEstimatedPos.isValid()) {
+                Log.d(TAG, "newCurPos: " + newEstimatedPos);
+                setCurrentPos(newEstimatedPos);
+            }
             walkedDistance = 0;
 
             Log.d(TAG, "SIZE of neighbors nächster: " + neighbours.size());
@@ -114,8 +116,10 @@ public class Person {
 
             neighbours = DBHandler.getDB().getOuterNeighborAnchors(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
-            Log.d(TAG, "newCurPos: " + newEstimatedPos);
-            setCurrentPos(newEstimatedPos);
+            if (newEstimatedPos.isValid()) {
+                Log.d(TAG, "newCurPos: " + newEstimatedPos);
+                setCurrentPos(newEstimatedPos);
+            }
             walkedDistance = 0;
 
             Log.d(TAG, "SIZE of neighbors übernächster: " + neighbours.size());
