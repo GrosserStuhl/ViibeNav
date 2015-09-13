@@ -2,6 +2,8 @@ package com.example.indoorbeacon.app.model;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
@@ -18,7 +20,9 @@ public class TTS extends UtteranceProgressListener {
 
     private static TTS singleton;
     private static TextToSpeech tts;
-    private boolean newStartedOldNotFinshed;
+
+    private ArrayList<String> stringList;
+    private int stringListCounter = 0;
 
     private Context c;
 
@@ -81,12 +85,11 @@ public class TTS extends UtteranceProgressListener {
         });
     }
 
-    public void speakList(final ArrayList<String> strings,final int counter){
+    public void speak(final String toSpeak, final UtteranceProgressListener utt){
+
         if(tts != null)
-            if (tts.isSpeaking()) {
+            if(tts.isSpeaking())
                 stop();
-                tts = null;
-            }
 
         tts = new TextToSpeech(c, new TextToSpeech.OnInitListener() {
             @Override
@@ -95,45 +98,64 @@ public class TTS extends UtteranceProgressListener {
                     tts.setLanguage(Locale.GERMANY);
                     Bundle params = new Bundle();
                     params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "Unique");
-                    tts.speak(strings.get(counter), TextToSpeech.QUEUE_FLUSH, params, "UniqueID");
-                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                            @Override
-                            public void onStart(String utteranceId) {
-
-                            }
-
-                            @Override
-                            public void onDone(String utteranceId) {
-                                if (counter < strings.size() - 1 && !tts.isSpeaking())
-                                    TTS.this.speakList(strings, counter + 1);
-                            }
-
-                            @Override
-                            public void onError(String utteranceId) {
-
-                            }
-                        });
-
-
+                    tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, params, "UniqueID");
+                    tts.setOnUtteranceProgressListener(utt);
                 }
             }
         });
     }
 
-//    private Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            if(speakListCounter < speakList.size()-1)
-//                TTS.this.speakList(speakList,speakListCounter);
-//        }
-//    };
-//
-//    private Handler h = new Handler(){
-//        @Override
-//        public void handleMessage(Message msg) {
-//            new Handler().postDelayed(runnable,500);
-//        }
-//    };
+    public void speakList(final ArrayList<String> strings,final int counter){
+            stringList = strings;
+            stringListCounter = counter;
+//            for (String s : strings)
+        if(tts.isSpeaking()) {
+            Log.d(TAG, "speakList "+ "try to start new List");
+            tts.stop();
+            h.removeCallbacks(runnable);
+//            speakList(strings, counter);
+//            runnable = new MyRunnable();
+        } else {
+            runnable = new MyRunnable();
+            h.sendEmptyMessage(0);
+        }
+    }
+
+    private Handler h = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            postDelayed(runnable, 500);
+        }
+    };
+
+    private MyRunnable runnable = new MyRunnable();
+
+    private class MyRunnable extends UtteranceProgressListener implements Runnable {
+        private boolean started;
+
+        public MyRunnable(){
+            started = false;
+        }
+
+        @Override
+        public void run() {
+            started = true;
+            if(stringListCounter < stringList.size()-1 && started)
+                speak(stringList.get(stringListCounter++),this);
+        }
+
+        @Override
+        public void onDone(String utteranceId) {
+            if(!tts.isSpeaking())
+                h.sendEmptyMessage(0);
+        }
+
+        @Override
+        public void onStart(String utteranceId) {}
+
+        @Override
+        public void onError(String utteranceId) {}
+    }
 //    private Handler betweenHandler = new Handler(){
 //        @Override
 //        public void handleMessage(Message msg) {

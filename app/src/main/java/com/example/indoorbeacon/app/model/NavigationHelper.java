@@ -33,10 +33,11 @@ public class NavigationHelper {
     private LinkedList<Range> ranges;
     private Range currentRange;
     private ArrayList<Coordinate> lastUserPositions;
+    private boolean firstInstruction = true;
 
     private TTS tts;
     private Person person;
-    private String instructionText;
+    private ArrayList<String> instructionTexts;
     private float previousOrientation;
     private float firstDirection;
     private float previousDirection;
@@ -135,10 +136,10 @@ public class NavigationHelper {
             }
         }
 
-        ranges.get(0).setRelationToNextRange(Range.LEFT);
+//        ranges.get(0).setRelationToNextRange(Range.LEFT);
 //        ranges.get(1).setRelationToNextRange(Range.RIGHT);
         currentRange = ranges.getFirst();
-        ranges.getLast().markAsLastRange();
+        ranges.getLast().setRelationToNextRange(Range.LAST);
 
         if (currentRange.getRelationToNextRange() == Range.LEFT)
             firstDirection = 270;
@@ -147,7 +148,7 @@ public class NavigationHelper {
 
         for (Range range : ranges) {
             for (Coordinate coord : range.getCoordList()) {
-                if (infoTextsForAnchors.containsKey(coord) && !infoTextsForAnchors.get(coord).getEnvironment().equals("")) {
+                if (infoTextsForAnchors.containsKey(coord) && !infoTextsForAnchors.get(coord).getEnvironment().trim().isEmpty()) {
                     range.addEnvironmentalInfos(infoTextsForAnchors.get(coord).getEnvironment());
                 }
             }
@@ -185,26 +186,30 @@ public class NavigationHelper {
     }
 
     private void onPositionChangedAction() {
-        Coordinate curPos = person.getCurrentPos();
-        if (lastUserPositions.size() < Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
-            lastUserPositions.add(curPos);
-            Log.d(TAG, "not enough positions, adding latest one to the list");
-        }
-        if (lastUserPositions.size() == Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
-            boolean allInSameRange = true;
-            Range tempRange = getRangeByCoord(lastUserPositions.get(lastUserPositions.size() - 1));
-            Log.d(TAG, "index of range of last pos: " + ranges.indexOf(tempRange));
-            int counterForSameRange = 1;
-            for (int i = lastUserPositions.size() - 2; i >= 0; i--) {
-                if (tempRange.equals(getRangeByCoord(lastUserPositions.get(i)))) {
-                    counterForSameRange++;
-                    Log.d(TAG, "pos at " + i + " is in same range too");
-                } else {
-                    allInSameRange = false;
-                    Log.d(TAG, "pos at " + i + " is NOT in same range");
-                    break;
-                }
+        if (firstInstruction) {
+            firstInstruction = false;
+            onNewRangeEntered();
+        } else {
+            Coordinate curPos = person.getCurrentPos();
+            if (lastUserPositions.size() < Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
+                lastUserPositions.add(curPos);
+                Log.d(TAG, "not enough positions, adding latest one to the list");
             }
+            if (lastUserPositions.size() == Definitions.NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE) {
+                boolean allInSameRange = true;
+                Range tempRange = getRangeByCoord(lastUserPositions.get(lastUserPositions.size() - 1));
+                Log.d(TAG, "index of range of last pos: " + ranges.indexOf(tempRange));
+                int counterForSameRange = 1;
+                for (int i = lastUserPositions.size() - 2; i >= 0; i--) {
+                    if (tempRange.equals(getRangeByCoord(lastUserPositions.get(i)))) {
+                        counterForSameRange++;
+                        Log.d(TAG, "pos at " + i + " is in same range too");
+                    } else {
+                        allInSameRange = false;
+                        Log.d(TAG, "pos at " + i + " is NOT in same range");
+                        break;
+                    }
+                }
 
             if (allInSameRange) {
                 if (!tempRange.equals(currentRange)) {
@@ -237,11 +242,23 @@ public class NavigationHelper {
                 Log.d(TAG, "size of userPosList after removal: " + lastUserPositions.size());
 
             }
+            }
         }
     }
 
     private void onNewRangeEntered() {
         resetImage();
+        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
+        instructionTexts = new ArrayList<>();
+        instructionTexts.add("Geradeaus");
+
+        String vorbeiAn = "Vorbei an ";
+        for (String e : environmentalInfo)
+            instructionTexts.add(vorbeiAn + e);
+
+//        strings.add("Vorbei an Glastür");strings.add("Vorbei an Teppich");strings.add("Vorbei an Ming-Vase");
+        instructionTexts.add(currentRange.getRelationToNextRangeAsString());
+        tts.speakList(instructionTexts, 0);
     }
 
     private Range getRangeByCoord(Coordinate coord) {
@@ -253,13 +270,6 @@ public class NavigationHelper {
             }
         }
         return resultRange;
-    }
-
-    private void newRangeEntered(){
-        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add("Glastür");strings.add("Teppich");strings.add("Ming-Vase");
-        tts.speakList(strings,0);
     }
 
     public void updateTextViews(TextView distanceTextView, TextView directionTextView) {
@@ -320,6 +330,17 @@ public class NavigationHelper {
 
     public void nextInstruction() {
         tts.speak("Nächste Anweisung");
+//        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
+//        ArrayList<String> strings = new ArrayList<>();
+//        strings.add("Geradeaus");
+//
+//        String vorbeiAn = "Vorbei an ";
+//        for (String e : environmentalInfo)
+//            strings.add(vorbeiAn+e);
+//
+////        strings.add("Vorbei an Glastür");strings.add("Vorbei an Teppich");strings.add("Vorbei an Ming-Vase");
+//        strings.add(currentRange.getRelationToNextRangeAsString());
+//        tts.speakList(strings, 0);
     }
 
     public void previousInstruction() {
@@ -327,6 +348,6 @@ public class NavigationHelper {
     }
 
     public void repeatInstruction() {
-        tts.speak("Wiederhole Anweisung");
+        tts.speakList(instructionTexts,0);
     }
 }
