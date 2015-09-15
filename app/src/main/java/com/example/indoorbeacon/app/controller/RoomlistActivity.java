@@ -49,12 +49,15 @@ public class RoomlistActivity extends Activity {
         ViewStub stub = (ViewStub) findViewById(R.id.roomlistViewStub);
 
         if (allEntries.size() != 0) {
-            stub.setLayoutResource(R.layout.roomlist_exp_list);
+            stub.setLayoutResource(R.layout.exp_list_view);
             stub.inflate();
 
-            final ExpandableListView list = (ExpandableListView) findViewById(R.id.roomExpListView);
+            final ExpandableListView list = (ExpandableListView) findViewById(R.id.expListView);
             CustomResultExpListAdapter adapter = new CustomResultExpListAdapter(this, allEntries, categories);
             list.setAdapter(adapter);
+
+            for (int i = 0; i < adapter.getGroupCount(); i++)
+                list.expandGroup(i);
 
             list.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 

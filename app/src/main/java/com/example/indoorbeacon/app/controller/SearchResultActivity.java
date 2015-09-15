@@ -52,13 +52,16 @@ public class SearchResultActivity extends Activity {
         ViewStub stub = (ViewStub) findViewById(R.id.searchResultsViewStub);
 
         if (results.size() != 0) {
-            stub.setLayoutResource(R.layout.search_results_exp_list);
+            stub.setLayoutResource(R.layout.exp_list_view);
             stub.inflate();
 
-            ExpandableListView list = (ExpandableListView) findViewById(R.id.resultsExpListView);
+            ExpandableListView list = (ExpandableListView) findViewById(R.id.expListView);
             ArrayList<String> categories = new ArrayList<>(results.keySet());
             CustomResultExpListAdapter adapter = new CustomResultExpListAdapter(this, results, categories);
             list.setAdapter(adapter);
+
+            for (int i = 0; i < adapter.getGroupCount(); i++)
+                list.expandGroup(i);
 
             list.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 

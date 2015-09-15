@@ -31,4 +31,5 @@
     <string name="prefDistanceDefault">Meter</string>
     <string name="prefOrientationUnit">Einheit der angezeigten Orientierung</string>
     <string name="prefOrientationDefault">Grad</string>
+    <string name="expListViewBeschreibung">Liste mit aufklappbaren Elementen</string>
 </resources>

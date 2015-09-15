@@ -66,7 +66,7 @@ public class CustomResultExpListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.search_results_exp_list_parent, parent, false);
+            convertView = inflater.inflate(R.layout.exp_list_view_parent, parent, false);
         }
 
         String parentText = (String) getGroup(groupPosition);
