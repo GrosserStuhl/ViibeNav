@@ -135,7 +135,7 @@ public class NavigationHelper {
             }
         }
 
-        ranges.get(0).setRelationToNextRange(Range.LEFT);
+        ranges.get(0).setRelationToNextRange(Range.RIGHT);
 //        ranges.get(1).setRelationToNextRange(Range.RIGHT);
         currentRange = ranges.getFirst();
         ranges.getLast().setRelationToNextRange(Range.LAST);
@@ -250,9 +250,8 @@ public class NavigationHelper {
         instructionTexts = new ArrayList<>();
         instructionTexts.add("Geradeaus");
 
-        String vorbeiAn = "Vorbei an ";
         for (String e : environmentalInfo)
-            instructionTexts.add(vorbeiAn + e);
+            instructionTexts.add(e);
 
 //        strings.add("Vorbei an Glastür");strings.add("Vorbei an Teppich");strings.add("Vorbei an Ming-Vase");
         instructionTexts.add(currentRange.getRelationToNextRangeAsString());
@@ -355,9 +354,8 @@ public class NavigationHelper {
             instructionTexts = new ArrayList<>();
             instructionTexts.add("Geradeaus");
 
-            String vorbeiAn = "Vorbei an ";
             for (String e : environmentalInfo)
-                instructionTexts.add(vorbeiAn + e);
+                instructionTexts.add(e);
 
             instructionTexts.add(nextRange.getRelationToNextRangeAsString());
             tts.speakList(instructionTexts, 0);
@@ -390,9 +388,8 @@ public class NavigationHelper {
             instructionTexts = new ArrayList<>();
             instructionTexts.add("Geradeaus");
 
-            String vorbeiAn = "Vorbei an ";
             for (String e : environmentalInfo)
-                instructionTexts.add(vorbeiAn + e);
+                instructionTexts.add(e);
 
             instructionTexts.add(previousRange.getRelationToNextRangeAsString());
             tts.speakList(instructionTexts, 0);
@@ -408,9 +405,8 @@ public class NavigationHelper {
         instructionTexts = new ArrayList<>();
         instructionTexts.add("Geradeaus");
 
-        String vorbeiAn = "Vorbei an ";
         for (String e : environmentalInfo)
-            instructionTexts.add(vorbeiAn + e);
+            instructionTexts.add(e);
 
 //        strings.add("Vorbei an Glastür");strings.add("Vorbei an Teppich");strings.add("Vorbei an Ming-Vase");
         instructionTexts.add(currentRange.getRelationToNextRangeAsString());
