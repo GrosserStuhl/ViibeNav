@@ -26,21 +26,21 @@ public class TTS extends UtteranceProgressListener {
     private int instructionCounter;
     private boolean hadErrors;
 
-    public static TTS getTTS(Context c){
-        synchronized(TTS.class){
-                if (singleton == null)
-                    singleton = new TTS(c);
+    public static TTS getTTS(Context c) {
+        synchronized (TTS.class) {
+            if (singleton == null)
+                singleton = new TTS(c);
 
         }
         return singleton;
     }
 
-    private TTS(Context c){
+    private TTS(Context c) {
         this.c = c;
         tts = new TextToSpeech(c, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if(status != TextToSpeech.ERROR) {
+                if (status != TextToSpeech.ERROR) {
                     tts.setLanguage(Locale.GERMANY);
                     Bundle params = new Bundle();
                     params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "Unique");
@@ -49,31 +49,33 @@ public class TTS extends UtteranceProgressListener {
         });
     }
 
-    @Deprecated
-    public void speak(final String toSpeak){
+    public void speak(final String toSpeak) {
+        ArrayList<String> list = new ArrayList<>();
+        list.add(toSpeak);
+        speakList(list, 0);
 
-        if(tts != null)
-            if(tts.isSpeaking())
-                stop();
-
-        tts = new TextToSpeech(c, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status != TextToSpeech.ERROR) {
-                    tts.setLanguage(Locale.GERMANY);
-                    Bundle params = new Bundle();
-                    params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "Unique");
-                    tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, params, "UniqueID");
-//                    tts.setOnUtteranceProgressListener(singleton);
-                }
-            }
-        });
+//        if(tts != null)
+//            if(tts.isSpeaking())
+//                stop();
+//
+//        tts = new TextToSpeech(c, new TextToSpeech.OnInitListener() {
+//            @Override
+//            public void onInit(int status) {
+//                if(status != TextToSpeech.ERROR) {
+//                    tts.setLanguage(Locale.GERMANY);
+//                    Bundle params = new Bundle();
+//                    params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "Unique");
+//                    tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, params, "UniqueID");
+////                    tts.setOnUtteranceProgressListener(singleton);
+//                }
+//            }
+//        });
     }
 
-    public void speak(final String toSpeak, final UtteranceProgressListener utt){
+    public void speak(final String toSpeak, final UtteranceProgressListener utt) {
 
-        if(tts != null)
-            if(tts.isSpeaking()) {
+        if (tts != null)
+            if (tts.isSpeaking()) {
                 stop();
                 Log.d(TAG, "speaking: RETURN!");
                 return;
@@ -82,7 +84,7 @@ public class TTS extends UtteranceProgressListener {
         tts = new TextToSpeech(c, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if(status != TextToSpeech.ERROR) {
+                if (status != TextToSpeech.ERROR) {
                     tts.setLanguage(Locale.GERMANY);
                     Bundle params = new Bundle();
                     params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "Unique");
@@ -93,11 +95,11 @@ public class TTS extends UtteranceProgressListener {
         });
     }
 
-    private Handler h = new Handler(){
+    private Handler h = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             String message = (String) msg.obj;
-            if(tts.isSpeaking()) {
+            if (tts.isSpeaking()) {
                 onError("Unique");
                 tts.stop();
 
@@ -110,7 +112,7 @@ public class TTS extends UtteranceProgressListener {
 //                speakList(instructionList,instructionCounter);
                 speakListItem(instructionList.get(instructionCounter));
             } else {
-                if(instructionCounter == 0)
+                if (instructionCounter == 0)
                     instructionCounter++;
                 speak(message, TTS.this);
             }
@@ -125,13 +127,13 @@ public class TTS extends UtteranceProgressListener {
     @Override
     public void onDone(String utteranceId) {
         Log.d(TAG, "speaking done." + tts.isSpeaking());
-            if (!hadErrors && instructionCounter < instructionList.size()) {
-                Message msg = Message.obtain();
-                Log.d(TAG, "onDone : countr"+instructionCounter);
-                msg.obj = instructionList.get(instructionCounter++);
-                h.sendMessage(msg);
-            }
-            hadErrors = false;
+        if (!hadErrors && instructionCounter < instructionList.size()) {
+            Message msg = Message.obtain();
+            Log.d(TAG, "onDone : countr" + instructionCounter);
+            msg.obj = instructionList.get(instructionCounter++);
+            h.sendMessage(msg);
+        }
+        hadErrors = false;
     }
 
     @Override
@@ -141,8 +143,7 @@ public class TTS extends UtteranceProgressListener {
     }
 
 
-
-    public void speakList(final ArrayList<String> strings,final int counter){
+    public void speakList(final ArrayList<String> strings, final int counter) {
         instructionList = strings;
         instructionCounter = counter;
         hadErrors = false;
@@ -150,18 +151,18 @@ public class TTS extends UtteranceProgressListener {
 
     }
 
-    private void speakListItem(String item){
+    private void speakListItem(String item) {
         Message msg = Message.obtain();
         msg.obj = item;
         h.sendMessage(msg);
     }
 
-    public void stop(){
-        if(tts.stop() == -1);
-            stop();
+    public void stop() {
+        if (tts.stop() == -1) ;
+        stop();
     }
 
-    public TextToSpeech getTextToSpeech(){
+    public TextToSpeech getTextToSpeech() {
         return tts;
     }
 }

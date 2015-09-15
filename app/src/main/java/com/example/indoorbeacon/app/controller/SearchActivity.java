@@ -91,25 +91,9 @@ public class SearchActivity extends Activity {
             if (resultCode == RESULT_OK) {
                 ArrayList<String> matches = data.getStringArrayListExtra(
                         RecognizerIntent.EXTRA_RESULTS);
-                //ArrayList "matches" zu Array konvertieren und als Parameter für nächsten Dialog übergeben
-//                showSpeechRecResults(matches.toArray(new String[matches.size()]));
                 searchField.setText(matches.get(0));
             }
         }
-    }
-
-    private void showSpeechRecResults(String[] matches) {
-        final String[] matchesCopy = new String[3];
-        System.arraycopy(matches, 0, matchesCopy, 0, matches.length);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-        builder.setTitle("Mögliche Option wählen").setItems(matches,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        searchField.setText(matchesCopy[which]);
-                    }
-                });
-        builder.create().show();
     }
 
     @Override

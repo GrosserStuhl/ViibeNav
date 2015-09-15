@@ -17,16 +17,16 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.indoorbeacon.app.R;
-import com.example.indoorbeacon.app.model.Connector;
-import com.example.indoorbeacon.app.model.NavigationHelper;
-import com.example.indoorbeacon.app.model.Person;
-import com.example.indoorbeacon.app.model.SensorHelper;
+import com.example.indoorbeacon.app.model.*;
+
+import java.util.ArrayList;
 
 /**
  * Created by #Dima on 28/07/2015.
@@ -153,10 +153,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         triggerMeasuring.sendEmptyMessage(0);
     }
 
-    private void setNavigating(boolean navigating) {
-        this.navigating = navigating;
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.mDetector.onTouchEvent(event);
@@ -182,7 +178,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, "No LE Support.", Toast.LENGTH_SHORT).show();
             finish();
-            return;
         }
 
     }
@@ -214,6 +209,14 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             Connector.getConnector().enableWiFi();
     }
 
+    public void readOutInstructions(View view) {
+        TTS.getTTS(this).speak(getResources().getString(R.string.infoInstructions));
+    }
+
+    public void openInStructionListActivity(View view) {
+        Intent intent = new Intent(this, InstructionListActivity.class);
+        startActivity(intent);
+    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
