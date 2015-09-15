@@ -34,7 +34,8 @@
             android:src="@drawable/red_dot"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:contentDescription="@string/walkingIndicatorImgText"/>
+            android:contentDescription="@string/walkingIndicatorImgText"
+            android:visibility="invisible"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -46,7 +47,8 @@
             android:textStyle="bold"
             android:layout_below="@+id/instructionTextView"
             android:layout_alignStart="@+id/arrowImageView"
-            android:layout_alignParentStart="false"/>
+            android:layout_alignParentStart="false"
+            android:visibility="invisible"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -57,6 +59,7 @@
             android:textSize="30sp"
             android:textStyle="bold"
             android:layout_below="@+id/estimatedCoords"
-            android:layout_alignEnd="@+id/estimatedCoords"/>
+            android:layout_alignEnd="@+id/estimatedCoords"
+        android:visibility="invisible"/>
 
 </RelativeLayout>

@@ -30,7 +30,7 @@ public class ExportImportDB {
         try {
             String currentDBPath = DBHandler.getDB().getDBPath();
             String backupDBPath  = Environment.getExternalStorageDirectory() + "/radiomap/radiomap.db";
-//            String backupDBPath  = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+ "/radiomapv2.db";
+//            String backupDBPath  = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+ "/radiomap-2.db";
             File backupDB = new File(backupDBPath);
 //            boolean readable = backupDB.setReadable(true, false);
 //            Log.d(TAG, "Backup readable: "+readable);

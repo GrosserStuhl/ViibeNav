@@ -398,7 +398,7 @@ public class DBHandler extends SQLiteOpenHelper {
             res.add(new Coordinate(floor, x, y));
             c.moveToNext();
         }
-        Log.d(TAG, "DONE FETCHING ALL ANCHORPOINTS "+res.size());
+        Log.d(TAG, "DONE FETCHING ALL ANCHORPOINTS " + res.size());
         c.close();
         db.close();
         return res;
@@ -408,15 +408,16 @@ public class DBHandler extends SQLiteOpenHelper {
         ArrayList<String> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
 
-//            String[] keys = key.split("\\s+");
-//            StringBuilder sb = new StringBuilder();
-//            for(String k : keys)
-//                sb.append(" OR LIKE '% " + k + " %'");
+            String[] keys = key.split("\\s+");
+            StringBuilder sb = new StringBuilder();
 
-        String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
-                "(" +
-                COLUMN_PERSON_NAME + " LIKE " + "'%" + key + "%'" /*+ sb.toString()*/ +
-                ");";
+        for (int i = 0; i < keys.length; i++)
+            if(i==0)
+                sb.append(" "+COLUMN_PERSON_NAME+" LIKE '%"+keys[i]+"%' ");
+            else
+                sb.append(" OR "+COLUMN_PERSON_NAME+" LIKE '%" + keys[i] + "%'");
+
+        String query = "SELECT DISTINCT "+COLUMN_PERSON_NAME+" FROM '" + TABLE_INFO + "' WHERE " + "("+sb.toString() + ");";
 
 
         Cursor c = db.rawQuery(query, null);
@@ -441,10 +442,18 @@ public class DBHandler extends SQLiteOpenHelper {
     public ArrayList<String> getSearchSpecificRoomEntries(String key) {
         ArrayList<String> res = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT *  FROM '" + TABLE_INFO + "' WHERE " +
-                "(" +
-                COLUMN_ROOM_NAME + " LIKE " + "'%" + key + "%'" +
-                ");";
+
+        String[] keys = key.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < keys.length; i++)
+            if(i==0)
+                sb.append(" "+COLUMN_ROOM_NAME+" LIKE '%"+keys[i]+"%' ");
+            else
+                sb.append(" OR "+COLUMN_ROOM_NAME+" LIKE '%" + keys[i] + "%'");
+
+        String query = "SELECT DISTINCT "+COLUMN_ROOM_NAME+" FROM '" + TABLE_INFO + "' WHERE " + "("+sb.toString() + ");";
+
 
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
