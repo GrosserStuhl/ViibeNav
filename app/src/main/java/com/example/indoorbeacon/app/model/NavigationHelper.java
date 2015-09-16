@@ -224,15 +224,8 @@ public class NavigationHelper {
 
     private void onNewRangeEntered() {
         adjustImageToNewRange();
-        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
-        instructionTexts = new ArrayList<>();
-        instructionTexts.add("Geradeaus");
-
-        for (String e : environmentalInfo)
-            instructionTexts.add(e);
-
-        instructionTexts.add(currentRange.getRelationToNextRangeAsString());
-        tts.speakList(instructionTexts, 0);
+        int index = ranges.indexOf(currentRange);
+        tts.speak(instructionList.get(index));
     }
 
     private Range getRangeByCoord(Coordinate coord) {
@@ -319,8 +312,7 @@ public class NavigationHelper {
     private void fillInstructionList() {
         instructionList = new ArrayList<>();
 
-        for (int i = 0; i < ranges.size(); i++) {
-            Range range = ranges.get(i);
+        for (Range range : ranges) {
             StringBuilder fullInstruction = new StringBuilder();
             int distance = range.getApproximateDistanceInMeters();
             fullInstruction.append("Geradeaus circa ").append(distance);
@@ -328,16 +320,11 @@ public class NavigationHelper {
                 fullInstruction.append(" Meter, ");
             else fullInstruction.append(" Meter.");
             ArrayList<String> environmentalInfo = range.getEnvironmentalInfos();
-            for (int j = 0; j < environmentalInfo.size(); j++) {
-                String e = environmentalInfo.get(j).trim();
-
-                if (j == environmentalInfo.size() - 1)
-                    fullInstruction.append(e).append(".");
-                else
-                    fullInstruction.append(e).append(", ");
+            for (String anEnvironmentalInfo : environmentalInfo) {
+                String e = anEnvironmentalInfo.trim();
+                fullInstruction.append(e);
             }
-            if (i == ranges.size() - 1)
-                fullInstruction.append(System.lineSeparator()).append("Und dann haben Sie ihr Ziel erreicht.");
+            fullInstruction.append(range.getRelationToNextRangeAsString());
             instructionList.add(fullInstruction.toString());
         }
     }
