@@ -16,13 +16,9 @@
             android:entryValues="@array/pref_orientation_units_values"
             android:defaultValue="@string/prefOrientationDefault"/>
 
-
     <Preference
             android:key="showImportActivity"
-            android:title="Import"
-            android:summary="Import Database from Radiomapper">
-        <!--<intent-->
-                <!--android:action="com.example.indoorbeacon.app.model.ExportImportDB"-->
-                <!--/>-->
+            android:title="Importieren"
+            android:summary="Datenbank aus der RadioMapper-App importieren">
     </Preference>
 </PreferenceScreen>

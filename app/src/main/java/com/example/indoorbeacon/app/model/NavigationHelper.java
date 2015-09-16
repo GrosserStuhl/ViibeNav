@@ -1,9 +1,7 @@
 package com.example.indoorbeacon.app.model;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.animation.Animation;
@@ -11,6 +9,7 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.indoorbeacon.app.controller.SettingsActivity;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 
@@ -40,14 +39,19 @@ public class NavigationHelper {
     private float previousOrientation = -1;
     private float firstDirection = 0;
     private float previousDirection = 0;
-    private String directionUnit = " °";
+    private String directionUnit;
     private int directionDifference = 0;
+
+    private SharedPreferences.OnSharedPreferenceChangeListener sListener;
 
     public NavigationHelper(Context context, Person person, String ziel) {
         this.person = person;
         tts = TTS.getTTS(context);
         initNavigation(ziel);
         setUpBrReceiver(context);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        directionUnit = preferences.getString(SettingsActivity.KEY_PREF_ORI, "Grad");
     }
 
     private void initNavigation(String ziel) {
@@ -243,7 +247,12 @@ public class NavigationHelper {
     }
 
     public void updateTextViews(TextView directionTextView) {
-        directionTextView.setText(directionDifference + directionUnit);
+        if (directionUnit.equals("Grad"))
+            directionTextView.setText(directionDifference + " " + directionUnit);
+        else if (directionUnit.equals("Uhrzeit")) {
+            directionDifference = Util.convertDegreesToTime(directionDifference);
+            directionTextView.setText(directionDifference + " Uhr");
+        }
     }
 
     public void updateImage(ImageView arrowImage, float newOrientation) {
@@ -257,14 +266,14 @@ public class NavigationHelper {
             } else if (direction > 360) {
                 direction = direction - 360;
             }
-
+//
             directionDifference = (int) (direction - firstDirection);
-            if (directionDifference <= 10) {
-                if (previousDirection < 360 && previousDirection > 355 && direction > 0 && direction < 5)
-                    direction = 360;
-                else if (previousDirection > 0 && previousDirection < 5 && direction < 360 && direction > 355)
-                    direction = 0;
-            }
+//            if (directionDifference <= 10) {
+//                if (previousDirection < 360 && previousDirection > 355 && direction > 0 && direction < 5)
+//                    direction = 360;
+//                else if (previousDirection > 0 && previousDirection < 5 && direction < 360 && direction > 355)
+//                    direction = 0;
+//            }
 
             RotateAnimation ra = new RotateAnimation(
                     previousDirection,

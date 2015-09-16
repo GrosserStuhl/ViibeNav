@@ -38,9 +38,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
     private GestureDetector mDetector;
 
-    private MediaPlayer mp;
-    private int[] anweisungen = new int[3];
-
     private ImageView dotImgView;
     private ImageView arrowImage;
     private TextView directionTextView;
@@ -59,7 +56,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         super.onCreate(savedInstanceState);
         getActionBar().setHomeButtonEnabled(true);
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_navigation);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
