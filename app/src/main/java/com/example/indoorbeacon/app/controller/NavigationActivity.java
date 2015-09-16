@@ -13,12 +13,10 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.WindowManager;
+import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -163,12 +161,9 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         super.onResume();
         sensorHelper.onResumeOperation(this);
 
-
         // Turn Off WiFi signals on activity start as it mitigates position estimation
         if (Connector.getConnector().WiFiEnabled())
             Connector.getConnector().disableWiFi();
-
-
 
         /*
          * Check for Bluetooth LE Support.  In production, our manifest entry will keep this
@@ -179,7 +174,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             Toast.makeText(this, "No LE Support.", Toast.LENGTH_SHORT).show();
             finish();
         }
-
     }
 
     @Override
@@ -188,7 +182,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         if (!Connector.getConnector().WiFiEnabled())
             Connector.getConnector().enableWiFi();
-
     }
 
     @Override
@@ -197,7 +190,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
 
         if (!Connector.getConnector().WiFiEnabled())
             Connector.getConnector().enableWiFi();
-
     }
 
     protected void onPause() {
@@ -209,15 +201,6 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             Connector.getConnector().enableWiFi();
     }
 
-    public void readOutInstructions(View view) {
-        TTS.getTTS(this).speak(getResources().getString(R.string.infoInstructions));
-    }
-
-    public void openInStructionListActivity(View view) {
-        Intent intent = new Intent(this, InstructionListActivity.class);
-        startActivity(intent);
-    }
-
     @Override
     public void onSensorChanged(SensorEvent event) {
         sensorHelper.onSensorChangedOperation(event);
@@ -226,6 +209,27 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         sensorHelper.onAccuracyChangedOperation(sensor, accuracy);
+    }
+
+    public void readOutInstructions(View view) {
+        TTS.getTTS(this).speak(getResources().getString(R.string.infoInstructions));
+    }
+
+    public void openInstructionListActivity(View view) {
+        Intent intent = new Intent(this, InstructionListActivity.class);
+        intent.putStringArrayListExtra("instructionList", navigationHelper.getInstructionList());
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {

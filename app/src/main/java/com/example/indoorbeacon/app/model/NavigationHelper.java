@@ -26,14 +26,13 @@ public class NavigationHelper {
     private static final String TAG = "NavigationHelper";
 
     private Coordinate target;
-    private Coordinate nextSubTarget;
-    private Coordinate previousPos;
     private LinkedList<Coordinate> path;
     private HashMap<Coordinate, InfoModel> infoTextsForAnchors;
     private LinkedList<Range> ranges;
     private Range currentRange;
     private ArrayList<Coordinate> lastUserPositions;
     private boolean firstInstruction = true;
+    private ArrayList<String> instructionList;
 
     private TTS tts;
     private Person person;
@@ -54,21 +53,11 @@ public class NavigationHelper {
     private void initNavigation(String ziel) {
         target = DBHandler.getDB().getTarget(ziel);
         path = DBHandler.getDB().getAllAnchors();
-//        path = new LinkedList<>();
-//        for (int i = 0; i < 4; i++) {
-//            path.add(new Coordinate(-1, 0, i));
-//        }
-//        for (int i = 1; i < 4; i++) {
-//            path.add(new Coordinate(-1, i, 3));
-//        }
-//        for (int i = 2; i > -1; i--) {
-//            path.add(new Coordinate(-1, 3, i));
-//        }
         infoTextsForAnchors = DBHandler.getDB().getCoordinateToInfoModelMap();
         ranges = new LinkedList<>();
         lastUserPositions = new ArrayList<>();
         dividePathIntoRanges();
-
+        fillInstructionList();
 //        onPositionChangedAction();
     }
 
@@ -150,23 +139,19 @@ public class NavigationHelper {
             }
         }
 
-        for (int i = 0; i < ranges.size(); i++) {
-            Log.d(TAG, "Range #" + i + ":");
-            String dir = "NONE";
-            if (ranges.get(i).getRelationToNextRange() == Range.LEFT)
-                dir = "links";
-            else if (ranges.get(i).getRelationToNextRange() == Range.RIGHT)
-                dir = "rechts";
-            if (!(ranges.get(i).getRelationToNextRange() == Range.LAST))
-                Log.d(TAG, "Nächste Range in Richtung: " + dir);
-            else
-                Log.d(TAG, "Das ist die letzte Range");
-            Log.d(TAG, ranges.get(i).toString());
-        }
-
-//        lastUserPositions.add(ranges.get(0).getCoordList().get(0));
-//        lastUserPositions.add(ranges.get(1).getCoordList().get(0));
-//        lastUserPositions.add(ranges.get(1).getCoordList().get(1));
+//        for (int i = 0; i < ranges.size(); i++) {
+//            Log.d(TAG, "Range #" + i + ":");
+//            String dir = "NONE";
+//            if (ranges.get(i).getRelationToNextRange() == Range.LEFT)
+//                dir = "links";
+//            else if (ranges.get(i).getRelationToNextRange() == Range.RIGHT)
+//                dir = "rechts";
+//            if (!(ranges.get(i).getRelationToNextRange() == Range.LAST))
+//                Log.d(TAG, "Nächste Range in Richtung: " + dir);
+//            else
+//                Log.d(TAG, "Das ist die letzte Range");
+//            Log.d(TAG, ranges.get(i).toString());
+//        }
     }
 
     private void setUpBrReceiver(Context context) {
@@ -201,10 +186,8 @@ public class NavigationHelper {
                 for (int i = lastUserPositions.size() - 2; i >= 0; i--) {
                     if (tempRange.equals(getRangeByCoord(lastUserPositions.get(i)))) {
                         counterForSameRange++;
-                        Log.d(TAG, "pos at " + i + " is in same range too");
                     } else {
                         allInSameRange = false;
-                        Log.d(TAG, "pos at " + i + " is NOT in same range");
                         break;
                     }
                 }
@@ -219,7 +202,7 @@ public class NavigationHelper {
                                 break;
                             }
                         }
-                    } else Log.d(TAG, "stil in same range");
+                    }
                     lastUserPositions.clear();
                 } else {
                     //size - (counterForSameRange + 1), da man für letztes Element eh schon size - 1 machen würde
@@ -227,18 +210,13 @@ public class NavigationHelper {
                     int counter = 0;
                     int deletionIndex = lastUserPositions.size() - (counterForSameRange + 1);
                     Iterator<Coordinate> it = lastUserPositions.iterator();
-                    Log.d(TAG, "userPosi: " + lastUserPositions);
-                    Log.d(TAG, "have to delete all pos up to index: " + deletionIndex);
                     while (it.hasNext()) {
-                        Coordinate c = it.next();
+                        it.next();
                         if (counter <= deletionIndex) {
                             it.remove();
-                            Log.d(TAG, "removing userPos: " + c);
                         }
                         counter++;
                     }
-                    Log.d(TAG, "size of userPosList after removal: " + lastUserPositions.size());
-
                 }
             }
         }
@@ -253,7 +231,6 @@ public class NavigationHelper {
         for (String e : environmentalInfo)
             instructionTexts.add(e);
 
-//        strings.add("Vorbei an Glastür");strings.add("Vorbei an Teppich");strings.add("Vorbei an Ming-Vase");
         instructionTexts.add(currentRange.getRelationToNextRangeAsString());
         tts.speakList(instructionTexts, 0);
     }
@@ -261,16 +238,13 @@ public class NavigationHelper {
     private Range getRangeByCoord(Coordinate coord) {
         Range resultRange = null;
         for (Range range : ranges) {
-            Log.d(TAG, "checking range " + range);
-            Log.d(TAG, "for pos: " + coord);
             if (range.getCoordList().contains(coord)) {
-                Log.d(TAG, "this was the wanted range");
                 resultRange = range;
                 break;
-            } else Log.d(TAG, "this was not the wanted range");
+            }
         }
         if (resultRange == null) {
-            Log.d(TAG, "resultRange still null");
+            Log.e(TAG, "resultRange still null");
         }
         return resultRange;
     }
@@ -342,57 +316,71 @@ public class NavigationHelper {
             firstDirection = 0;
     }
 
-    public void nextInstruction() {
-//        tts.speak("Nächste Anweisung");
+    private void fillInstructionList() {
+        instructionList = new ArrayList<>();
 
+        for (int i = 0; i < ranges.size(); i++) {
+            Range range = ranges.get(i);
+            StringBuilder fullInstruction = new StringBuilder();
+            int distance = range.getApproximateDistanceInMeters();
+            fullInstruction.append("Geradeaus circa ").append(distance);
+            if (!range.getEnvironmentalInfos().isEmpty())
+                fullInstruction.append(" Meter, ");
+            else fullInstruction.append(" Meter.");
+            ArrayList<String> environmentalInfo = range.getEnvironmentalInfos();
+            for (int j = 0; j < environmentalInfo.size(); j++) {
+                String e = environmentalInfo.get(j).trim();
+
+                if (j == environmentalInfo.size() - 1)
+                    fullInstruction.append(e).append(".");
+                else
+                    fullInstruction.append(e).append(", ");
+            }
+            if (i == ranges.size() - 1)
+                fullInstruction.append(System.lineSeparator()).append("Und dann haben Sie ihr Ziel erreicht.");
+            instructionList.add(fullInstruction.toString());
+        }
+    }
+
+    public void nextInstruction() {
         int index = ranges.indexOf(currentRange);
 
-        Range nextRange;
+//        Range nextRange;
         if (index != ranges.size() - 1) {
-            nextRange = ranges.get(index + 1);
-            ArrayList<String> environmentalInfo = nextRange.getEnvironmentalInfos();
-            instructionTexts = new ArrayList<>();
-            instructionTexts.add("Geradeaus");
-
-            for (String e : environmentalInfo)
-                instructionTexts.add(e);
-
-            instructionTexts.add(nextRange.getRelationToNextRangeAsString());
-            tts.speakList(instructionTexts, 0);
+//            nextRange = ranges.get(index + 1);
+//            ArrayList<String> environmentalInfo = nextRange.getEnvironmentalInfos();
+//            instructionTexts = new ArrayList<>();
+//            instructionTexts.add("Geradeaus");
+//
+//            for (String e : environmentalInfo)
+//                instructionTexts.add(e);
+//
+//            instructionTexts.add(nextRange.getRelationToNextRangeAsString());
+//            tts.speakList(instructionTexts, 0);
+            tts.speak(instructionList.get(index + 1));
         } else {
             ArrayList<String> alternative = new ArrayList<>();
             alternative.add("Danach haben Sie ihr Ziel erreicht. Es gibt keine nächste Anweisung.");
             tts.speakList(alternative, 0);
         }
-//        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
-//        ArrayList<String> strings = new ArrayList<>();
-//        strings.add("Geradeaus");
-//
-//        String vorbeiAn = "Vorbei an ";
-//        for (String e : environmentalInfo)
-//            strings.add(vorbeiAn+e);
-//
-////        strings.add("Vorbei an Glastür");strings.add("Vorbei an Teppich");strings.add("Vorbei an Ming-Vase");
-//        strings.add(currentRange.getRelationToNextRangeAsString());
-//        tts.speakList(strings, 0);
     }
 
     public void previousInstruction() {
-//        tts.speak("Vorherige Anweisung");
         int index = ranges.indexOf(currentRange);
 
-        Range previousRange;
+//        Range previousRange;
         if (index != 0) {
-            previousRange = ranges.get(index - 1);
-            ArrayList<String> environmentalInfo = previousRange.getEnvironmentalInfos();
-            instructionTexts = new ArrayList<>();
-            instructionTexts.add("Geradeaus");
-
-            for (String e : environmentalInfo)
-                instructionTexts.add(e);
-
-            instructionTexts.add(previousRange.getRelationToNextRangeAsString());
-            tts.speakList(instructionTexts, 0);
+//            previousRange = ranges.get(index - 1);
+//            ArrayList<String> environmentalInfo = previousRange.getEnvironmentalInfos();
+//            instructionTexts = new ArrayList<>();
+//            instructionTexts.add("Geradeaus");
+//
+//            for (String e : environmentalInfo)
+//                instructionTexts.add(e);
+//
+//            instructionTexts.add(previousRange.getRelationToNextRangeAsString());
+//            tts.speakList(instructionTexts, 0);
+            tts.speak(instructionList.get(index - 1));
         } else {
             ArrayList<String> alternative = new ArrayList<>();
             alternative.add("Die Navigation hat hier begonnen. Es gibt noch keine vorherige Anweisung.");
@@ -401,15 +389,20 @@ public class NavigationHelper {
     }
 
     public void repeatInstruction() {
-        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
-        instructionTexts = new ArrayList<>();
-        instructionTexts.add("Geradeaus");
+//        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
+//        instructionTexts = new ArrayList<>();
+//        instructionTexts.add("Geradeaus");
+//
+//        for (String e : environmentalInfo)
+//            instructionTexts.add(e);
+//
+//        instructionTexts.add(currentRange.getRelationToNextRangeAsString());
+//        tts.speakList(instructionTexts, 0);
+        int index = ranges.indexOf(currentRange);
+        tts.speak(instructionList.get(index));
+    }
 
-        for (String e : environmentalInfo)
-            instructionTexts.add(e);
-
-//        strings.add("Vorbei an Glastür");strings.add("Vorbei an Teppich");strings.add("Vorbei an Ming-Vase");
-        instructionTexts.add(currentRange.getRelationToNextRangeAsString());
-        tts.speakList(instructionTexts, 0);
+    public ArrayList<String> getInstructionList() {
+        return instructionList;
     }
 }

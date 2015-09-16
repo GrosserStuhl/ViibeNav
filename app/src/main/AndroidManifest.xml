@@ -93,7 +93,7 @@
 
         <activity
                 android:name=".controller.InstructionListActivity"
-                android:label="Liste der Anweisungen"
+                android:label="Anweisungen"
                 android:parentActivityName=".controller.NavigationActivity"
                 android:screenOrientation="portrait">
             <intent-filter>

@@ -87,7 +87,7 @@
             android:src="@mipmap/numbered_list"
             android:background="@drawable/custom_button"
             android:contentDescription="@string/instructionListImgViewText"
-            android:onClick="openInStructionListActivity"
+            android:onClick="openInstructionListActivity"
             android:stateListAnimator="@drawable/button_press_animator"
             android:layout_alignTop="@+id/instructionTextView"
             android:layout_alignParentEnd="true"

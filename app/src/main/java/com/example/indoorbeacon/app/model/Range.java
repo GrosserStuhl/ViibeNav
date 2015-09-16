@@ -26,6 +26,10 @@ public class Range {
         return coordinates;
     }
 
+    public int getApproximateDistanceInMeters() {
+        return coordinates.size() * Definitions.ANCHORPOINT_DISTANCE_IN_CM / 100;
+    }
+
     public int getRelationToNextRange() {
         return relationToNextRange;
     }
@@ -53,10 +57,10 @@ public class Range {
         environmentalInfos.add(info);
     }
 
-    public String getRelationToNextRangeAsString(){
+    public String getRelationToNextRangeAsString() {
         if (relationToNextRange == Range.LAST)
             return " und dann haben Sie ihr Ziel erreicht.";
-        else if(relationToNextRange == Range.LEFT)
+        else if (relationToNextRange == Range.LEFT)
             return " und dann links abbiegen.";
         else if (relationToNextRange == Range.RIGHT)
             return " und dann rechts abbiegen.";
