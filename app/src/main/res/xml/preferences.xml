@@ -6,7 +6,8 @@
             android:dialogTitle="@string/prefDistanceUnit"
             android:entries="@array/pref_distance_units_entries"
             android:entryValues="@array/pref_distance_units_values"
-            android:defaultValue="@string/prefDistanceDefault"/>
+            android:defaultValue="@string/prefDistanceDefault"
+            android:summary="%s"/>
 
     <ListPreference
             android:key="pref_orientationUnit"
@@ -14,7 +15,13 @@
             android:dialogTitle="@string/prefOrientationUnit"
             android:entries="@array/pref_orientation_units_entries"
             android:entryValues="@array/pref_orientation_units_values"
-            android:defaultValue="@string/prefOrientationDefault"/>
+            android:defaultValue="@string/prefOrientationDefault"
+            android:summary="%s"/>
+
+    <CheckBoxPreference
+            android:key="pref_invertColors"
+            android:title="@string/prefInvertColors"
+            android:defaultValue="false"/>
 
     <Preference
             android:key="showImportActivity"

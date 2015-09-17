@@ -1,10 +1,7 @@
 package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -13,6 +10,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -57,7 +55,15 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         super.onCreate(savedInstanceState);
         getActionBar().setHomeButtonEnabled(true);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean invertColors = preferences.getBoolean(SettingsActivity.KEY_PREF_INV, false);
         setContentView(R.layout.activity_navigation);
+        if(invertColors){
+            View someView = findViewById(R.id.arrowImageView);
+            View root = someView.getRootView();
+            root.setBackgroundColor(getResources().getColor(android.R.color.black));
+        }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Intent intent = getIntent();

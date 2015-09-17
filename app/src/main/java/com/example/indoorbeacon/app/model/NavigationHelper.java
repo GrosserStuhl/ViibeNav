@@ -42,8 +42,6 @@ public class NavigationHelper {
     private String directionUnit;
     private int directionDifference = 0;
 
-    private SharedPreferences.OnSharedPreferenceChangeListener sListener;
-
     public NavigationHelper(Context context, Person person, String ziel) {
         this.person = person;
         tts = TTS.getTTS(context);

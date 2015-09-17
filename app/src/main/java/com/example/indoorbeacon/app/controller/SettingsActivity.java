@@ -17,6 +17,7 @@ import com.example.indoorbeacon.app.model.ExportImportDB;
 public class SettingsActivity extends Activity {
 
     public static final String KEY_PREF_ORI = "pref_orientationUnit";
+    public static final String KEY_PREF_INV = "pref_invertColors";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
