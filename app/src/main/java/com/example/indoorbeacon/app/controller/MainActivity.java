@@ -2,17 +2,16 @@ package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
-
+import android.widget.TextView;
+import android.widget.Toast;
 import com.example.indoorbeacon.app.R;
-import com.example.indoorbeacon.app.model.SensorHelper;
-import com.example.indoorbeacon.app.model.BluetoothScan;
-import com.example.indoorbeacon.app.model.Connector;
-import com.example.indoorbeacon.app.model.Measurement;
-import com.example.indoorbeacon.app.model.TTS;
+import com.example.indoorbeacon.app.model.*;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 
 
@@ -24,12 +23,24 @@ public class MainActivity extends Activity {
 
     Connector connect;
 
+    private boolean themeChanged = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        getActionBar().setHomeButtonEnabled(true);
 //        getActionBar().setDisplayHomeAsUpEnabled(true);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean darkBackground = preferences.getBoolean(SettingsActivity.KEY_PREF_DRK, false);
         setContentView(R.layout.activity_main);
+        if (darkBackground) {
+            TextView suchText = (TextView) findViewById(R.id.suchenTextView);
+            suchText.setTextColor(Color.WHITE);
+            TextView listeText = (TextView) findViewById(R.id.listeTextView);
+            listeText.setTextColor(Color.WHITE);
+            View root = getWindow().getDecorView().getRootView();
+            root.setBackgroundColor(Color.parseColor(Definitions.DARK_BACKGROUND_COLOR));
+        }
 
         dbHandler = DBHandler.createDB(this, null, null, 1);
 
@@ -41,6 +52,15 @@ public class MainActivity extends Activity {
         TTS.getTTS(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+                                                  String key) {
+                if (key.equals(SettingsActivity.KEY_PREF_DRK)) {
+                    themeChanged = true;
+                }
+            }
+        };
     }
 
     public void openSearchActivity(View view) {
@@ -55,29 +75,16 @@ public class MainActivity extends Activity {
 
     public void openSettingsActivity(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
-
-    //    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            Intent refresh = new Intent(this, MainActivity.class);
+            startActivity(refresh);
+            this.finish();
+        }
+    }
 }

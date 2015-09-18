@@ -82,47 +82,56 @@ public class NavigationHelper {
             counter++;
         }
 
-        for (int i = 2; i < path.size(); i++) {
-            if (nextNavIsAlong_X_Axis) {
-                if (path.get(i).getX() > lastX || path.get(i).getX() < lastX) {
-                    lastX = path.get(i).getX();
-                    Log.d(TAG, "x-if");
-                } else {
-                    Log.d(TAG, "x-else");
-                    ArrayList<Coordinate> rangeCoords = new ArrayList<>();
-                    for (int j = newRangeStart; j <= counter; j++) {
-                        rangeCoords.add(path.get(j));
-                    }
-                    ranges.add(new Range(rangeCoords, Range.NONE));
-                    //Counter + 1, da counter erst am ende der Schleife hochgezählt wird
-                    newRangeStart = counter + 1;
-                    nextNavIsAlong_X_Axis = false;
-                    nextNavIsAlong_Y_Axis = true;
-                }
-            } else if (nextNavIsAlong_Y_Axis) {
-                if (path.get(i).getY() > lastY || path.get(i).getY() < lastY) {
-                    lastY = path.get(i).getY();
-                    Log.d(TAG, "y-if");
-                } else {
-                    Log.d(TAG, "y-else");
-                    ArrayList<Coordinate> rangeCoords = new ArrayList<>();
-                    for (int j = newRangeStart; j <= counter; j++) {
-                        rangeCoords.add(path.get(j));
-                    }
-                    ranges.add(new Range(rangeCoords, Range.NONE));
-                    //Counter + 1, da counter erst am ende der Schleife hochgezählt wird
-                    newRangeStart = counter + 1;
-                    nextNavIsAlong_Y_Axis = false;
-                    nextNavIsAlong_X_Axis = true;
-                }
+        if (path.size() < 3) {
+            ArrayList<Coordinate> rangeCoords = new ArrayList<>();
+            for (int j = newRangeStart; j <= counter; j++) {
+                rangeCoords.add(path.get(j));
             }
-            counter++;
-            if (i == path.size() - 1) {
-                ArrayList<Coordinate> rangeCoords = new ArrayList<>();
-                for (int j = newRangeStart; j <= counter; j++) {
-                    rangeCoords.add(path.get(j));
+            ranges.add(new Range(rangeCoords, Range.NONE));
+        } else {
+
+            for (int i = 2; i < path.size(); i++) {
+                if (nextNavIsAlong_X_Axis) {
+                    if (path.get(i).getX() > lastX || path.get(i).getX() < lastX) {
+                        lastX = path.get(i).getX();
+                        Log.d(TAG, "x-if");
+                    } else {
+                        Log.d(TAG, "x-else");
+                        ArrayList<Coordinate> rangeCoords = new ArrayList<>();
+                        for (int j = newRangeStart; j <= counter; j++) {
+                            rangeCoords.add(path.get(j));
+                        }
+                        ranges.add(new Range(rangeCoords, Range.NONE));
+                        //Counter + 1, da counter erst am ende der Schleife hochgezählt wird
+                        newRangeStart = counter + 1;
+                        nextNavIsAlong_X_Axis = false;
+                        nextNavIsAlong_Y_Axis = true;
+                    }
+                } else if (nextNavIsAlong_Y_Axis) {
+                    if (path.get(i).getY() > lastY || path.get(i).getY() < lastY) {
+                        lastY = path.get(i).getY();
+                        Log.d(TAG, "y-if");
+                    } else {
+                        Log.d(TAG, "y-else");
+                        ArrayList<Coordinate> rangeCoords = new ArrayList<>();
+                        for (int j = newRangeStart; j <= counter; j++) {
+                            rangeCoords.add(path.get(j));
+                        }
+                        ranges.add(new Range(rangeCoords, Range.NONE));
+                        //Counter + 1, da counter erst am ende der Schleife hochgezählt wird
+                        newRangeStart = counter + 1;
+                        nextNavIsAlong_Y_Axis = false;
+                        nextNavIsAlong_X_Axis = true;
+                    }
                 }
-                ranges.add(new Range(rangeCoords, Range.NONE));
+                counter++;
+                if (i == path.size() - 1) {
+                    ArrayList<Coordinate> rangeCoords = new ArrayList<>();
+                    for (int j = newRangeStart; j <= counter; j++) {
+                        rangeCoords.add(path.get(j));
+                    }
+                    ranges.add(new Range(rangeCoords, Range.NONE));
+                }
             }
         }
 

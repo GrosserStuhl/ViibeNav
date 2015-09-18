@@ -4,18 +4,23 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.NavUtils;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.indoorbeacon.app.R;
+import com.example.indoorbeacon.app.model.Definitions;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -32,7 +37,17 @@ public class SearchActivity extends Activity {
         super.onCreate(savedInstanceState);
         getActionBar().setHomeButtonEnabled(true);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean darkBackground = preferences.getBoolean(SettingsActivity.KEY_PREF_DRK, false);
         setContentView(R.layout.activity_suchen);
+        if (darkBackground) {
+            TextView textView = (TextView) findViewById(R.id.infoTextSuche);
+            textView.setTextColor(Color.WHITE);
+            EditText editText = (EditText) findViewById(R.id.searchField);
+            editText.setTextColor(Color.WHITE);
+            View root = getWindow().getDecorView().getRootView();
+            root.setBackgroundColor(Color.parseColor(Definitions.DARK_BACKGROUND_COLOR));
+        }
 
         searchField = (EditText) findViewById(R.id.searchField);
 

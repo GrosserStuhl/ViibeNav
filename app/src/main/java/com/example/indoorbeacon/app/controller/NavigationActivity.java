@@ -3,15 +3,14 @@ package com.example.indoorbeacon.app.controller;
 import android.app.Activity;
 import android.content.*;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.*;
@@ -21,8 +20,6 @@ import android.widget.Toast;
 
 import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.*;
-
-import java.util.ArrayList;
 
 /**
  * Created by #Dima on 28/07/2015.
@@ -47,6 +44,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     private Handler triggerMeasuring;
 
     private boolean initialized;
+    private boolean darkBackground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +55,13 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean invertColors = preferences.getBoolean(SettingsActivity.KEY_PREF_INV, false);
+        darkBackground = preferences.getBoolean(SettingsActivity.KEY_PREF_DRK, false);
         setContentView(R.layout.activity_navigation);
-        if(invertColors){
+        if(darkBackground){
             View someView = findViewById(R.id.arrowImageView);
             View root = someView.getRootView();
-            root.setBackgroundColor(getResources().getColor(android.R.color.black));
+            root.setBackgroundColor(Color.parseColor(Definitions.DARK_BACKGROUND_COLOR));
+//            getActionBar().setBackgroundDrawable(new ColorDrawable(Color.BLUE));
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -85,6 +84,12 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         directionTextView = (TextView) findViewById(R.id.instructionTextView);
         estimatedCoordTextView = (TextView) findViewById(R.id.estimatedCoords);
         estimatedAlgorithm = (TextView) findViewById(R.id.estimatedAlgorithm);
+
+        if(darkBackground){
+            directionTextView.setTextColor(Color.WHITE);
+            estimatedAlgorithm.setTextColor(Color.WHITE);
+            estimatedAlgorithm.setTextColor(Color.WHITE);
+        }
     }
 
     private void initHandler() {

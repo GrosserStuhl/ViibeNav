@@ -19,7 +19,7 @@
             android:summary="%s"/>
 
     <CheckBoxPreference
-            android:key="pref_invertColors"
+            android:key="pref_darkBackground"
             android:title="@string/prefInvertColors"
             android:defaultValue="false"/>
 

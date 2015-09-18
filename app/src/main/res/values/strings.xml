@@ -31,7 +31,7 @@
     <string name="prefDistanceDefault">Meter</string>
     <string name="prefOrientationUnit">Einheit der angezeigten Orientierung</string>
     <string name="prefOrientationDefault">Grad</string>
-    <string name="prefInvertColors">Farben invertieren</string>
+    <string name="prefInvertColors">Dunkler Hintergrund</string>
     <string name="expListViewBeschreibung">Liste mit aufklappbaren Elementen</string>
     <string name="navInfoButtonText">Anleitung zur Bedienung</string>
     <string name="infoInstructions">Anleitung zur Bedienung: Nach rechts wischen für nächste Anweisung.

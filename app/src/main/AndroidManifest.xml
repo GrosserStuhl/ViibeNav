@@ -59,7 +59,6 @@
         <activity
                 android:name=".controller.RoomlistActivity"
                 android:label="Raumliste"
-                android:parentActivityName=".controller.MainActivity"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="com.example.indoorbeacon.app.RoomlistActivity"/>

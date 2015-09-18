@@ -2,7 +2,10 @@ package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,6 +14,7 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.example.indoorbeacon.app.R;
+import com.example.indoorbeacon.app.model.Definitions;
 import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
 import com.example.indoorbeacon.app.view.adapter.CustomResultExpListAdapter;
 
@@ -23,13 +27,20 @@ import java.util.List;
  */
 public class SearchResultActivity extends Activity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setHomeButtonEnabled(true);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean darkBackground = preferences.getBoolean(SettingsActivity.KEY_PREF_DRK, false);
         setContentView(R.layout.activity_search_results);
+        if (darkBackground) {
+            TextView someView = (TextView) findViewById(R.id.searchResultTextView);
+            someView.setTextColor(Color.WHITE);
+            View root = getWindow().getDecorView().getRootView();
+            root.setBackgroundColor(Color.parseColor(Definitions.DARK_BACKGROUND_COLOR));
+        }
 
         Intent intent = getIntent();
         String suchInhalt = intent.getStringExtra("suchInhalt");
@@ -77,6 +88,10 @@ public class SearchResultActivity extends Activity {
         } else {
             stub.setLayoutResource(R.layout.search_results_nothingfound_content);
             stub.inflate();
+            if (darkBackground) {
+                TextView textView = (TextView) findViewById(R.id.searchResultsNothingFoundTextView);
+                textView.setTextColor(Color.WHITE);
+            }
         }
     }
 

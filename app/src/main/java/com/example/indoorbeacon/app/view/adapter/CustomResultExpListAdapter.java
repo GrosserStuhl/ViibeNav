@@ -1,6 +1,10 @@
 package com.example.indoorbeacon.app.view.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +13,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import com.example.indoorbeacon.app.R;
+import com.example.indoorbeacon.app.controller.SettingsActivity;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +22,12 @@ import java.util.List;
  * Created by Dima on 31/08/2015.
  */
 public class CustomResultExpListAdapter extends BaseExpandableListAdapter {
-    private Context context;
+    private Activity activity;
     private HashMap<String, List<String>> results;
     private List<String> categories;
 
-    public CustomResultExpListAdapter(Context context, HashMap<String, List<String>> results, List<String> categories) {
-        this.context = context;
+    public CustomResultExpListAdapter(Activity activity, HashMap<String, List<String>> results, List<String> categories) {
+        this.activity = activity;
         this.results = results;
         this.categories = categories;
     }
@@ -65,13 +70,18 @@ public class CustomResultExpListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(context);
+            LayoutInflater inflater = LayoutInflater.from(activity);
             convertView = inflater.inflate(R.layout.exp_list_view_parent, parent, false);
         }
 
         String parentText = (String) getGroup(groupPosition);
         TextView parentTextView = (TextView) convertView.findViewById(R.id.resultsExpListParentTextView);
         parentTextView.setText(parentText);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        boolean darkBackground = preferences.getBoolean(SettingsActivity.KEY_PREF_DRK, false);
+        if(darkBackground)
+            parentTextView.setTextColor(Color.WHITE);
 
         return convertView;
     }
@@ -80,7 +90,7 @@ public class CustomResultExpListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
         if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(context);
+            LayoutInflater inflater = LayoutInflater.from(activity);
             convertView = inflater.inflate(R.layout.custom_listitem, parent, false);
         }
 

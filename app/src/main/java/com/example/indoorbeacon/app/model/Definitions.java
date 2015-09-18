@@ -79,4 +79,6 @@ public class Definitions {
 
     public static final int NUMBER_OF_NEEDED_POINTS_FOR_NEW_RANGE = 3;
 
+    public static final String DARK_BACKGROUND_COLOR = "#ff000000";
+
 }
