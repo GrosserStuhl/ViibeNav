@@ -170,8 +170,8 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         sensorHelper.onResumeOperation(this);
 
         // Turn Off WiFi signals on activity start as it mitigates position estimation
-        if (Connector.getConnector().WiFiEnabled())
-            Connector.getConnector().disableWiFi();
+        if (WiFiConnector.getConnector().WiFiEnabled())
+            WiFiConnector.getConnector().disableWiFi();
 
         /*
          * Check for Bluetooth LE Support.  In production, our manifest entry will keep this
@@ -188,16 +188,16 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     protected void onStop() {
         super.onStop();
 
-        if (!Connector.getConnector().WiFiEnabled())
-            Connector.getConnector().enableWiFi();
+        if (!WiFiConnector.getConnector().WiFiEnabled())
+            WiFiConnector.getConnector().enableWiFi();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        if (!Connector.getConnector().WiFiEnabled())
-            Connector.getConnector().enableWiFi();
+        if (!WiFiConnector.getConnector().WiFiEnabled())
+            WiFiConnector.getConnector().enableWiFi();
     }
 
     protected void onPause() {
@@ -205,8 +205,8 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         sensorHelper.onPauseOperation(this);
 
         // When application is paused turn on WiFi again
-        if (!Connector.getConnector().WiFiEnabled())
-            Connector.getConnector().enableWiFi();
+        if (!WiFiConnector.getConnector().WiFiEnabled())
+            WiFiConnector.getConnector().enableWiFi();
     }
 
     @Override
