@@ -13,13 +13,13 @@ import com.example.indoorbeacon.app.model.BluetoothScan;
 import com.example.indoorbeacon.app.model.Connector;
 import com.example.indoorbeacon.app.model.Measurement;
 import com.example.indoorbeacon.app.model.TTS;
-import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.dbmodels.Database;
 
 
 public class MainActivity extends Activity {
 
     BluetoothScan bluetoothScan;
-    DBHandler dbHandler;
+    Database dbHandler;
     Measurement measurement;
 
     Connector connect;
@@ -31,7 +31,7 @@ public class MainActivity extends Activity {
 //        getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_main);
 
-        dbHandler = DBHandler.createDB(this, null, null, 1);
+        dbHandler = Database.createDB(this, null, null, 1);
 
         connect = Connector.createConnector((WifiManager) getSystemService(WIFI_SERVICE));
 

@@ -10,7 +10,7 @@ import android.view.ViewStub;
 import android.widget.ExpandableListView;
 
 import com.example.indoorbeacon.app.R;
-import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.dbmodels.Database;
 import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 import com.example.indoorbeacon.app.view.adapter.CustomResultExpListAdapter;
 
@@ -31,10 +31,10 @@ public class RoomlistActivity extends Activity {
         setContentView(R.layout.activity_raumliste);
 
         HashMap<String, List<String>> allEntries = new HashMap<>();
-        ArrayList<String> categories = DBHandler.getDB().getAllDistinctCategories();
+        ArrayList<String> categories = Database.getDB().getAllDistinctCategories();
         if (categories.size() > 0) {
             for (String category : categories) {
-                ArrayList<InfoModel> infoList = DBHandler.getDB().getAllEntriesForSpecificCategory(category);
+                ArrayList<InfoModel> infoList = Database.getDB().getAllEntriesForSpecificCategory(category);
                 if (infoList.size() > 0) {
                     ArrayList<String> entryList = new ArrayList<>();
                     for (InfoModel infoEntry : infoList) {

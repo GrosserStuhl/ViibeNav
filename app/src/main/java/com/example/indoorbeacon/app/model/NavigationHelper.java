@@ -11,7 +11,7 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.dbmodels.Database;
 import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 
 import java.util.ArrayList;
@@ -51,9 +51,9 @@ public class NavigationHelper {
     }
 
     private void initNavigation(String ziel) {
-        target = DBHandler.getDB().getTarget(ziel);
-        path = DBHandler.getDB().getAllAnchors();
-        infoTextsForAnchors = DBHandler.getDB().getCoordinateToInfoModelMap();
+        target = Database.getDB().getTarget(ziel);
+        path = Database.getDB().getAllAnchors();
+        infoTextsForAnchors = Database.getDB().getCoordinateToInfoModelMap();
         ranges = new LinkedList<>();
         lastUserPositions = new ArrayList<>();
         dividePathIntoRanges();

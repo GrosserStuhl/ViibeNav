@@ -5,7 +5,7 @@ import android.util.Log;
 import com.example.indoorbeacon.app.model.Coordinate;
 import com.example.indoorbeacon.app.model.Definitions;
 import com.example.indoorbeacon.app.model.Util;
-import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.dbmodels.Database;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +41,7 @@ public class Ewknn implements PositionAlgorithm {
         // see slide 10 on ppxt mentioned above
         // ||||||||||||||||||||||||||||||||||||
         // Step 1/3 done -> I RPs filtering
-        ArrayList<DeviationToCoord> data = DBHandler.getDB().getAllDistancesFromMedians(map);
+        ArrayList<DeviationToCoord> data = Database.getDB().getAllDistancesFromMedians(map);
 
         if(data == null || data.isEmpty()) {
             Log.e(TAG, "INVALID COORDINATE FILTER 1");

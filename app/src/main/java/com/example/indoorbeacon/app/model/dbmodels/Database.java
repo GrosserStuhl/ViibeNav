@@ -1,6 +1,5 @@
 package com.example.indoorbeacon.app.model.dbmodels;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,7 +8,6 @@ import android.util.Log;
 
 import com.example.indoorbeacon.app.model.Coordinate;
 import com.example.indoorbeacon.app.model.Definitions;
-import com.example.indoorbeacon.app.model.Orientation;
 import com.example.indoorbeacon.app.model.Util;
 import com.example.indoorbeacon.app.model.position.neighbor.DeviationToCoord;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
@@ -23,167 +21,141 @@ import java.util.LinkedList;
 /**
  * Created by TomTheBomb on 14.07.2015.
  */
-public class DBHandler extends SQLiteOpenHelper {
+public class Database extends SQLiteOpenHelper {
 
-    private static final String TAG = "DBHandler";
+    private static final String TAG = "Database";
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "radiomap.db";
 
-    // ANCHORS TABLE
-    public static final String TABLE_ANCHORS = "anchorpoints";
-    public static final String ANCHORS_COLUMN_ID = "_id";
-    // POSITION OF ANCHOR
+    // Fingerprint TABLE
+    public static final String TABLE_FINGERPRINT = "fingerprint";
+    public static final String FINGERPRINT_COLUMN_ID = "fingerprintid";
+    public static final String COLUMN_FLOOR = "floor";
     public static final String COLUMN_X = "x";
     public static final String COLUMN_Y = "y";
-    public static final String COLUMN_FLOOR = "floor";
-    public static final String COLUMN_FRONT = "front";
-    public static final String COLUMN_BACK = "back";
-    public static final String COLUMN_INFO_ID = "infoid";
+    public static final String COLUMN_INFO_ID = "fingerprint_infoid";
 
-    // MAXIMUM AMOUNT OF BEACONS IN ONE TABLE
-    public static final String TABLE_BEACON_MEDIAN_TO_ANCHOR = "beaconmediantoanchor";
-    public static final String BEACON_MEDIAN_TO_ANCHOR_ID = "id";
-    public static final String COLUMN_BEACON_1 = "beacon1";
-    public static final String COLUMN_BEACON_2 = "beacon2";
-    public static final String COLUMN_BEACON_3 = "beacon3";
-    public static final String COLUMN_BEACON_4 = "beacon4";
-    public static final String COLUMN_BEACON_5 = "beacon5";
-    public static final String COLUMN_BEACON_6 = "beacon6";
+    public static final String TABLE_FP_HAS_MEDIAN = "fp_has_median";
+    public static final String FP_HAS_MEDIAN_COLUMN_ID = "fp_has_medianid";
+    public static final String COLUMN_MEDIAN_ID = "fp_has_median_medianid";
+    public static final String COLUMN_FINGERPRINT_ID = "fp_has_median_fingerprintid";
 
     // MEDIANS TABLE
-    public static final String TABLE_MEDIANS = "medians";
-    public static final String MEDIANS_COLUMN_ID = "_id";
+    public static final String TABLE_MEDIAN = "median";
+    public static final String MEDIAN_COLUMN_ID = "medianid";
     public static final String COLUMN_MEDIAN_VALUE = "median";
-    public static final String COLUMN_MACADDRESS = "macaddress";
+    public static final String COLUMN_BEACON_ID = "median_beaconid";
+    public static final String COLUMN_ORIENTATION ="orientation";
 
     // BEACONS TABLE
-    public static final String TABLE_BEACONS = "beacons";
-    public static final String BEACONS_COLUMN_ID = "id";
+    public static final String TABLE_BEACON = "beacon";
+    public static final String BEACON_COLUMN_ID = "beaconid";
     public static final String COLUMN_MAJOR = "major";
     public static final String COLUMN_MINOR = "minor";
+    public static final String COLUMN_MAC_ADDRESS = "macAddress";
+    public static final String COLUMN_UUID = "uuid";
 
     // INFO TABLE
     public static final String TABLE_INFO = "info";
-    public static final String INFO_COLUMN_ID = "id";
+    public static final String INFO_COLUMN_ID = "infoid";
     public static final String COLUMN_PERSON_NAME = "personname";
     public static final String COLUMN_ROOM_NAME = "roomname";
     public static final String COLUMN_ENVIRONMENT = "environment";
     public static final String COLUMN_CATEGORY = "category";
 
-    private Context c;
-    private static DBHandler singleton;
+    private static Database singleton;
 
+    private Context context;
 
-    private DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    private Database(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
-        this.c = context;
+
+        this.context = context;
     }
 
-    public static DBHandler createDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    public static Database createDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         // Avoid possible errors with multiple threads accessing this method -> synchronized
-        synchronized (DBHandler.class) {
+        synchronized(Database.class) {
             if (singleton == null) {
-                singleton = new DBHandler(context, name, factory, version);
+                singleton = new Database(context, name, factory, version);
             }
         }
         return singleton;
     }
 
-    public static DBHandler getDB() {
+    public static Database getDB(){
         return singleton;
     }
 
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+//        db.execSQL("SELECT load_extension('./libsqlitefunctions.so')");
 
         // CREATE BEACONS TABLE
-        String query1 = "CREATE TABLE " + TABLE_BEACONS + "(" +
-                "'" + BEACONS_COLUMN_ID + "'" + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'" + COLUMN_MACADDRESS + "'" + " TEXT UNIQUE, " +
-                "'" + COLUMN_MAJOR + "'" + " INTEGER, " +
-                "'" + COLUMN_MINOR + "'" + " INTEGER " +
+        String query1 = "CREATE TABLE "+ TABLE_BEACON + "(" +
+                "'"+ BEACON_COLUMN_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "'"+ COLUMN_MAC_ADDRESS +"'"+ " TEXT, " +
+                "'"+ COLUMN_MAJOR+"'"+ " INTEGER, "+
+                "'"+ COLUMN_MINOR +"'"+ " INTEGER UNIQUE, "+
+                "'"+ COLUMN_UUID +"'"+ " TEXT "+
                 ");";
         db.execSQL(query1);
 
-        // CREATE MEDIANS TABLE - laut: http://www.w3schools.com/sql/sql_foreignkey.asp
-        String query2 = "CREATE TABLE " + TABLE_MEDIANS + "(" +
-                "'" + MEDIANS_COLUMN_ID + "'" + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'" + COLUMN_MEDIAN_VALUE + "'" + " INTEGER, " +
-                "'" + COLUMN_MACADDRESS + "'" + " TEXT "/*FOREIGN KEY REFERENCES "+TABLE_BEACONS+"("+BEACONS_COLUMN_ID+")"*/ +
+        // CREATE MEDIANS TABLE
+        String query2 = "CREATE TABLE "+ TABLE_MEDIAN + "(" +
+                "'"+ MEDIAN_COLUMN_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "'"+ COLUMN_MEDIAN_VALUE+"'"+ " INTEGER, "+
+                "'"+ COLUMN_BEACON_ID +"'"+ " INTEGER, "/*FOREIGN KEY REFERENCES "+TABLE_BEACON+"("+BEACONS_COLUMN_ID+")"*/+
+                "'"+ COLUMN_ORIENTATION +"'"+ " TEXT "+
                 ");";
         db.execSQL(query2);
 
-        // CREATE ANCHORS TABLE
-        String query3 = "CREATE TABLE " + TABLE_ANCHORS + "(" +
-                "'" + ANCHORS_COLUMN_ID + "'" + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'" + COLUMN_X + "'" + " INTEGER, " +
-                "'" + COLUMN_Y + "'" + " INTEGER, " +
-                "'" + COLUMN_FLOOR + "'" + " INTEGER, " +
-                // 90 degrees
-                "'" + COLUMN_FRONT + "'" + " INTEGER," +
-                // 270 degrees
-                "'" + COLUMN_BACK + "'" + " INTEGER," +
-                "'" + COLUMN_INFO_ID + "'" + " INTEGER  " +
+        // CREATE FINGERPRINT TABLE
+        String query3 = "CREATE TABLE "+ TABLE_FINGERPRINT + "(" +
+                "'"+ FINGERPRINT_COLUMN_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "'"+ COLUMN_FLOOR +"'"+ " INTEGER, "+
+                "'"+ COLUMN_X +"'"+ " INTEGER, "+
+                "'"+ COLUMN_Y +"'"+ " INTEGER, "+
+                "'"+ COLUMN_INFO_ID +"'"+ " INTEGER  " +
                 ");";
         db.execSQL(query3);
 
         // CREATE INFO TABLE
-        String query4 = "CREATE TABLE " + TABLE_INFO + "(" +
-                "'" + INFO_COLUMN_ID + "'" + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'" + COLUMN_PERSON_NAME + "'" + " TEXT, " +
-                "'" + COLUMN_ROOM_NAME + "'" + " TEXT, " +
-                "'" + COLUMN_ENVIRONMENT + "'" + " TEXT, " +
-                "'" + COLUMN_CATEGORY + "'" + " TEXT " +
+        String query4 = "CREATE TABLE "+ TABLE_INFO + "(" +
+                "'"+ INFO_COLUMN_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "'"+ COLUMN_PERSON_NAME +"'"+ " TEXT, "+
+                "'"+ COLUMN_ROOM_NAME +"'"+ " TEXT, "+
+                "'"+ COLUMN_ENVIRONMENT +"'"+ " TEXT, "+
+                "'"+ COLUMN_CATEGORY+"'"+ " TEXT "+
                 ");";
         db.execSQL(query4);
 
-        // CREATE INFO TABLE
-        String query5 = "CREATE TABLE " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "(" +
-                "'" + BEACON_MEDIAN_TO_ANCHOR_ID + "'" + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'" + COLUMN_BEACON_1 + "'" + " INTEGER, " +
-                "'" + COLUMN_BEACON_2 + "'" + " INTEGER, " +
-                "'" + COLUMN_BEACON_3 + "'" + " INTEGER, " +
-                "'" + COLUMN_BEACON_4 + "'" + " INTEGER, " +
-                "'" + COLUMN_BEACON_5 + "'" + " INTEGER, " +
-                "'" + COLUMN_BEACON_6 + "'" + " INTEGER " +
+        // CREATE FP_HAS_MEDIAN TABLE
+        String query5 = "CREATE TABLE "+ TABLE_FP_HAS_MEDIAN + "(" +
+                "'"+ FP_HAS_MEDIAN_COLUMN_ID +"'"+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "'"+ COLUMN_MEDIAN_ID +"'"+ " INTEGER, "+
+                "'"+ COLUMN_FINGERPRINT_ID +"'"+ " INTEGER "+
                 ");";
         db.execSQL(query5);
-
-
-        // TEST ZWECKE
-        ContentValues valuesTest = new ContentValues();
-        valuesTest.put(COLUMN_PERSON_NAME, "Robert Tscharn");
-        valuesTest.put(COLUMN_ROOM_NAME, "Diana Löffler ihr Raum");
-        valuesTest.put(COLUMN_CATEGORY, "WCs");
-
-        db.insertOrThrow(TABLE_INFO, null, valuesTest);
-
-        ContentValues valuesTest2 = new ContentValues();
-        valuesTest2.put(COLUMN_PERSON_NAME, "Diana Löffler");
-        valuesTest2.put(COLUMN_ROOM_NAME, "Robert Tscharn sein Raum");
-        valuesTest2.put(COLUMN_CATEGORY, "Büro");
-
-        db.insertOrThrow(TABLE_INFO, null, valuesTest2);
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS" + TABLE_ANCHORS);
-        db.execSQL("DROP TABLE IF EXISTS" + TABLE_MEDIANS);
-        db.execSQL("DROP TABLE IF EXISTS" + TABLE_BEACONS);
+        db.execSQL("DROP TABLE IF EXISTS" + TABLE_FINGERPRINT);
+        db.execSQL("DROP TABLE IF EXISTS" + TABLE_MEDIAN);
+        db.execSQL("DROP TABLE IF EXISTS" + TABLE_BEACON);
         db.execSQL("DROP TABLE IF EXISTS" + TABLE_INFO);
-        db.execSQL("DROP TABLE IF EXISTS" + TABLE_BEACON_MEDIAN_TO_ANCHOR);
+        db.execSQL("DROP TABLE IF EXISTS" + TABLE_FP_HAS_MEDIAN);
         onCreate(db);
     }
 
     public Coordinate getTarget(String targetString){
         SQLiteDatabase db = getWritableDatabase();
-        final String query = "SELECT " + COLUMN_X + "," + COLUMN_Y + " FROM '" + TABLE_ANCHORS + "'"+
-                " JOIN '" + TABLE_INFO + "' ON " + TABLE_ANCHORS + "."+COLUMN_INFO_ID +"="+ TABLE_INFO+"."+INFO_COLUMN_ID+" WHERE ("+
+        final String query = "SELECT " + COLUMN_X + "," + COLUMN_Y + " FROM '" + TABLE_FINGERPRINT + "'"+
+                " JOIN '" + TABLE_INFO + "' ON " + TABLE_FINGERPRINT + "."+COLUMN_INFO_ID +"="+ TABLE_INFO+"."+INFO_COLUMN_ID+" WHERE ("+
                 COLUMN_PERSON_NAME + " LIKE '%"+targetString+"%' OR " +
                 COLUMN_ROOM_NAME + " LIKE '%"+targetString+"%');";
         Cursor c = db.rawQuery(query, null);
@@ -218,22 +190,29 @@ public class DBHandler extends SQLiteOpenHelper {
             final String macAddress = map[i].getMacAddressStr();
             final double median = map[i].getMedian();
 
-            String queryOrientation = "";
-            if (map[i].getOrientation().equals(Orientation.back))
-                queryOrientation = "( " + TABLE_ANCHORS + "." + COLUMN_BACK + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID + " ) ";
-            else if (map[i].getOrientation().equals(Orientation.front))
-                queryOrientation = "( " + TABLE_ANCHORS + "." + COLUMN_FRONT + " = " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + BEACON_MEDIAN_TO_ANCHOR_ID + " ) ";
+//            String queryOrientation = "";
+//            if (map[i].getOrientation().equals(Orientation.back))
+//                queryOrientation = "( " + TABLE_FINGERPRINT + "." + COLUMN_BACK + " = " + TABLE_FP_HAS_MEDIAN + "." + BEACON_MEDIAN_TO_ANCHOR_ID + " ) ";
+//            else if (map[i].getOrientation().equals(Orientation.front))
+//                queryOrientation = "( " + TABLE_FINGERPRINT + "." + COLUMN_FRONT + " = " + TABLE_FP_HAS_MEDIAN + "." + BEACON_MEDIAN_TO_ANCHOR_ID + " ) ";
+//
+//            String query = "SELECT " + TABLE_FINGERPRINT + "." + COLUMN_FLOOR + "," + TABLE_FINGERPRINT + "." + COLUMN_X + ", " + TABLE_FINGERPRINT + "." + COLUMN_Y + "," + TABLE_MEDIAN + "." + MEDIANS_COLUMN_ID + ", " + calcManhattenDB_Cmd(median) + " AS " + LOCAL_COLUMN_DEVIATION + " " +
+//                    " FROM '" + TABLE_MEDIAN + "' JOIN '" + TABLE_FINGERPRINT + "' JOIN '" + TABLE_FP_HAS_MEDIAN + "' WHERE macAddress = '" + macAddress + "' AND " +
+//                    " ( " + TABLE_FP_HAS_MEDIAN + "." + COLUMN_BEACON_1 + " = " + TABLE_MEDIAN + "." + MEDIANS_COLUMN_ID + " " +
+//                    "   OR " + TABLE_FP_HAS_MEDIAN + "." + COLUMN_BEACON_2 + " = " + TABLE_MEDIAN + "." + MEDIANS_COLUMN_ID + "  " +
+//                    "   OR " + TABLE_FP_HAS_MEDIAN + "." + COLUMN_BEACON_3 + " = " + TABLE_MEDIAN + "." + MEDIANS_COLUMN_ID + "  " +
+//                    "   OR " + TABLE_FP_HAS_MEDIAN + "." + COLUMN_BEACON_4 + " = " + TABLE_MEDIAN + "." + MEDIANS_COLUMN_ID + "  " +
+//                    "   OR " + TABLE_FP_HAS_MEDIAN + "." + COLUMN_BEACON_5 + " = " + TABLE_MEDIAN + "." + MEDIANS_COLUMN_ID + "  " +
+//                    "   OR " + TABLE_FP_HAS_MEDIAN + "." + COLUMN_BEACON_6 + " = " + TABLE_MEDIAN + "." + MEDIANS_COLUMN_ID + "  " +
+//                    "  ) AND " + queryOrientation +
+//                    " GROUP BY " + COLUMN_MEDIAN_VALUE + " HAVING deviation <=" + Definitions.POSITIONING_THRESHOLD + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + Definitions.POSITIONING_LIMIT + ";";
 
-            String query = "SELECT " + TABLE_ANCHORS + "." + COLUMN_FLOOR + "," + TABLE_ANCHORS + "." + COLUMN_X + ", " + TABLE_ANCHORS + "." + COLUMN_Y + "," + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + ", " + calcManhattenDB_Cmd(median) + " AS " + LOCAL_COLUMN_DEVIATION + " " +
-                    " FROM '" + TABLE_MEDIANS + "' JOIN '" + TABLE_ANCHORS + "' JOIN '" + TABLE_BEACON_MEDIAN_TO_ANCHOR + "' WHERE macAddress = '" + macAddress + "' AND " +
-                    " ( " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_1 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + " " +
-                    "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_2 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
-                    "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_3 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
-                    "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_4 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
-                    "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_5 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
-                    "   OR " + TABLE_BEACON_MEDIAN_TO_ANCHOR + "." + COLUMN_BEACON_6 + " = " + TABLE_MEDIANS + "." + MEDIANS_COLUMN_ID + "  " +
-                    "  ) AND " + queryOrientation +
-                    " GROUP BY " + COLUMN_MEDIAN_VALUE + " HAVING deviation <=" + Definitions.POSITIONING_THRESHOLD + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + Definitions.POSITIONING_LIMIT + ";";
+            String query = "SELECT " + TABLE_FINGERPRINT + "." + COLUMN_FLOOR + "," + TABLE_FINGERPRINT + "." + COLUMN_X + ", " + TABLE_FINGERPRINT + "." + COLUMN_Y + "," +
+                    TABLE_BEACON + "." + COLUMN_MAC_ADDRESS + ", " + TABLE_MEDIAN + "."+MEDIAN_COLUMN_ID+", MIN(ABS("+TABLE_MEDIAN+"."+COLUMN_MEDIAN_VALUE+" - "+map[i].getMedian()+")) AS " + LOCAL_COLUMN_DEVIATION + " " +
+                    " FROM '" + TABLE_FP_HAS_MEDIAN + "' JOIN '" + TABLE_FINGERPRINT + "' ON "+COLUMN_FINGERPRINT_ID+"="+FINGERPRINT_COLUMN_ID+" JOIN '" +
+                    TABLE_MEDIAN + "' ON "+COLUMN_MEDIAN_ID+"="+MEDIAN_COLUMN_ID+ " JOIN '"+TABLE_BEACON+"' ON "+COLUMN_BEACON_ID+"="+BEACON_COLUMN_ID +
+                    " WHERE "+COLUMN_MAC_ADDRESS+" = '" + macAddress + "' AND "+ COLUMN_ORIENTATION + " = '" + map[i].getOrientation().toString()+"'"+
+                    " GROUP BY " + MEDIAN_COLUMN_ID + " HAVING "+LOCAL_COLUMN_DEVIATION+" <=" + Definitions.POSITIONING_THRESHOLD + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + Definitions.POSITIONING_LIMIT + ";";
 
             Cursor c = db.rawQuery(query, null);
             c.moveToFirst();
@@ -273,41 +252,9 @@ public class DBHandler extends SQLiteOpenHelper {
         return ID;
     }
 
-    //Delete an anchor from the database
-    public void deleteAnchor(String anchorName) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("DELETE FROM " + TABLE_ANCHORS + " WHERE " + anchorName + "=\"" + anchorName + "\";");
-    }
-
-    public void deleteAllTables() {
-        SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_ANCHORS + "'");
-        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_MEDIANS + "'");
-        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_BEACONS + "'");
-        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_INFO + "'");
-        db.execSQL("DROP TABLE IF EXISTS '" + TABLE_BEACON_MEDIAN_TO_ANCHOR + "'");
-        onCreate(db);
-    }
-
-
-    /*
-    Uses euclidean distance
-     */
-    private String calcEuclideanDB_Cmd(double median) {
-        return "SQRT(ABS(MAX(POWER(" + COLUMN_MEDIAN_VALUE + " - " + median + "))))";
-    }
-
-    /*
-    Uses Manhatten distrance for DB
-     */
-    private String calcManhattenDB_Cmd(double median) {
-        return "ABS(MIN(" + COLUMN_MEDIAN_VALUE + " - " + median + "))";
-    }
-
-
     public Coordinate getCoordFromAnchorId(int id) {
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT " + COLUMN_X + ", " + COLUMN_Y + ", " + COLUMN_FLOOR + " FROM '" + TABLE_ANCHORS + "' WHERE " + ANCHORS_COLUMN_ID + " = '" + id + "';";
+        String query = "SELECT " + COLUMN_X + ", " + COLUMN_Y + ", " + COLUMN_FLOOR + " FROM '" + TABLE_FINGERPRINT + "' WHERE " + FINGERPRINT_COLUMN_ID + " = '" + id + "';";
 
         // Cursor point to a location in your results
         Cursor c = db.rawQuery(query, null);
@@ -336,9 +283,9 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         //SELECT _id,x,y,floor,personname,roomname,environment,category  FROM anchorpoints JOIN
 //        info on anchorpoints.infoid = info.id
-        String query = "SELECT "+ ANCHORS_COLUMN_ID +","+ COLUMN_X +","+ COLUMN_Y +","+ COLUMN_FLOOR + ","+
+        String query = "SELECT "+ FINGERPRINT_COLUMN_ID +","+ COLUMN_X +","+ COLUMN_Y +","+ COLUMN_FLOOR + ","+
                 INFO_COLUMN_ID + ","+ COLUMN_PERSON_NAME + ","+ COLUMN_ROOM_NAME + ","+ COLUMN_ENVIRONMENT + ","+ COLUMN_CATEGORY +
-                " FROM '" + TABLE_ANCHORS + "' JOIN '"+TABLE_INFO +"' ON "+TABLE_ANCHORS+"."+COLUMN_INFO_ID +
+                " FROM '" + TABLE_FINGERPRINT + "' JOIN '"+TABLE_INFO +"' ON "+TABLE_FINGERPRINT+"."+COLUMN_INFO_ID +
                 " = " + TABLE_INFO + "." + INFO_COLUMN_ID + ";";
 
         // Cursor point to a location in your results
@@ -380,7 +327,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public LinkedList<Coordinate> getAllAnchors(){
         LinkedList<Coordinate> res = new LinkedList<>();
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT " + COLUMN_X + ", " + COLUMN_Y + ", " + COLUMN_FLOOR + " FROM '" + TABLE_ANCHORS + "';";
+        String query = "SELECT " + COLUMN_X + ", " + COLUMN_Y + ", " + COLUMN_FLOOR + " FROM '" + TABLE_FINGERPRINT + "';";
 
         // Cursor point to a location in your results
         Cursor c = db.rawQuery(query, null);
@@ -398,7 +345,7 @@ public class DBHandler extends SQLiteOpenHelper {
             res.add(new Coordinate(floor, x, y));
             c.moveToNext();
         }
-        Log.d(TAG, "DONE FETCHING ALL ANCHORPOINTS " + res.size());
+        Log.d(TAG, "DONE FETCHING ALL FINGERPRINTS " + res.size());
         c.close();
         db.close();
         return res;
@@ -529,7 +476,7 @@ public class DBHandler extends SQLiteOpenHelper {
         return res;
     }
 
-    public ArrayList<Coordinate> getDirectNeighborAnchors(Coordinate centerPos) {
+    public ArrayList<Coordinate> getDirectNeighborFPs(Coordinate centerPos) {
         ArrayList<Coordinate> neighbors = new ArrayList<>();
 //        neighbors.add(centerPos);
         double x = centerPos.getX();
@@ -574,7 +521,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         for (int i = 0; i < neighbors.size(); i++) {
             String subQuery = COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
-            String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE " + subQuery + ";";
+            String query = "SELECT * FROM '" + TABLE_FINGERPRINT + "' WHERE " + subQuery + ";";
             Cursor c = db.rawQuery(query, null);
             c.moveToFirst();
 
@@ -600,7 +547,7 @@ public class DBHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    public ArrayList<Coordinate> getOuterNeighborAnchors(Coordinate centerPos) {
+    public ArrayList<Coordinate> getOuterNeighborFPs(Coordinate centerPos) {
         ArrayList<Coordinate> neighbors = new ArrayList<>();
 //        neighbors.add(centerPos);
         double x = centerPos.getX();
@@ -649,7 +596,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         for (int i = 0; i < neighbors.size(); i++) {
             String subQuery = COLUMN_X + "=" + neighbors.get(i).getX() + " AND " + COLUMN_Y + "=" + neighbors.get(i).getY() + ";";
-            String query = "SELECT * FROM '" + TABLE_ANCHORS + "' WHERE " + subQuery + ";";
+            String query = "SELECT * FROM '" + TABLE_FINGERPRINT + "' WHERE " + subQuery + ";";
             Cursor c = db.rawQuery(query, null);
             c.moveToFirst();
 
@@ -677,10 +624,10 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
     public String getDBPath() {
-        return c.getDatabasePath(DBHandler.DATABASE_NAME).toString();
+        return context.getDatabasePath(Database.DATABASE_NAME).toString();
     }
 
     public boolean deleteDBFile() {
-        return new File(c.getDatabasePath(DBHandler.DATABASE_NAME).toString()).delete();
+        return new File(context.getDatabasePath(Database.DATABASE_NAME).toString()).delete();
     }
 }

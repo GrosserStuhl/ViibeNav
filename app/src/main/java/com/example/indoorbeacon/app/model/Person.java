@@ -7,7 +7,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.indoorbeacon.app.controller.NavigationActivity;
-import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.dbmodels.Database;
 import com.example.indoorbeacon.app.model.position.neighbor.Ewknn;
 import com.example.indoorbeacon.app.model.position.neighbor.MacToMedian;
 import com.example.indoorbeacon.app.model.position.neighbor.PositionAlgorithm;
@@ -93,7 +93,7 @@ public class Person {
             // x o x
             // x x x  (3x3 Matrix)
 
-            neighbours = DBHandler.getDB().getDirectNeighborAnchors(currentPos);
+            neighbours = Database.getDB().getDirectNeighborFPs(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             if (newEstimatedPos.isValid()) {
                 Log.d(TAG, "newCurPos: " + newEstimatedPos);
@@ -113,7 +113,7 @@ public class Person {
             // * x x x |*|
             // * * * * *
 
-            neighbours = DBHandler.getDB().getOuterNeighborAnchors(currentPos);
+            neighbours = Database.getDB().getOuterNeighborFPs(currentPos);
             Coordinate newEstimatedPos = findNextBestPos(neighbours, estimatedPos);
             if (newEstimatedPos.isValid()) {
                 Log.d(TAG, "newCurPos: " + newEstimatedPos);
@@ -152,7 +152,7 @@ public class Person {
     }
 
     private Coordinate getCoordFromAnchorId(int id) {
-        return DBHandler.getDB().getCoordFromAnchorId(id);
+        return Database.getDB().getCoordFromAnchorId(id);
     }
 
     public void setCurrentPos(Coordinate currentPos) {

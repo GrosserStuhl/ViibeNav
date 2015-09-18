@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
-import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.dbmodels.Database;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,7 +28,7 @@ public class ExportImportDB {
     //importing database
     public void importDB() {
         try {
-            String currentDBPath = DBHandler.getDB().getDBPath();
+            String currentDBPath = Database.getDB().getDBPath();
             String backupDBPath  = Environment.getExternalStorageDirectory() + "/radiomap/radiomap.db";
 //            String backupDBPath  = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+ "/radiomap-2.db";
             File backupDB = new File(backupDBPath);
