@@ -1,10 +1,13 @@
 package com.example.indoorbeacon.app.controller;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
+import android.preference.PreferenceManager;
+import android.widget.Toast;
 import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.ExportImportDB;
 
@@ -12,6 +15,9 @@ import com.example.indoorbeacon.app.model.ExportImportDB;
  * Created by Dima on 28/07/2015.
  */
 public class SettingsActivity extends Activity {
+
+    public static final String KEY_PREF_ORI = "pref_orientationUnit";
+    public static final String KEY_PREF_INV = "pref_invertColors";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +35,6 @@ public class SettingsActivity extends Activity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.preferences);
 
             expImpDB = new ExportImportDB(getActivity());

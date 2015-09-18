@@ -11,6 +11,7 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.indoorbeacon.app.controller.SettingsActivity;
 import com.example.indoorbeacon.app.model.dbmodels.Database;
 import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 
@@ -40,7 +41,7 @@ public class NavigationHelper {
     private float previousOrientation = -1;
     private float firstDirection = 0;
     private float previousDirection = 0;
-    private String directionUnit = " °";
+    private String directionUnit;
     private int directionDifference = 0;
 
     public NavigationHelper(Context context, Person person, String ziel) {
@@ -48,6 +49,9 @@ public class NavigationHelper {
         tts = TTS.getTTS(context);
         initNavigation(ziel);
         setUpBrReceiver(context);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        directionUnit = preferences.getString(SettingsActivity.KEY_PREF_ORI, "Grad");
     }
 
     private void initNavigation(String ziel) {
@@ -224,15 +228,8 @@ public class NavigationHelper {
 
     private void onNewRangeEntered() {
         adjustImageToNewRange();
-        ArrayList<String> environmentalInfo = currentRange.getEnvironmentalInfos();
-        instructionTexts = new ArrayList<>();
-        instructionTexts.add("Geradeaus");
-
-        for (String e : environmentalInfo)
-            instructionTexts.add(e);
-
-        instructionTexts.add(currentRange.getRelationToNextRangeAsString());
-        tts.speakList(instructionTexts, 0);
+        int index = ranges.indexOf(currentRange);
+        tts.speak(instructionList.get(index));
     }
 
     private Range getRangeByCoord(Coordinate coord) {
@@ -250,7 +247,12 @@ public class NavigationHelper {
     }
 
     public void updateTextViews(TextView directionTextView) {
-        directionTextView.setText(directionDifference + directionUnit);
+        if (directionUnit.equals("Grad"))
+            directionTextView.setText(directionDifference + " " + directionUnit);
+        else if (directionUnit.equals("Uhrzeit")) {
+            directionDifference = Util.convertDegreesToTime(directionDifference);
+            directionTextView.setText(directionDifference + " Uhr");
+        }
     }
 
     public void updateImage(ImageView arrowImage, float newOrientation) {
@@ -264,14 +266,14 @@ public class NavigationHelper {
             } else if (direction > 360) {
                 direction = direction - 360;
             }
-
+//
             directionDifference = (int) (direction - firstDirection);
-            if (directionDifference <= 10) {
-                if (previousDirection < 360 && previousDirection > 355 && direction > 0 && direction < 5)
-                    direction = 360;
-                else if (previousDirection > 0 && previousDirection < 5 && direction < 360 && direction > 355)
-                    direction = 0;
-            }
+//            if (directionDifference <= 10) {
+//                if (previousDirection < 360 && previousDirection > 355 && direction > 0 && direction < 5)
+//                    direction = 360;
+//                else if (previousDirection > 0 && previousDirection < 5 && direction < 360 && direction > 355)
+//                    direction = 0;
+//            }
 
             RotateAnimation ra = new RotateAnimation(
                     previousDirection,
@@ -319,8 +321,7 @@ public class NavigationHelper {
     private void fillInstructionList() {
         instructionList = new ArrayList<>();
 
-        for (int i = 0; i < ranges.size(); i++) {
-            Range range = ranges.get(i);
+        for (Range range : ranges) {
             StringBuilder fullInstruction = new StringBuilder();
             int distance = range.getApproximateDistanceInMeters();
             fullInstruction.append("Geradeaus circa ").append(distance);
@@ -328,16 +329,11 @@ public class NavigationHelper {
                 fullInstruction.append(" Meter, ");
             else fullInstruction.append(" Meter.");
             ArrayList<String> environmentalInfo = range.getEnvironmentalInfos();
-            for (int j = 0; j < environmentalInfo.size(); j++) {
-                String e = environmentalInfo.get(j).trim();
-
-                if (j == environmentalInfo.size() - 1)
-                    fullInstruction.append(e).append(".");
-                else
-                    fullInstruction.append(e).append(", ");
+            for (String anEnvironmentalInfo : environmentalInfo) {
+                String e = anEnvironmentalInfo.trim();
+                fullInstruction.append(e);
             }
-            if (i == ranges.size() - 1)
-                fullInstruction.append(System.lineSeparator()).append("Und dann haben Sie ihr Ziel erreicht.");
+            fullInstruction.append(range.getRelationToNextRangeAsString());
             instructionList.add(fullInstruction.toString());
         }
     }
