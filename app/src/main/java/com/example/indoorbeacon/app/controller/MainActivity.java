@@ -11,19 +11,21 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.indoorbeacon.app.R;
-import com.example.indoorbeacon.app.model.*;
-import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.SensorHelper;
+import com.example.indoorbeacon.app.model.BluetoothScan;
+import com.example.indoorbeacon.app.model.Connector;
+import com.example.indoorbeacon.app.model.Measurement;
+import com.example.indoorbeacon.app.model.TTS;
+import com.example.indoorbeacon.app.model.dbmodels.Database;
 
 
 public class MainActivity extends Activity {
 
     BluetoothScan bluetoothScan;
-    DBHandler dbHandler;
+    Database dbHandler;
     Measurement measurement;
 
     Connector connect;
-
-    private boolean themeChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +44,7 @@ public class MainActivity extends Activity {
             root.setBackgroundColor(Color.parseColor(Definitions.DARK_BACKGROUND_COLOR));
         }
 
-        dbHandler = DBHandler.createDB(this, null, null, 1);
+        dbHandler = Database.createDB(this, null, null, 1);
 
         connect = Connector.createConnector((WifiManager) getSystemService(WIFI_SERVICE));
 
@@ -52,15 +54,6 @@ public class MainActivity extends Activity {
         TTS.getTTS(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-                                                  String key) {
-                if (key.equals(SettingsActivity.KEY_PREF_DRK)) {
-                    themeChanged = true;
-                }
-            }
-        };
     }
 
     public void openSearchActivity(View view) {

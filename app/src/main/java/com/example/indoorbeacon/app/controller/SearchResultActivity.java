@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.example.indoorbeacon.app.R;
 import com.example.indoorbeacon.app.model.Definitions;
-import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.dbmodels.Database;
 import com.example.indoorbeacon.app.view.adapter.CustomResultExpListAdapter;
 
 import java.util.ArrayList;
@@ -45,8 +45,8 @@ public class SearchResultActivity extends Activity {
         Intent intent = getIntent();
         String suchInhalt = intent.getStringExtra("suchInhalt");
 
-        ArrayList<String> persons = new ArrayList<>(DBHandler.getDB().getSearchSpecificPersonEntries(suchInhalt));
-        ArrayList<String> rooms = new ArrayList<>(DBHandler.getDB().getSearchSpecificRoomEntries(suchInhalt));
+        ArrayList<String> persons = new ArrayList<>(Database.getDB().getSearchSpecificPersonEntries(suchInhalt));
+        ArrayList<String> rooms = new ArrayList<>(Database.getDB().getSearchSpecificRoomEntries(suchInhalt));
         HashMap<String, List<String>> results = new HashMap<>();
 
         if (persons.size() > 0)

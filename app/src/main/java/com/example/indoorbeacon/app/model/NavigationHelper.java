@@ -1,7 +1,9 @@
 package com.example.indoorbeacon.app.model;
 
-import android.content.*;
-import android.preference.PreferenceManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.animation.Animation;
@@ -10,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.indoorbeacon.app.controller.SettingsActivity;
-import com.example.indoorbeacon.app.model.dbmodels.DBHandler;
+import com.example.indoorbeacon.app.model.dbmodels.Database;
 import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
 
 import java.util.ArrayList;
@@ -53,9 +55,9 @@ public class NavigationHelper {
     }
 
     private void initNavigation(String ziel) {
-        target = DBHandler.getDB().getTarget(ziel);
-        path = DBHandler.getDB().getAllAnchors();
-        infoTextsForAnchors = DBHandler.getDB().getCoordinateToInfoModelMap();
+        target = Database.getDB().getTarget(ziel);
+        path = Database.getDB().getAllAnchors();
+        infoTextsForAnchors = Database.getDB().getCoordinateToInfoModelMap();
         ranges = new LinkedList<>();
         lastUserPositions = new ArrayList<>();
         dividePathIntoRanges();
