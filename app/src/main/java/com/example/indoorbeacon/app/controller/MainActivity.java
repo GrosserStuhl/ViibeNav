@@ -11,27 +11,18 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.indoorbeacon.app.R;
-import com.example.indoorbeacon.app.model.SensorHelper;
-import com.example.indoorbeacon.app.model.BluetoothScan;
-import com.example.indoorbeacon.app.model.Connector;
-import com.example.indoorbeacon.app.model.Measurement;
-import com.example.indoorbeacon.app.model.TTS;
+import com.example.indoorbeacon.app.model.*;
 import com.example.indoorbeacon.app.model.dbmodels.Database;
 
 
 public class MainActivity extends Activity {
 
-    BluetoothScan bluetoothScan;
     Database dbHandler;
-    Measurement measurement;
-
     Connector connect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        getActionBar().setHomeButtonEnabled(true);
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean darkBackground = preferences.getBoolean(SettingsActivity.KEY_PREF_DRK, false);
         setContentView(R.layout.activity_main);
