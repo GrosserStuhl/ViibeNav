@@ -8,7 +8,6 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.example.indoorbeacon.app.controller.SettingsActivity;
 import com.example.indoorbeacon.app.model.dbmodels.Database;
 import com.example.indoorbeacon.app.model.dbmodels.InfoModel;
@@ -341,7 +340,7 @@ public class NavigationHelper {
             fullInstruction.append("Geradeaus circa ").append(distance);
             if (range.hasEnvironmentalInfos())
                 fullInstruction.append(" ").append(distanceUnit).append(", ");
-//            else fullInstruction.append(" ").append(distanceUnit).append(".");
+            else fullInstruction.append(" ").append(distanceUnit);
 
             ArrayList<String> environmentalInfo = range.getEnvironmentalInfos();
             for (String anEnvironmentalInfo : environmentalInfo) {
