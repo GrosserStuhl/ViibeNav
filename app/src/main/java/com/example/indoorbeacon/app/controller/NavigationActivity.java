@@ -58,8 +58,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         darkBackground = preferences.getBoolean(SettingsActivity.KEY_PREF_DRK, false);
         setContentView(R.layout.activity_navigation);
         if(darkBackground){
-            View someView = findViewById(R.id.arrowImageView);
-            View root = someView.getRootView();
+            View root = getWindow().getDecorView().getRootView();
             root.setBackgroundColor(Color.parseColor(Definitions.DARK_BACKGROUND_COLOR));
 //            getActionBar().setBackgroundDrawable(new ColorDrawable(Color.BLUE));
         }

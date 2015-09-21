@@ -102,32 +102,55 @@ public class Util {
 
     public static int convertDegreesToTime(int degrees) {
         int result = 0;
-        int absDegrees = Math.abs(degrees);
-        Log.d(TAG, "absDegrees: " + absDegrees);
-        if (absDegrees > 345 || absDegrees <= 15)
+        if (degrees > 345 || (degrees <= 15 && degrees >= 0))
             result = 12;
-        else if (absDegrees > 15 && absDegrees <= 40)
-            result = 13;
-        else if (absDegrees > 40 && absDegrees <= 70)
-            result = 14;
-        else if (absDegrees > 70 && absDegrees <= 95)
-            result = 15;
-        else if (absDegrees > 95 && absDegrees <= 120)
-            result = 16;
-        else if (absDegrees > 120 && absDegrees <= 160)
-            result = 17;
-        else if (absDegrees > 160 && absDegrees <= 185)
-            result = 18;
-        else if (absDegrees > 185 && absDegrees <= 210)
-            result = 19;
-        else if (absDegrees > 210 && absDegrees <= 240)
-            result = 20;
-        else if (absDegrees > 240 && absDegrees <= 275)
-            result = 21;
-        else if (absDegrees > 275 && absDegrees <= 310)
-            result = 22;
-        else if (absDegrees > 310 && absDegrees <= 345)
-            result = 23;
+        else if (degrees > 15 && degrees <= 40)
+            result = 1;
+        else if (degrees > 40 && degrees <= 70)
+            result = 2;
+        else if (degrees > 70 && degrees <= 95)
+            result = 3;
+        else if (degrees > 95 && degrees <= 120)
+            result = 4;
+        else if (degrees > 120 && degrees <= 160)
+            result = 5;
+        else if (degrees > 160 && degrees <= 185)
+            result = 6;
+        else if (degrees > 185 && degrees <= 210)
+            result = 7;
+        else if (degrees > 210 && degrees <= 240)
+            result = 8;
+        else if (degrees > 240 && degrees <= 275)
+            result = 9;
+        else if (degrees > 275 && degrees <= 310)
+            result = 10;
+        else if (degrees > 310 && degrees <= 345)
+            result = 11;
+            //Negative Seite
+        else if (degrees < -15 && degrees >= -40)
+            result = 11;
+        else if (degrees < -40 && degrees >= -70)
+            result = 10;
+        else if (degrees < -70 && degrees >= -95)
+            result = 9;
+        else if (degrees < -95 && degrees >= -120)
+            result = 8;
+        else if (degrees < -120 && degrees >= -160)
+            result = 7;
+        else if (degrees < -160 && degrees >= -185)
+            result = 6;
+        else if (degrees < -185 && degrees >= -210)
+            result = 5;
+        else if (degrees < -210 && degrees >= -240)
+            result = 4;
+        else if (degrees < -240 && degrees >= -275)
+            result = 3;
+        else if (degrees < -275 && degrees >= -310)
+            result = 2;
+        else if (degrees < -310 && degrees >= -345)
+            result = 1;
+        else if (degrees < -345 || (degrees > -15 && degrees < 0))
+            result = 12;
 
         return result;
     }

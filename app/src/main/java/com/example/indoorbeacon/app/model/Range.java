@@ -13,7 +13,6 @@ public class Range {
 
     private ArrayList<Coordinate> coordinates;
     private int relationToNextRange;
-    private boolean hasEnvironmentalInfos = false;
     private ArrayList<String> environmentalInfos;
 
     public Range(ArrayList<Coordinate> coordinates, int relationToNextRange) {
@@ -30,6 +29,11 @@ public class Range {
         return coordinates.size() * Definitions.ANCHORPOINT_DISTANCE_IN_CM / 100;
     }
 
+    public int getApproximateDistanceInSteps() {
+        float length = coordinates.size() * Definitions.ANCHORPOINT_DISTANCE_IN_CM;
+        return Math.round(length / Definitions.WALKED_WALKED_CENTIMETERS_PER_SECOND);
+    }
+
     public int getRelationToNextRange() {
         return relationToNextRange;
     }
@@ -42,18 +46,15 @@ public class Range {
         return environmentalInfos;
     }
 
-    public boolean isHasEnvironmentalInfos() {
-        return hasEnvironmentalInfos;
+    public boolean hasEnvironmentalInfos() {
+        return !environmentalInfos.isEmpty();
     }
 
     public void setEnvironmentalInfos(ArrayList<String> environmentalInfos) {
         this.environmentalInfos = environmentalInfos;
-        hasEnvironmentalInfos = true;
     }
 
     public void addEnvironmentalInfos(String info) {
-        if (environmentalInfos.isEmpty())
-            hasEnvironmentalInfos = true;
         environmentalInfos.add(info);
     }
 
@@ -67,6 +68,7 @@ public class Range {
         return " Achtung! Es konnte keine anschließende Richtung bestimmt werden.";
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,16 +77,15 @@ public class Range {
         Range range = (Range) o;
 
         if (relationToNextRange != range.relationToNextRange) return false;
-        if (hasEnvironmentalInfos != range.hasEnvironmentalInfos) return false;
         if (coordinates != null ? !coordinates.equals(range.coordinates) : range.coordinates != null) return false;
         return !(environmentalInfos != null ? !environmentalInfos.equals(range.environmentalInfos) : range.environmentalInfos != null);
+
     }
 
     @Override
     public int hashCode() {
         int result = coordinates != null ? coordinates.hashCode() : 0;
         result = 31 * result + relationToNextRange;
-        result = 31 * result + (hasEnvironmentalInfos ? 1 : 0);
         result = 31 * result + (environmentalInfos != null ? environmentalInfos.hashCode() : 0);
         return result;
     }

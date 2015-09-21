@@ -18,6 +18,7 @@ import com.example.indoorbeacon.app.model.ExportImportDB;
 public class SettingsActivity extends Activity {
 
     public static final String KEY_PREF_ORI = "pref_orientationUnit";
+    public static final String KEY_PREF_DIS = "pref_distanceUnit";
     public static final String KEY_PREF_DRK = "pref_darkBackground";
     private static Activity settingsActivity;
 

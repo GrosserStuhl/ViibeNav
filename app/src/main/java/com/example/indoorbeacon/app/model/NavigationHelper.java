@@ -40,16 +40,18 @@ public class NavigationHelper {
     private float firstDirection = 0;
     private float previousDirection = 0;
     private String directionUnit;
+    private String distanceUnit;
     private int directionDifference = 0;
 
     public NavigationHelper(Context context, Person person, String ziel) {
         this.person = person;
         tts = TTS.getTTS(context);
-        initNavigation(ziel);
         setUpBrReceiver(context);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         directionUnit = preferences.getString(SettingsActivity.KEY_PREF_ORI, "Grad");
+        distanceUnit = preferences.getString(SettingsActivity.KEY_PREF_DIS, "Meter");
+        initNavigation(ziel);
     }
 
     private void initNavigation(String ziel) {
@@ -274,7 +276,7 @@ public class NavigationHelper {
                 direction = direction - 360;
             }
 //
-            directionDifference = (int) (direction - firstDirection);
+            directionDifference = (int) direction;
 //            if (directionDifference <= 10) {
 //                if (previousDirection < 360 && previousDirection > 355 && direction > 0 && direction < 5)
 //                    direction = 360;
@@ -330,15 +332,21 @@ public class NavigationHelper {
 
         for (Range range : ranges) {
             StringBuilder fullInstruction = new StringBuilder();
-            int distance = range.getApproximateDistanceInMeters();
+            int distance = 0;
+            if (distanceUnit.equals("Meter"))
+                distance = range.getApproximateDistanceInMeters();
+            else if (distanceUnit.equals("Schritte"))
+                distance = range.getApproximateDistanceInSteps();
+
             fullInstruction.append("Geradeaus circa ").append(distance);
-            if (!range.getEnvironmentalInfos().isEmpty())
-                fullInstruction.append(" Meter, ");
-            else fullInstruction.append(" Meter.");
+            if (range.hasEnvironmentalInfos())
+                fullInstruction.append(" ").append(distanceUnit).append(", ");
+//            else fullInstruction.append(" ").append(distanceUnit).append(".");
+
             ArrayList<String> environmentalInfo = range.getEnvironmentalInfos();
             for (String anEnvironmentalInfo : environmentalInfo) {
                 String e = anEnvironmentalInfo.trim();
-                fullInstruction.append(e);
+                fullInstruction.append(e).append(", ");
             }
             fullInstruction.append(range.getRelationToNextRangeAsString());
             instructionList.add(fullInstruction.toString());
