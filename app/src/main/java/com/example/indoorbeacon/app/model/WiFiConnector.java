@@ -1,31 +1,34 @@
 package com.example.indoorbeacon.app.model;
 
+import android.app.Activity;
+import android.content.Context;
 import android.net.wifi.WifiManager;
 
 /**
  * Created by TomTheBomb on 01.08.2015.
  */
-public class Connector {
+public class WiFiConnector {
 
     private WifiManager wifi;
 
-    private static Connector singleton;
+    private static WiFiConnector singleton;
 
-    private Connector(WifiManager wifi) {
+    private WiFiConnector(WifiManager wifi) {
         this.wifi = wifi;
     }
 
-    public static Connector createConnector(WifiManager wifi){
+    public static WiFiConnector getConnector(Activity act){
         // Avoid possible errors with multiple threads accessing this method -> synchronized
-        synchronized(Connector.class) {
+        synchronized(WiFiConnector.class) {
             if (singleton == null) {
-                singleton = new Connector(wifi);
+                WifiManager wifi = (WifiManager) act.getSystemService(Context.WIFI_SERVICE);
+                singleton = new WiFiConnector(wifi);
             }
         }
         return singleton;
     }
 
-    public static Connector getConnector(){
+    public static WiFiConnector getConnector(){
         return singleton;
     }
 
