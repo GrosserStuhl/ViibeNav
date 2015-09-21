@@ -76,7 +76,7 @@ public class TTS extends UtteranceProgressListener {
 
         if (tts != null)
             if (tts.isSpeaking()) {
-                stop();
+                tts.stop();
                 Log.d(TAG, "speaking: RETURN!");
                 return;
             }
@@ -104,6 +104,7 @@ public class TTS extends UtteranceProgressListener {
                 tts.stop();
 
                 instructionCounter = 0;
+                h.removeCallbacksAndMessages(null);
 //                h.removeCallbacksAndMessages(msg);
 //                Message send = Message.obtain();
 //                send.obj = message;
@@ -155,11 +156,6 @@ public class TTS extends UtteranceProgressListener {
         Message msg = Message.obtain();
         msg.obj = item;
         h.sendMessage(msg);
-    }
-
-    public void stop() {
-        if (tts.stop() == -1) ;
-        stop();
     }
 
     public TextToSpeech getTextToSpeech() {
