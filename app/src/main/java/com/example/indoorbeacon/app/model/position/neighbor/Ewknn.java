@@ -44,16 +44,17 @@ public class Ewknn implements PositionAlgorithm {
         ArrayList<DeviationToCoord> data = Database.getDB().getAllDistancesFromMedians(map);
 
         if(data == null || data.isEmpty()) {
-            Log.e(TAG, "INVALID COORDINATE FILTER 1");
+            Log.e(TAG, "INVALID COORDINATE FILTER - DATA == NULL || data empty");
             return new Coordinate(-1, -1, -1);
         }
 
         // Step 2/3 done -> II RPs filtering
         // Remove minDeviation from list and calculate next threshold with it
         // after that the filtered list with minDeviation added is returned
-        if(data.size() == 1)
-            return new Coordinate(-1,-1,-1);
-        else {
+        if(data.size() == 1) {
+            Log.e(TAG, "INVALID COORDINATE DATA SIZE = 1");
+            return new Coordinate(-1, -1, -1);
+        } else {
             DeviationToCoord minDeviation = getMinDevToCoord(data);
             data = filterRPsII(minDeviation, data);
         }

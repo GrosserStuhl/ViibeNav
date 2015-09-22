@@ -183,12 +183,13 @@ public class Database extends SQLiteOpenHelper {
     public ArrayList<DeviationToCoord> getAllDistancesFromMedians(MacToMedian[] map) {
         SQLiteDatabase db = getWritableDatabase();
 
+        Log.d(TAG,"How big is mactomedian: "+map.length);
+
         ArrayList<DeviationToCoord> devsToCoords = new ArrayList<>();
         final String LOCAL_COLUMN_DEVIATION = "deviation";
 
         for (int i = 0; i < map.length; i++) {
             final String macAddress = map[i].getMacAddressStr();
-            final double median = map[i].getMedian();
 
 //            String queryOrientation = "";
 //            if (map[i].getOrientation().equals(Orientation.back))
@@ -207,16 +208,22 @@ public class Database extends SQLiteOpenHelper {
 //                    "  ) AND " + queryOrientation +
 //                    " GROUP BY " + COLUMN_MEDIAN_VALUE + " HAVING deviation <=" + Definitions.POSITIONING_THRESHOLD + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + Definitions.POSITIONING_LIMIT + ";";
 
-            String query = "SELECT " + TABLE_FINGERPRINT + "." + COLUMN_FLOOR + "," + TABLE_FINGERPRINT + "." + COLUMN_X + ", " + TABLE_FINGERPRINT + "." + COLUMN_Y + "," +
-                    TABLE_BEACON + "." + COLUMN_MAC_ADDRESS + ", " + TABLE_MEDIAN + "."+MEDIAN_COLUMN_ID+", MIN(ABS("+TABLE_MEDIAN+"."+COLUMN_MEDIAN_VALUE+" - "+map[i].getMedian()+")) AS " + LOCAL_COLUMN_DEVIATION + " " +
-                    " FROM '" + TABLE_FP_HAS_MEDIAN + "' JOIN '" + TABLE_FINGERPRINT + "' ON "+COLUMN_FINGERPRINT_ID+"="+FINGERPRINT_COLUMN_ID+" JOIN '" +
-                    TABLE_MEDIAN + "' ON "+COLUMN_MEDIAN_ID+"="+MEDIAN_COLUMN_ID+ " JOIN '"+TABLE_BEACON+"' ON "+COLUMN_BEACON_ID+"="+BEACON_COLUMN_ID +
-                    " WHERE "+COLUMN_MAC_ADDRESS+" = '" + macAddress + "' AND "+ COLUMN_ORIENTATION + " = '" + map[i].getOrientation().toString()+"'"+
-                    " GROUP BY " + MEDIAN_COLUMN_ID + " HAVING "+LOCAL_COLUMN_DEVIATION+" <=" + Definitions.POSITIONING_THRESHOLD + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + Definitions.POSITIONING_LIMIT + ";";
+//            String query = "SELECT " + TABLE_FINGERPRINT + "." + COLUMN_FLOOR + "," + TABLE_FINGERPRINT + "." + COLUMN_X + ", " + TABLE_FINGERPRINT + "." + COLUMN_Y + ", " +
+//                    TABLE_BEACON + "." + COLUMN_MAC_ADDRESS + ", " + TABLE_MEDIAN + "."+MEDIAN_COLUMN_ID+", MIN(ABS("+TABLE_MEDIAN+"."+COLUMN_MEDIAN_VALUE+" - "+map[i].getMedian()+")) AS " + LOCAL_COLUMN_DEVIATION + " " +
+//                    " FROM '" + TABLE_FP_HAS_MEDIAN + "' JOIN '" + TABLE_FINGERPRINT + "' ON "+COLUMN_FINGERPRINT_ID+"="+FINGERPRINT_COLUMN_ID+" JOIN '" +
+//                    TABLE_MEDIAN + "' ON "+COLUMN_MEDIAN_ID+"="+MEDIAN_COLUMN_ID+ " JOIN '"+TABLE_BEACON+"' ON "+COLUMN_BEACON_ID+"="+BEACON_COLUMN_ID +
+//                    " WHERE "+COLUMN_MAC_ADDRESS+" = '" + macAddress + "' AND "+ COLUMN_ORIENTATION + " = '" + map[i].getOrientation().toString()+"'"+
+//                    " GROUP BY " + MEDIAN_COLUMN_ID + " HAVING "+LOCAL_COLUMN_DEVIATION+" <=" + Definitions.POSITIONING_THRESHOLD + " ORDER BY " + LOCAL_COLUMN_DEVIATION + " ASC LIMIT " + Definitions.POSITIONING_LIMIT + ";";
+
+            String query = "SELECT fingerprint.floor, fingerprint.x, fingerprint.y, beacon.macAddress, median.medianid, MIN(ABS(median.median+78)) as deviation FROM fp_has_median JOIN fingerprint ON fp_has_median.fp_has_median_fingerprintid = fingerprint.fingerprintid JOIN " +
+                    " median ON fp_has_median.fp_has_median_medianid = median.medianid JOIN beacon ON median.median_beaconid = beacon.beaconid"+
+                    " WHERE beacon.macAddress = '"+map[i].getMacAddressStr()+"' AND median.orientation='"+map[i].getOrientation()+"' GROUP by median.medianid HAVING deviation<="+ Definitions.POSITIONING_THRESHOLD+
+                    " ORDER BY deviation ASC LIMIT "+Definitions.POSITIONING_LIMIT+";";
 
             Cursor c = db.rawQuery(query, null);
             c.moveToFirst();
 
+            int counter = 0;
             while (!c.isAfterLast()) {
                 Coordinate coordinate = new Coordinate(c.getInt(c.getColumnIndex(COLUMN_FLOOR)), c.getInt(c.getColumnIndex(COLUMN_X)), c.getInt(c.getColumnIndex(COLUMN_Y)));
 
@@ -225,12 +232,19 @@ public class Database extends SQLiteOpenHelper {
 //                Log.d(TAG, "Deviation-Median" + c.getInt(c.getColumnIndex(MEDIANS_COLUMN_ID)) +
 //                        " deviation: " + deviation +
 //                        " -> Coord: " + coordinate + " macAddress " + macAddress);
+                Log.d(TAG,"Which deviation? "+deviation);
+                counter++;
                 c.moveToNext();
             }
+
+            Log.d(TAG,"How many results from one beacon? "+counter+ " FROM MEDIAN "+map[i].getMedian());
+
             c.close();
+//            Log.d(TAG, "How many deviations from DB: " + devsToCoords.size());
+//            Log.d(TAG,"QUERY: "+query);
         }
         db.close();
-//        Log.d(TAG,"DEV TO COORDS SIZE: "+devsToCoords.size()+ " FROM "+map.length+ " Macs");
+        Log.d(TAG,"DEV TO COORDS SIZE: "+devsToCoords.size()+ " FROM "+map.length+ " Macs");
 //        return devsToCoords.toArray(new DeviationToCoord[devsToCoords.size()]);
         return devsToCoords;
     }
