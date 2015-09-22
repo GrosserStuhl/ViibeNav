@@ -42,9 +42,13 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     private boolean navigating;
     private Person person;
     private Handler triggerMeasuring;
+    private Handler measuringHandler;
+    private Handler imageUpdateHandler;
 
     private boolean initialized;
     private boolean darkBackground;
+    private BroadcastReceiver mMessageReceiver;
+    private BroadcastReceiver mCoordReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +61,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         darkBackground = preferences.getBoolean(SettingsActivity.KEY_PREF_DRK, false);
         setContentView(R.layout.activity_navigation);
-        if(darkBackground){
+        if (darkBackground) {
             View root = getWindow().getDecorView().getRootView();
             root.setBackgroundColor(Color.parseColor(Definitions.DARK_BACKGROUND_COLOR));
 //            getActionBar().setBackgroundDrawable(new ColorDrawable(Color.BLUE));
@@ -84,7 +88,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         estimatedCoordTextView = (TextView) findViewById(R.id.estimatedCoords);
         estimatedAlgorithm = (TextView) findViewById(R.id.estimatedAlgorithm);
 
-        if(darkBackground){
+        if (darkBackground) {
             directionTextView.setTextColor(Color.WHITE);
             estimatedAlgorithm.setTextColor(Color.WHITE);
             estimatedAlgorithm.setTextColor(Color.WHITE);
@@ -100,7 +104,10 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             }
         };
 
-        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        measuringHandler = new Handler();
+        imageUpdateHandler = new Handler();
+
+        mMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean isWalking = intent.getBooleanExtra("isWalking", false);
@@ -115,7 +122,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("walking boolean changed"));
 
-        new Handler().postDelayed(new Runnable() {
+        imageUpdateHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 navigationHelper.updateImage(arrowImage, sensorHelper.getOrientation());
@@ -125,13 +132,14 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         }, 250);
 
         // setup GUI updates + new Measurements
-        BroadcastReceiver mCoordReceiver = new BroadcastReceiver() {
+        mCoordReceiver = new BroadcastReceiver() {
+
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean startedMeasuring = intent.getBooleanExtra("startedMeasuring", false);
                 if (!startedMeasuring) {
                     if (!initialized) {
-                        new Handler().postDelayed(new Runnable() {
+                        measuringHandler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 estimatedCoordTextView.setText(person.getCurrentPos().toString());
@@ -234,9 +242,27 @@ public class NavigationActivity extends Activity implements SensorEventListener 
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 finish();
+                TTS.getTTS(this).getTextToSpeech().stop();
+                measuringHandler.removeCallbacksAndMessages(null);
+                imageUpdateHandler.removeCallbacksAndMessages(null);
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(mCoordReceiver);
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            finish();
+            TTS.getTTS(this).getTextToSpeech().stop();
+            measuringHandler.removeCallbacksAndMessages(null);
+            imageUpdateHandler.removeCallbacksAndMessages(null);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mCoordReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
