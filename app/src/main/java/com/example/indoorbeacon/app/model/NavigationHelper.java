@@ -141,7 +141,7 @@ public class NavigationHelper {
             }
         }
 
-        ranges.get(0).setRelationToNextRange(Range.RIGHT);
+        ranges.get(0).setRelationToNextRange(Range.LEFT);
 //        ranges.get(1).setRelationToNextRange(Range.RIGHT);
         currentRange = ranges.getFirst();
         ranges.getLast().setRelationToNextRange(Range.LAST);
