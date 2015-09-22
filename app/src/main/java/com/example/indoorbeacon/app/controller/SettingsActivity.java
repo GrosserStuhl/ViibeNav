@@ -20,6 +20,7 @@ public class SettingsActivity extends Activity {
     public static final String KEY_PREF_ORI = "pref_orientationUnit";
     public static final String KEY_PREF_DIS = "pref_distanceUnit";
     public static final String KEY_PREF_DRK = "pref_darkBackground";
+    public static final String KEY_PREF_ENV = "pref_useEnvInfos";
     private static Activity settingsActivity;
 
     @Override

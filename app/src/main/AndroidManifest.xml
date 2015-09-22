@@ -82,7 +82,8 @@
         <activity
                 android:name=".controller.NavigationActivity"
                 android:label="Navigation"
-                android:screenOrientation="portrait">
+                android:screenOrientation="portrait"
+                android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="com.example.indoorbeacon.app.NavigationActivity"/>
 

@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
@@ -51,8 +50,12 @@ public class RoomlistActivity extends Activity {
                 if (infoList.size() > 0) {
                     ArrayList<String> entryList = new ArrayList<>();
                     for (InfoModel infoEntry : infoList) {
-                        entryList.add("<font color='#000000'>" + infoEntry.getPerson_name() +
-                                "</font><br/><font color='#006400'>" + infoEntry.getRoom_name() + "</font>");
+                        if (infoEntry.getPersonName() == null)
+                            infoEntry.setPersonName("Unbenannt");
+                        if (infoEntry.getRoomName() == null)
+                            infoEntry.setRoomName("Unbenannt");
+                        entryList.add("<font color='#000000'>" + infoEntry.getPersonName() +
+                                "</font><br/><font color='#006400'>" + infoEntry.getRoomName() + "</font>");
                     }
                     allEntries.put(category, entryList);
                 }

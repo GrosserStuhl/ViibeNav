@@ -41,6 +41,7 @@ public class NavigationHelper {
     private String directionUnit;
     private String distanceUnit;
     private int directionDifference = 0;
+    private boolean useEnvInfos;
 
     public NavigationHelper(Context context, Person person, String ziel) {
         this.person = person;
@@ -50,6 +51,7 @@ public class NavigationHelper {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         directionUnit = preferences.getString(SettingsActivity.KEY_PREF_ORI, "Grad");
         distanceUnit = preferences.getString(SettingsActivity.KEY_PREF_DIS, "Meter");
+        useEnvInfos = preferences.getBoolean(SettingsActivity.KEY_PREF_ENV, true);
         initNavigation(ziel);
     }
 
@@ -338,14 +340,17 @@ public class NavigationHelper {
                 distance = range.getApproximateDistanceInSteps();
 
             fullInstruction.append("Geradeaus circa ").append(distance);
-            if (range.hasEnvironmentalInfos())
-                fullInstruction.append(" ").append(distanceUnit).append(", ");
-            else fullInstruction.append(" ").append(distanceUnit);
+            fullInstruction.append(" ").append(distanceUnit);
 
-            ArrayList<String> environmentalInfo = range.getEnvironmentalInfos();
-            for (String anEnvironmentalInfo : environmentalInfo) {
-                String e = anEnvironmentalInfo.trim();
-                fullInstruction.append(e).append(", ");
+            if (useEnvInfos) {
+                if (range.hasEnvironmentalInfos())
+                    fullInstruction.append(", ");
+
+                ArrayList<String> environmentalInfo = range.getEnvironmentalInfos();
+                for (String anEnvironmentalInfo : environmentalInfo) {
+                    String e = anEnvironmentalInfo.trim();
+                    fullInstruction.append(e).append(",");
+                }
             }
             fullInstruction.append(range.getRelationToNextRangeAsString());
             instructionList.add(fullInstruction.toString());

@@ -23,6 +23,12 @@
             android:title="@string/prefInvertColors"
             android:defaultValue="false"/>
 
+    <CheckBoxPreference
+            android:key="pref_useEnvInfos"
+            android:title="@string/prefEnvInfos"
+            android:defaultValue="true"/>
+
+
     <Preference
             android:key="showImportActivity"
             android:title="Importieren"

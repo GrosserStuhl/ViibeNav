@@ -22,7 +22,7 @@
 
     <string name="add_info">Hinzufügen</string>
     <string name="cancel_info">Abbrechen</string>
-    <string name="person_name">Person</string>
+    <string name="personName">Person</string>
     <string name="room_name">Raumname</string>
     <string name="environment">Umgebung</string>
     <string name="set">Einstellen</string>
@@ -32,6 +32,7 @@
     <string name="prefOrientationUnit">Einheit der angezeigten Orientierung</string>
     <string name="prefOrientationDefault">Grad</string>
     <string name="prefInvertColors">Dunkler Hintergrund</string>
+    <string name="prefEnvInfos">Umgebungsinfos einbeziehen</string>
     <string name="expListViewBeschreibung">Liste mit aufklappbaren Elementen</string>
     <string name="navInfoButtonText">Anleitung zur Bedienung</string>
     <string name="infoInstructions">Anleitung zur Bedienung: Nach rechts wischen für nächste Anweisung.
