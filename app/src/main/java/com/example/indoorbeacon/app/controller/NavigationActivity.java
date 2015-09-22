@@ -241,12 +241,7 @@ public class NavigationActivity extends Activity implements SensorEventListener 
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                finish();
-                TTS.getTTS(this).getTextToSpeech().stop();
-                measuringHandler.removeCallbacksAndMessages(null);
-                imageUpdateHandler.removeCallbacksAndMessages(null);
-                LocalBroadcastManager.getInstance(this).unregisterReceiver(mCoordReceiver);
-                LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+                killNavigationActivity();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -255,14 +250,20 @@ public class NavigationActivity extends Activity implements SensorEventListener 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            finish();
-            TTS.getTTS(this).getTextToSpeech().stop();
-            measuringHandler.removeCallbacksAndMessages(null);
-            imageUpdateHandler.removeCallbacksAndMessages(null);
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mCoordReceiver);
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+            killNavigationActivity();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    private void killNavigationActivity() {
+        finish();
+        TTS.getTTS(this).getTextToSpeech().stop();
+        measuringHandler.removeCallbacksAndMessages(null);
+        imageUpdateHandler.removeCallbacksAndMessages(null);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mCoordReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        person.killAllHandlers();
+        navigationHelper.killAllHandlers();
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {

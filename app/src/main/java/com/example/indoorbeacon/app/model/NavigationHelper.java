@@ -23,6 +23,7 @@ import java.util.LinkedList;
 public class NavigationHelper {
     private static final String TAG = "NavigationHelper";
 
+    private Context context;
     private Coordinate target;
     private LinkedList<Coordinate> path;
     private HashMap<Coordinate, InfoModel> infoTextsForAnchors;
@@ -42,11 +43,13 @@ public class NavigationHelper {
     private String distanceUnit;
     private int directionDifference = 0;
     private boolean useEnvInfos;
+    private BroadcastReceiver mMessageReceiver;
 
     public NavigationHelper(Context context, Person person, String ziel) {
+        this.context = context;
         this.person = person;
         tts = TTS.getTTS(context);
-        setUpBrReceiver(context);
+        setUpBrReceiver();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         directionUnit = preferences.getString(SettingsActivity.KEY_PREF_ORI, "Grad");
@@ -168,8 +171,8 @@ public class NavigationHelper {
 //        }
     }
 
-    private void setUpBrReceiver(Context context) {
-        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+    private void setUpBrReceiver() {
+        mMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 onPositionChangedAction();
@@ -324,7 +327,7 @@ public class NavigationHelper {
             firstDirection = 270;
         else if (currentRange.getRelationToNextRange() == Range.RIGHT)
             firstDirection = 90;
-        else if (currentRange.getRelationToNextRange() == Range.NONE)
+        else if (currentRange.getRelationToNextRange() == Range.NONE || currentRange.getRelationToNextRange() == Range.LAST)
             firstDirection = 0;
     }
 
@@ -419,5 +422,9 @@ public class NavigationHelper {
 
     public ArrayList<String> getInstructionList() {
         return instructionList;
+    }
+
+    public void killAllHandlers() {
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(mMessageReceiver);
     }
 }

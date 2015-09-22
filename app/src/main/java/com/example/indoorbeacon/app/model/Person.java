@@ -32,6 +32,7 @@ public class Person {
 
     private SensorHelper sensorHelper;
     private int walkedDistance;
+    private Handler walkDestectionHandler;
 
     private ArrayList<Coordinate> tmpCoordinates;
 
@@ -46,7 +47,8 @@ public class Person {
 
         sensorHelper = SensorHelper.getSensorHelper(activity);
 
-        new Handler().postDelayed(new Runnable() {
+        walkDestectionHandler = new Handler();
+        walkDestectionHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (sensorHelper.isWalking()) {
@@ -185,5 +187,9 @@ public class Person {
 
     public void setCurrentPosAlgorithm(Coordinate currentPosAlgorithm) {
         this.currentPosAlgorithm = currentPosAlgorithm;
+    }
+
+    public void killAllHandlers() {
+        walkDestectionHandler.removeCallbacksAndMessages(null);
     }
 }
